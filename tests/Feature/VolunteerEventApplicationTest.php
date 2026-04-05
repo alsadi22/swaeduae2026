@@ -136,6 +136,6 @@ class VolunteerEventApplicationTest extends TestCase
         $event = $this->futureEventWithApplicationRequired();
 
         $this->post(route('volunteer.opportunities.apply', $event), [])
-            ->assertRedirect(route('login'));
+            ->assertRedirect(route('login', ['lang' => 'en'], absolute: false));
     }
 }

@@ -22,6 +22,15 @@ class EmailVerificationTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_verified_user_visiting_verify_email_redirects_to_dashboard_with_locale(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get('/verify-email')
+            ->assertRedirect(route('dashboard', ['lang' => 'en'], absolute: false));
+    }
+
     public function test_email_can_be_verified(): void
     {
         $user = User::factory()->unverified()->create();

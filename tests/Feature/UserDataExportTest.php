@@ -51,7 +51,7 @@ class UserDataExportTest extends TestCase
 
     public function test_guest_cannot_access_data_export(): void
     {
-        $this->get(route('profile.data-export'))->assertRedirect(route('login'));
+        $this->get(route('profile.data-export'))->assertRedirect(route('login', ['lang' => 'en'], absolute: false));
     }
 
     public function test_data_export_is_throttled_per_user(): void

@@ -15,7 +15,7 @@ class VolunteerProfileTest extends TestCase
     public function test_guest_is_redirected_from_volunteer_profile_edit(): void
     {
         $this->get(route('volunteer.profile.edit'))
-            ->assertRedirect(route('login'));
+            ->assertRedirect(route('login', ['lang' => 'en'], absolute: false));
     }
 
     public function test_non_volunteer_cannot_access_volunteer_profile_edit(): void

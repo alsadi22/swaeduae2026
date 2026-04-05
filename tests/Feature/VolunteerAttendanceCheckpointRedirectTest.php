@@ -73,6 +73,6 @@ class VolunteerAttendanceCheckpointRedirectTest extends TestCase
             'checkin_window_ends_at' => now()->addDays(2),
         ]);
 
-        $this->get(route('volunteer.opportunities.attendance', $event))->assertRedirect(route('login'));
+        $this->get(route('volunteer.opportunities.attendance', $event))->assertRedirect(route('login', ['lang' => 'en'], absolute: false));
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\OrganizationInvitation;
 use App\Models\User;
+use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +29,7 @@ class AcceptOrganizationInvitationController extends Controller
         }
 
         if (! $request->user()) {
-            return redirect()->guest(route('login', [], false));
+            return redirect()->guest(route('login', PublicLocale::query(), false));
         }
 
         $user = $request->user();

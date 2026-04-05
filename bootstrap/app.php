@@ -3,6 +3,7 @@
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
 use App\Support\AuthRedirect;
+use App\Support\PublicLocale;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -36,13 +37,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 return route('admin.login', absolute: false);
             }
 
-            return route('login', absolute: false);
+            return route('login', PublicLocale::query(), absolute: false);
         });
 
         $middleware->redirectUsersTo(function (Request $request) {
             $user = $request->user();
             if ($user === null) {
-                return route('home', absolute: false);
+                return route('home', PublicLocale::query(), absolute: false);
             }
 
             return AuthRedirect::homeForUser($user);

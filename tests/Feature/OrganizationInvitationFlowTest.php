@@ -74,7 +74,7 @@ class OrganizationInvitationFlowTest extends TestCase
             'expires_at' => now()->addWeek(),
         ]);
 
-        $this->get('/organization/join/'.$plain)->assertRedirect(route('login', [], false));
+        $this->get('/organization/join/'.$plain)->assertRedirect(route('login', ['lang' => 'en'], false));
     }
 
     public function test_invalid_token_shows_public_message_without_login(): void

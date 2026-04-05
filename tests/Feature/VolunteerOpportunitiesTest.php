@@ -101,7 +101,7 @@ class VolunteerOpportunitiesTest extends TestCase
         ]);
 
         $this->post(route('volunteer.opportunities.join', $event))
-            ->assertRedirect(route('login'));
+            ->assertRedirect(route('login', ['lang' => 'en'], absolute: false));
     }
 
     public function test_volunteer_without_minimum_profile_cannot_join_open_roster(): void
