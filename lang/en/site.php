@@ -57,7 +57,13 @@ return [
 
     'gallery_placeholder' => 'Photo gallery preview — coming with the media module.',
 
-    'programs_intro' => 'Programs and initiatives will be listed here with filters once the CMS is live. Below is a preview layout.',
+    'programs_intro' => 'Explore our published program pages below. Editors can add a full narrative for this route with the CMS slug “programs”, and surface individual initiatives with “Show on programs page” in admin.',
+
+    'programs_grid_hint' => 'These cards are published CMS pages (not institutional routes). Toggle visibility in Admin → CMS pages.',
+
+    'programs_empty' => 'No program pages are highlighted yet.',
+
+    'programs_empty_admin_hint' => 'Publish a CMS page and enable “Show on programs page” to list it here (both EN and AR rows when bilingual publishing applies).',
 
     'events_intro' => 'Upcoming volunteer opportunities and public activities appear below. Open an event for details and follow the link to register or join the roster.',
 

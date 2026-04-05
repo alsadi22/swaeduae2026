@@ -47,6 +47,7 @@ class CmsPage extends Model
         'published_at',
         'author_id',
         'show_on_home',
+        'show_on_programs',
     ];
 
     protected function casts(): array
@@ -54,6 +55,7 @@ class CmsPage extends Model
         return [
             'published_at' => 'datetime',
             'show_on_home' => 'boolean',
+            'show_on_programs' => 'boolean',
         ];
     }
 

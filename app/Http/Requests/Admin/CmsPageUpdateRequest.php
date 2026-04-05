@@ -60,6 +60,7 @@ class CmsPageUpdateRequest extends FormRequest
                 Rule::requiredIf(fn () => $this->input('status') === CmsPage::STATUS_PUBLISHED),
             ],
             'show_on_home' => ['boolean'],
+            'show_on_programs' => ['boolean'],
             'allow_partial_locale_publish' => ['sometimes', 'boolean'],
         ];
     }

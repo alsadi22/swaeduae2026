@@ -15,7 +15,6 @@ class InstitutionalPageController extends Controller
     private const ALLOWED_FALLBACK_VIEWS = [
         'public.about',
         'public.leadership',
-        'public.programs',
         'public.media',
         'public.partners',
         'public.faq',

@@ -100,4 +100,17 @@
         </label>
         <x-input-error :messages="$errors->get('show_on_home')" class="mt-2" />
     </div>
+
+    <div class="rounded-md border border-gray-200 bg-gray-50 p-4">
+        <input type="hidden" name="show_on_programs" value="0" />
+        <label class="inline-flex items-start gap-3">
+            <input type="checkbox" name="show_on_programs" value="1" class="mt-1 rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+                @checked(old('show_on_programs', $page->show_on_programs ?? false)) />
+            <span>
+                <span class="block text-sm font-medium text-gray-700">{{ __('Show on programs page') }}</span>
+                <span class="mt-0.5 block text-xs text-gray-500">{{ __('When published, list this page in the “Featured program pages” grid on /programs (not for institutional slugs).') }}</span>
+            </span>
+        </label>
+        <x-input-error :messages="$errors->get('show_on_programs')" class="mt-2" />
+    </div>
 </div>

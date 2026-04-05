@@ -28,4 +28,17 @@ return [
     */
     'default_og_image_url' => env('DEFAULT_OG_IMAGE_URL'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Home page — partner logos (Phase C5)
+    |--------------------------------------------------------------------------
+    |
+    | Each item: label (EN), optional label_ar, url, logo (https URL or /path under public).
+    | Leave empty to show the bilingual placeholder line from lang files.
+    |
+    */
+    'home_partners' => [
+        // ['label' => 'Example partner', 'label_ar' => 'شريك', 'url' => 'https://example.org', 'logo' => '/images/partners/example.svg'],
+    ],
+
 ];

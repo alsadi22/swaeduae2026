@@ -3,14 +3,15 @@
 use App\Http\Controllers\Public\AcceptOrganizationInvitationController;
 use App\Http\Controllers\Public\CmsPageController;
 use App\Http\Controllers\Public\ContactController;
-use App\Http\Controllers\Public\SupportController;
 use App\Http\Controllers\Public\ExternalNewsPublicController;
 use App\Http\Controllers\Public\HomeController;
-use App\Http\Controllers\Public\MediaHubController;
 use App\Http\Controllers\Public\InstitutionalPageController;
+use App\Http\Controllers\Public\MediaHubController;
 use App\Http\Controllers\Public\OrganizationRegistrationController;
+use App\Http\Controllers\Public\ProgramsIndexController;
 use App\Http\Controllers\Public\PublicEventController;
 use App\Http\Controllers\Public\SitemapController;
+use App\Http\Controllers\Public\SupportController;
 use App\Http\Controllers\Public\YouthCouncilsController;
 use App\Http\Controllers\Volunteer\VolunteerHubController;
 use Illuminate\Support\Facades\Route;
@@ -51,10 +52,7 @@ Route::get('/leadership', [InstitutionalPageController::class, 'show'])
     ->defaults('cms_slug', 'leadership')
     ->defaults('fallback_view', 'public.leadership')
     ->name('leadership');
-Route::get('/programs', [InstitutionalPageController::class, 'show'])
-    ->defaults('cms_slug', 'programs')
-    ->defaults('fallback_view', 'public.programs')
-    ->name('programs.index');
+Route::get('/programs', ProgramsIndexController::class)->name('programs.index');
 Route::get('/youth-councils', YouthCouncilsController::class)->name('youth-councils');
 Route::get('/events', [PublicEventController::class, 'index'])->name('events.index');
 Route::get('/events/{event}', [PublicEventController::class, 'show'])->name('events.show');
