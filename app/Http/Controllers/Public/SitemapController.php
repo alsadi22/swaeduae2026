@@ -24,6 +24,7 @@ class SitemapController extends Controller
         foreach ([
             route('home', [], true),
             route('feed', [], true),
+            route('site.webmanifest', [], true),
             route('about', [], true),
             route('leadership', [], true),
             route('programs.index', [], true),

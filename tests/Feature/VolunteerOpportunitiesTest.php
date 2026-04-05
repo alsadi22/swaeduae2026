@@ -377,6 +377,12 @@ class VolunteerOpportunitiesTest extends TestCase
             ->assertSessionHasErrors('sort');
     }
 
+    public function test_opportunities_index_rejects_invalid_entry(): void
+    {
+        $this->get(route('volunteer.opportunities.index', ['entry' => 'vip-only']))
+            ->assertSessionHasErrors('entry');
+    }
+
     public function test_opportunities_sort_starts_late_orders_newest_first(): void
     {
         $org = Organization::query()->create(['name_en' => 'Sort Org', 'name_ar' => null]);

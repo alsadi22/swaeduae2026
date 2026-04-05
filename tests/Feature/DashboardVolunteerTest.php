@@ -52,6 +52,19 @@ class DashboardVolunteerTest extends TestCase
             ->assertSee(__('Manage email preferences'), false);
     }
 
+    public function test_volunteer_dashboard_links_to_programs_and_media(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $user = User::factory()->create();
+        $user->assignRole('volunteer');
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('data-testid="dashboard-discover-programs"', false)
+            ->assertSee('data-testid="dashboard-discover-media"', false);
+    }
+
     public function test_admin_without_volunteer_role_sees_no_volunteer_section_titles(): void
     {
         $this->seed(RoleSeeder::class);

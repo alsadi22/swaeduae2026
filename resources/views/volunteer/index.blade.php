@@ -25,6 +25,11 @@
                     @endif
                 @endguest
             </div>
+            <div class="mt-6 flex flex-wrap gap-x-6 gap-y-2 border-t border-slate-200/80 pt-6 text-sm font-semibold text-emerald-800">
+                <a href="{{ route('programs.index', $localeQ) }}" data-testid="volunteer-hub-programs" class="hover:underline">{{ __('Programs') }} →</a>
+                <a href="{{ route('media.index', $localeQ) }}" data-testid="volunteer-hub-media" class="hover:underline">{{ __('Media') }} →</a>
+                <a href="{{ route('events.index', $localeQ) }}" data-testid="volunteer-hub-events" class="hover:underline">{{ __('Events') }} →</a>
+            </div>
             <p class="mt-10">
                 <a href="{{ route('home', $localeQ) }}" class="footer-link text-sm font-semibold">{{ __('Back to home') }}</a>
             </p>

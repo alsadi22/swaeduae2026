@@ -67,4 +67,13 @@ class ExternalNewsItemAdminTest extends TestCase
             ->assertSee('UniqueHeadlineAlpha', false)
             ->assertDontSee('OtherStoryBeta', false);
     }
+
+    public function test_admin_external_news_items_index_rejects_oversized_search(): void
+    {
+        $user = $this->adminUser();
+
+        $this->actingAs($user)
+            ->get(route('admin.external-news-items.index', array_merge(PublicLocale::query(), ['search' => str_repeat('z', 101)])))
+            ->assertSessionHasErrors('search');
+    }
 }

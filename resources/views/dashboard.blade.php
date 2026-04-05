@@ -54,6 +54,8 @@
                         </div>
                         <div class="mt-6 flex flex-wrap gap-4 border-t border-slate-100 pt-6">
                             <a href="{{ route('dashboard.attendance.index', $dashLocaleQ) }}" class="text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('My attendance') }} →</a>
+                            <a href="{{ route('programs.index', $dashLocaleQ) }}" data-testid="dashboard-discover-programs" class="text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Programs') }} →</a>
+                            <a href="{{ route('media.index', $dashLocaleQ) }}" data-testid="dashboard-discover-media" class="text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Media') }} →</a>
                         </div>
                     </div>
                 </div>

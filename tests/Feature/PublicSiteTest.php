@@ -38,6 +38,15 @@ class PublicSiteTest extends TestCase
         $this->get('/volunteer')->assertOk();
     }
 
+    public function test_volunteer_hub_includes_programs_media_events_links(): void
+    {
+        $this->get('/volunteer')
+            ->assertOk()
+            ->assertSee('data-testid="volunteer-hub-programs"', false)
+            ->assertSee('data-testid="volunteer-hub-media"', false)
+            ->assertSee('data-testid="volunteer-hub-events"', false);
+    }
+
     public function test_volunteer_opportunities_list_is_ok(): void
     {
         $this->get('/volunteer/opportunities')->assertOk();

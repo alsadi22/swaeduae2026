@@ -71,6 +71,15 @@ class CmsPageAdminTest extends TestCase
             ->assertSee('title="'.__('Show in media center').'"', false);
     }
 
+    public function test_admin_cms_index_rejects_invalid_placement(): void
+    {
+        $user = $this->adminUser();
+
+        $this->actingAs($user)
+            ->get(route('admin.cms-pages.index', array_merge(PublicLocale::query(), ['placement' => 'storefront'])))
+            ->assertSessionHasErrors('placement');
+    }
+
     public function test_admin_cms_index_placement_filter_limits_rows(): void
     {
         $user = $this->adminUser();
