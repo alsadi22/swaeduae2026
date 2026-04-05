@@ -35,6 +35,10 @@ class PublicLayoutSeoTest extends TestCase
         $response->assertSee('property="og:description"', false);
         $response->assertSee('property="og:type"', false);
         $response->assertSee('rel="canonical"', false);
+        $response->assertSee('rel="alternate" hreflang="en"', false);
+        $response->assertSee('rel="alternate" hreflang="ar"', false);
+        $response->assertSee('property="og:locale"', false);
+        $response->assertSee('property="og:locale:alternate"', false);
         $response->assertSee('name="twitter:card"', false);
         $response->assertSee('name="twitter:title"', false);
         $response->assertSee('name="twitter:description"', false);
@@ -71,6 +75,8 @@ class PublicLayoutSeoTest extends TestCase
         $response->assertDontSee('rel="canonical"', false);
         $response->assertDontSee('property="og:url"', false);
         $response->assertDontSee('application/ld+json', false);
+        $response->assertDontSee('hreflang="en"', false);
+        $response->assertDontSee('property="og:locale"', false);
         $response->assertSee('property="og:title"', false);
     }
 

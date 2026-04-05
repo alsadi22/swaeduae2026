@@ -43,12 +43,22 @@
             <link rel="canonical" href="{{ $resolvedCanonical }}">
         @endif
 
+        @if (! $isAdminCmsPreview)
+            <link rel="alternate" hreflang="en" href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}">
+            <link rel="alternate" hreflang="ar" href="{{ request()->fullUrlWithQuery(['lang' => 'ar']) }}">
+            <link rel="alternate" hreflang="x-default" href="{{ request()->fullUrlWithQuery(['lang' => config('app.locale', 'en')]) }}">
+        @endif
+
         @if ($resolvedOgUrl)
             <meta property="og:url" content="{{ $resolvedOgUrl }}">
         @endif
         <meta property="og:title" content="{{ $resolvedOgTitle }}">
         <meta property="og:description" content="{{ $resolvedOgDescription }}">
         <meta property="og:type" content="{{ $ogType }}">
+        @if (! $isAdminCmsPreview)
+            <meta property="og:locale" content="{{ app()->getLocale() === 'ar' ? 'ar_AE' : 'en_AE' }}">
+            <meta property="og:locale:alternate" content="{{ app()->getLocale() === 'ar' ? 'en_AE' : 'ar_AE' }}">
+        @endif
         @if ($ogImage)
             <meta property="og:image" content="{{ $ogImage }}">
         @endif

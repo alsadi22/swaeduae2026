@@ -49,33 +49,52 @@
             </div>
             <p class="mt-3 max-w-2xl text-sm text-slate-600">{{ __('site.programs_grid_hint') }}</p>
 
-            <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                @forelse ($programPages as $p)
-                    <article class="card-surface group overflow-hidden transition duration-200 hover:shadow-card-hover">
-                        <a href="{{ $p->publicUrl() }}?lang={{ app()->getLocale() }}" class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2">
-                            <div class="h-32 bg-gradient-to-br from-emerald-100 via-slate-50 to-amber-50 transition group-hover:from-emerald-200/90"></div>
-                            <div class="p-5">
-                                <h3 class="font-display font-bold text-slate-900 group-hover:text-emerald-900">{{ $p->title }}</h3>
-                                @if ($p->excerpt)
-                                    <p class="mt-2 text-sm text-slate-600 leading-relaxed">{{ \Illuminate\Support\Str::limit($p->excerpt, 160) }}</p>
-                                @else
-                                    <p class="mt-2 text-sm text-slate-600 leading-relaxed">{{ \Illuminate\Support\Str::limit($p->body, 160) }}</p>
-                                @endif
-                                <span class="mt-4 inline-flex text-sm font-bold text-emerald-800 group-hover:underline">{{ __('Read more') }} →</span>
-                            </div>
-                        </a>
-                    </article>
-                @empty
-                    <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 p-10 text-center sm:col-span-2 lg:col-span-3">
+            <form method="get" action="{{ route('programs.index', ['lang' => app()->getLocale()]) }}" class="card-surface mt-8 flex flex-col gap-4 p-4 sm:flex-row sm:flex-wrap sm:items-end">
+                <div class="min-w-0 flex-1">
+                    <label for="public_programs_q" class="block text-xs font-bold uppercase tracking-wide text-slate-500">{{ __('Search programs') }}</label>
+                    <input type="search" id="public_programs_q" name="q" value="{{ $search }}" maxlength="120" placeholder="{{ __('Search by title or body') }}" class="mt-1 block w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button type="submit" class="btn-primary-solid">{{ __('Apply') }}</button>
+                    @if (filled($search))
+                        <a href="{{ route('programs.index', ['lang' => app()->getLocale()]) }}" class="btn-secondary-muted">{{ __('Clear') }}</a>
+                    @endif
+                </div>
+            </form>
+
+            @if ($programPages->total() === 0)
+                @if (filled($search))
+                    <p class="mt-8 text-sm text-slate-600">{{ __('No program pages match your search.') }}</p>
+                @else
+                    <div class="mt-10 rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 p-10 text-center sm:col-span-2 lg:col-span-3">
                         <p class="text-slate-600">{{ __('site.programs_empty') }}</p>
                         <p class="mt-3 text-sm text-slate-500">{{ __('site.programs_empty_admin_hint') }}</p>
                     </div>
-                @endforelse
-            </div>
-            @if ($programPages->hasPages())
-                <div class="mt-10">
-                    {{ $programPages->links('vendor.pagination.tailwind-public') }}
+                @endif
+            @else
+                <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($programPages as $p)
+                        <article class="card-surface group overflow-hidden transition duration-200 hover:shadow-card-hover">
+                            <a href="{{ $p->publicUrl() }}?lang={{ app()->getLocale() }}" class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2">
+                                <div class="h-32 bg-gradient-to-br from-emerald-100 via-slate-50 to-amber-50 transition group-hover:from-emerald-200/90"></div>
+                                <div class="p-5">
+                                    <h3 class="font-display font-bold text-slate-900 group-hover:text-emerald-900">{{ $p->title }}</h3>
+                                    @if ($p->excerpt)
+                                        <p class="mt-2 text-sm text-slate-600 leading-relaxed">{{ \Illuminate\Support\Str::limit($p->excerpt, 160) }}</p>
+                                    @else
+                                        <p class="mt-2 text-sm text-slate-600 leading-relaxed">{{ \Illuminate\Support\Str::limit($p->body, 160) }}</p>
+                                    @endif
+                                    <span class="mt-4 inline-flex text-sm font-bold text-emerald-800 group-hover:underline">{{ __('Read more') }} →</span>
+                                </div>
+                            </a>
+                        </article>
+                    @endforeach
                 </div>
+                @if ($programPages->hasPages())
+                    <div class="mt-10">
+                        {{ $programPages->links('vendor.pagination.tailwind-public') }}
+                    </div>
+                @endif
             @endif
         </section>
     </div>

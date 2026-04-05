@@ -86,7 +86,7 @@
                 @endforeach
             </ul>
             <div class="mt-10">
-                {{ $events->links() }}
+                {{ $events->links('vendor.pagination.tailwind-public') }}
             </div>
         @endif
     </div>

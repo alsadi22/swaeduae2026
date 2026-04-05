@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
 use App\Support\AuthRedirect;
 use Illuminate\Console\Scheduling\Schedule;
@@ -49,6 +50,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(append: [
             SetLocale::class,
+            SecurityHeaders::class,
         ]);
 
         // Do not use config() here — the config repository is not bound yet during bootstrap.

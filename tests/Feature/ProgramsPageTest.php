@@ -29,6 +29,49 @@ class ProgramsPageTest extends TestCase
             ->assertSeeText(__('Featured program pages'));
     }
 
+    public function test_programs_index_search_filters_by_title_or_body(): void
+    {
+        CmsPage::query()->create([
+            'slug' => 'alpha-prog-search-xyz',
+            'locale' => 'en',
+            'title' => 'Alpha unique program title',
+            'meta_description' => null,
+            'og_image' => null,
+            'excerpt' => null,
+            'body' => '## Other body',
+            'status' => CmsPage::STATUS_PUBLISHED,
+            'published_at' => now()->subDay(),
+            'author_id' => null,
+            'show_on_home' => false,
+            'show_on_programs' => true,
+        ]);
+        CmsPage::query()->create([
+            'slug' => 'beta-prog-other',
+            'locale' => 'en',
+            'title' => 'Beta unrelated',
+            'meta_description' => null,
+            'og_image' => null,
+            'excerpt' => null,
+            'body' => '## Beta body',
+            'status' => CmsPage::STATUS_PUBLISHED,
+            'published_at' => now()->subDay(),
+            'author_id' => null,
+            'show_on_home' => false,
+            'show_on_programs' => true,
+        ]);
+
+        $this->get(route('programs.index', ['q' => 'unique program']))
+            ->assertOk()
+            ->assertSee('Alpha unique program title', false)
+            ->assertDontSee('Beta unrelated', false);
+    }
+
+    public function test_programs_index_rejects_oversized_search_query(): void
+    {
+        $this->get(route('programs.index', ['q' => str_repeat('x', 121)]))
+            ->assertSessionHasErrors('q');
+    }
+
     public function test_programs_page_lists_pages_marked_show_on_programs(): void
     {
         CmsPage::query()->create([

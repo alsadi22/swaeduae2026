@@ -195,5 +195,6 @@ class PublicEventsAndSitemapTest extends TestCase
         $this->assertStringContainsString('Disallow: /dashboard', $body);
         $this->assertStringContainsString('Disallow: /profile', $body);
         $this->assertStringContainsString('Disallow: /organization/', $body);
+        $this->assertStringNotContainsString("Disallow: /register\n", $body);
     }
 }

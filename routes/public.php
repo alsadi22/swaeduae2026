@@ -40,7 +40,6 @@ Route::get('/robots.txt', function () {
         'Disallow: /organization/',
         'Disallow: /attendance/',
         'Disallow: /login',
-        'Disallow: /register',
         'Disallow: /forgot-password',
         'Disallow: /reset-password',
         '',
