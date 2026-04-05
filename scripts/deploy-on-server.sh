@@ -15,6 +15,17 @@ if [[ ! -f artisan ]]; then
   exit 1
 fi
 
+# Vite: if public/hot exists, @vite points at the dev server (e.g. 127.0.0.1:5173) and the site loads with no CSS/JS.
+rm -f public/hot
+
+if [[ ! -f public/build/manifest.json ]]; then
+  echo "deploy-on-server: ERROR — public/build/manifest.json is missing." >&2
+  echo "  Without it, Laravel cannot emit correct asset URLs (page will look unstyled)." >&2
+  echo "  Fix: on a machine with Node, run: npm ci && npm run build" >&2
+  echo "  Then commit and push public/build/ (this repo tracks built assets for production)." >&2
+  exit 1
+fi
+
 echo "==> Composer (production)"
 composer install --no-dev --optimize-autoloader --no-interaction
 
