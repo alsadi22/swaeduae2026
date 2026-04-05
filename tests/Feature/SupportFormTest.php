@@ -39,6 +39,23 @@ class SupportFormTest extends TestCase
         });
     }
 
+    public function test_support_form_rejects_invalid_topic(): void
+    {
+        Mail::fake();
+
+        $this->post(route('support.store'), [
+            'name' => 'User',
+            'email' => 'user@example.com',
+            'phone' => '',
+            'topic' => 'not-a-valid-topic',
+            'subject' => 'Hello',
+            'message' => str_repeat('x', 40),
+        ])
+            ->assertSessionHasErrors('topic');
+
+        Mail::assertNothingSent();
+    }
+
     public function test_support_honeypot_filled_sends_no_mail_but_shows_success(): void
     {
         Mail::fake();

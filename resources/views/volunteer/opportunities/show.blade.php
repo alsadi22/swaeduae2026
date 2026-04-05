@@ -5,7 +5,7 @@
         220
     );
     $ogImage = \App\Models\CmsPage::resolveShareImageUrl(config('swaeduae.default_og_image_url'));
-    $localeQ = \App\Support\PublicLocale::query();
+    $localeQ = \App\Support\PublicLocale::queryForUser(auth()->user());
     $breadcrumbItems = [
         ['name' => __('Home'), 'url' => route('home', $localeQ, true)],
         ['name' => __('Volunteer'), 'url' => route('volunteer.index', $localeQ, true)],
@@ -107,7 +107,7 @@
                             </div>
                             <p class="mt-2 text-xs text-slate-500">{{ __('Opens a secure link valid for 7 days—same technology as QR codes from your coordinator.') }}</p>
                             @can('leaveRoster', $event)
-                                <form action="{{ route('volunteer.opportunities.leave', $event) }}" method="post" class="mt-6" onsubmit="return confirm(@json(__('Leave this opportunity? You can join again before the event starts if slots allow.')));">
+                                <form action="{{ route('volunteer.opportunities.leave', array_merge(['event' => $event], $localeQ)) }}" method="post" class="mt-6" onsubmit="return confirm(@json(__('Leave this opportunity? You can join again before the event starts if slots allow.')));">
                                     @csrf
                                     <button type="submit" class="text-sm font-semibold text-red-700 hover:text-red-900">{{ __('Leave roster') }}</button>
                                 </form>
@@ -121,7 +121,7 @@
                                 @if ($application?->status === \App\Models\EventApplication::STATUS_PENDING)
                                     <p class="mt-3 text-sm font-medium text-amber-900">{{ __('Your application is pending review.') }}</p>
                                     @can('withdrawApplication', $event)
-                                        <form action="{{ route('volunteer.opportunities.withdraw-application', $event) }}" method="post" class="mt-3" onsubmit="return confirm(@json(__('Withdraw your application?')));">
+                                        <form action="{{ route('volunteer.opportunities.withdraw-application', array_merge(['event' => $event], $localeQ)) }}" method="post" class="mt-3" onsubmit="return confirm(@json(__('Withdraw your application?')));">
                                             @csrf
                                             <button type="submit" class="text-sm font-semibold text-slate-700 hover:text-slate-900">{{ __('Withdraw application') }}</button>
                                         </form>
@@ -134,7 +134,7 @@
                                         <div class="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700 whitespace-pre-wrap">{{ $application->review_note }}</div>
                                     @endif
                                     @can('applyToEvent', $event)
-                                        <form action="{{ route('volunteer.opportunities.apply', $event) }}" method="post" class="mt-4 space-y-3">
+                                        <form action="{{ route('volunteer.opportunities.apply', array_merge(['event' => $event], $localeQ)) }}" method="post" class="mt-4 space-y-3">
                                             @csrf
                                             <div>
                                                 <label for="apply_message" class="block text-xs font-medium text-slate-700">{{ __('Optional message to organizers') }}</label>
@@ -146,7 +146,7 @@
                                 @elseif ($application?->status === \App\Models\EventApplication::STATUS_WITHDRAWN)
                                     <p class="mt-3 text-sm text-slate-600">{{ __('You withdrew your application.') }}</p>
                                     @can('applyToEvent', $event)
-                                        <form action="{{ route('volunteer.opportunities.apply', $event) }}" method="post" class="mt-4 space-y-3">
+                                        <form action="{{ route('volunteer.opportunities.apply', array_merge(['event' => $event], $localeQ)) }}" method="post" class="mt-4 space-y-3">
                                             @csrf
                                             <div>
                                                 <label for="apply_message_w" class="block text-xs font-medium text-slate-700">{{ __('Optional message to organizers') }}</label>
@@ -157,7 +157,7 @@
                                     @endcan
                                 @else
                                     @can('applyToEvent', $event)
-                                        <form action="{{ route('volunteer.opportunities.apply', $event) }}" method="post" class="mt-4 space-y-3">
+                                        <form action="{{ route('volunteer.opportunities.apply', array_merge(['event' => $event], $localeQ)) }}" method="post" class="mt-4 space-y-3">
                                             @csrf
                                             <div>
                                                 <label for="apply_message_new" class="block text-xs font-medium text-slate-700">{{ __('Optional message to organizers') }}</label>
@@ -171,7 +171,7 @@
                         @endif
 
                             @can('joinRoster', $event)
-                                <form action="{{ route('volunteer.opportunities.join', $event) }}" method="post" class="mt-4">
+                                <form action="{{ route('volunteer.opportunities.join', array_merge(['event' => $event], $localeQ)) }}" method="post" class="mt-4">
                                     @csrf
                                     <button type="submit" class="btn-primary-solid">{{ __('Join roster') }}</button>
                                 </form>

@@ -6,7 +6,7 @@
     </x-slot>
 
     @php
-        $attLocaleQ = \App\Support\PublicLocale::query();
+        $attLocaleQ = \App\Support\PublicLocale::queryForUser(auth()->user());
     @endphp
     <div class="py-12">
         <div class="mx-auto max-w-3xl sm:px-6 lg:px-8">
@@ -30,7 +30,7 @@
                     @endif
                     <p class="mt-2 text-sm text-slate-600">{{ __('Dispute attendance hint') }}</p>
                 </div>
-                <form method="post" action="{{ route('dashboard.attendance.disputes.store', $attendance) }}" class="space-y-4 p-6">
+                <form method="post" action="{{ route('dashboard.attendance.disputes.store', array_merge(['attendance' => $attendance], $attLocaleQ)) }}" class="space-y-4 p-6">
                     @csrf
                     <div>
                         <x-input-label for="description" :value="__('Description')" />

@@ -29,6 +29,8 @@ class ProgramsPageTest extends TestCase
             ->assertSeeText(__('Programs & initiatives'))
             ->assertSeeText(__('Featured program pages'));
         $response->assertSee(route('programs.index', ['lang' => app()->getLocale()], true), false);
+        $response->assertSee('data-testid="programs-footer-opportunities"', false);
+        $response->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
     }
 
     public function test_programs_index_search_filters_by_title_or_body(): void

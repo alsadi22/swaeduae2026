@@ -224,6 +224,17 @@ class DashboardVolunteerTest extends TestCase
         $response->assertDontSee('Pending Only Event', false);
     }
 
+    public function test_dashboard_rejects_invalid_application_status_filter(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $user = User::factory()->create();
+        $user->assignRole('volunteer');
+
+        $this->actingAs($user)
+            ->get(route('dashboard', ['application_status' => 'not-a-real-status']))
+            ->assertSessionHasErrors('application_status');
+    }
+
     public function test_past_roster_commitments_are_paginated_on_dashboard(): void
     {
         $this->seed(RoleSeeder::class);

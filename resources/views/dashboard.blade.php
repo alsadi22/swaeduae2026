@@ -6,7 +6,7 @@
     </x-slot>
 
     @php
-        $dashLocaleQ = \App\Support\PublicLocale::query();
+        $dashLocaleQ = \App\Support\PublicLocale::queryForUser(auth()->user());
     @endphp
     <div class="py-12">
         <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
@@ -188,7 +188,7 @@
                                         <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
                                             <a href="{{ route('volunteer.opportunities.attendance', array_merge(['event' => $ev], $dashLocaleQ)) }}" class="inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Open attendance check-in') }} →</a>
                                             @can('leaveRoster', $ev)
-                                                <form action="{{ route('volunteer.opportunities.leave', $ev) }}" method="post" class="inline" onsubmit="return confirm(@json(__('Leave this opportunity? You can join again before the event starts if slots allow.')));">
+                                                <form action="{{ route('volunteer.opportunities.leave', array_merge(['event' => $ev], $dashLocaleQ)) }}" method="post" class="inline" onsubmit="return confirm(@json(__('Leave this opportunity? You can join again before the event starts if slots allow.')));">
                                                     @csrf
                                                     <button type="submit" class="text-sm font-bold text-red-600 hover:text-red-800">{{ __('Leave roster') }}</button>
                                                 </form>
