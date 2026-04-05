@@ -14,6 +14,17 @@ class PublicLayoutSeoTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_media_hub_emits_meta_description_and_open_graph(): void
+    {
+        $response = $this->get('/media');
+
+        $response->assertOk();
+        $response->assertSee(e(__('site.media_hub_meta_description')), false);
+        $response->assertSee('property="og:url"', false);
+        $response->assertSee('property="og:title"', false);
+        $response->assertSee('rel="canonical"', false);
+    }
+
     public function test_public_page_emits_open_graph_and_canonical(): void
     {
         $response = $this->get('/about?lang=en');

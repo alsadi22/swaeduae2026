@@ -6,7 +6,7 @@
         : __('Programs').' — '.__('SwaedUAE');
     $metaDescription = $cmsPage
         ? ($cmsPage->meta_description ?? $cmsPage->excerpt)
-        : __('site.meta_description');
+        : __('site.programs_meta_description');
     $pageAbsoluteUrl = $cmsPage ? $cmsPage->absolutePublicUrl() : url()->route('programs.index');
     $ogTitle = $cmsPage ? $cmsPage->title : __('Programs & initiatives');
     $ogDescription = $metaDescription ?? __('site.meta_description');

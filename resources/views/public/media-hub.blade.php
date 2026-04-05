@@ -1,8 +1,22 @@
 @php
     $pageTitle = __('Media center').' — '.__('SwaedUAE');
+    $metaDescription = __('site.media_hub_meta_description');
+    $hubCanonical = request()->fullUrl();
+    $ogImage = \App\Models\CmsPage::resolveShareImageUrl(config('swaeduae.default_og_image_url'));
     $qParams = $search !== '' ? ['q' => $search] : [];
+    $internalTotal = $internalPaginator?->total() ?? 0;
+    $externalTotal = $externalPaginator?->total() ?? 0;
+    $bothEmpty = $internalTotal === 0 && $externalTotal === 0;
 @endphp
-<x-public-layout :title="$pageTitle" :metaDescription="__('site.meta_description')">
+<x-public-layout
+    :title="$pageTitle"
+    :metaDescription="$metaDescription"
+    :ogUrl="$hubCanonical"
+    :canonicalUrl="$hubCanonical"
+    :ogTitle="$pageTitle"
+    :ogDescription="$metaDescription"
+    :ogImage="$ogImage"
+>
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
         <h1 class="public-page-title">{{ __('Media center') }}</h1>
         <p class="mt-8 max-w-2xl text-slate-600 leading-relaxed">{{ __('site.media_hub_intro') }}</p>
@@ -54,54 +68,53 @@
             </form>
         @endif
 
-        <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            @foreach ($internalNews as $page)
-                <article class="card-surface flex flex-col overflow-hidden">
-                    <div class="h-32 bg-gradient-to-br from-emerald-100 via-slate-50 to-amber-50"></div>
-                    <div class="flex flex-1 flex-col p-5">
-                        <p class="text-xs font-bold uppercase tracking-wider text-emerald-700">{{ __('Our article') }}</p>
-                        <h2 class="font-display mt-2 font-bold text-slate-900">{{ $page->title }}</h2>
-                        @if ($page->excerpt)
-                            <p class="mt-2 text-sm text-slate-600">{{ $page->excerpt }}</p>
-                        @endif
-                        <div class="mt-auto pt-4">
-                            <a href="{{ $page->publicUrl() }}?lang={{ app()->getLocale() }}" class="text-sm font-bold text-emerald-800 hover:underline">{{ __('Read more') }} →</a>
-                        </div>
-                    </div>
-                </article>
-            @endforeach
-
-            @foreach ($externalNews as $ext)
-                <article class="card-surface flex flex-col overflow-hidden ring-1 ring-amber-100/80">
-                    @if ($ext->featureImageUrl())
-                        <div class="h-32 overflow-hidden bg-slate-100">
-                            <img src="{{ $ext->featureImageUrl() }}" alt="" class="h-full w-full object-cover" loading="lazy" width="400" height="200">
-                        </div>
-                    @else
-                        <div class="h-32 bg-gradient-to-br from-slate-100 to-amber-50"></div>
-                    @endif
-                    <div class="flex flex-1 flex-col p-5">
-                        <p class="text-xs font-bold uppercase tracking-wider text-amber-800">{{ __('External source') }} · {{ $ext->source->labelForLocale() }}</p>
-                        <h2 class="font-display mt-2 font-bold text-slate-900">{{ $ext->titleForLocale() }}</h2>
-                        @if ($ext->summaryForLocale())
-                            <p class="mt-2 text-sm text-slate-600">{{ \Illuminate\Support\Str::limit($ext->summaryForLocale(), 180) }}</p>
-                        @endif
-                        @if ($ext->original_published_at)
-                            <p class="mt-2 text-xs text-slate-500">{{ __('Original date') }}: {{ $ext->original_published_at->locale(app()->getLocale())->isoFormat('LL') }}</p>
-                        @endif
-                        <div class="mt-auto flex flex-wrap gap-3 pt-4">
-                            <a href="{{ $ext->publicDetailUrl() }}" class="text-sm font-bold text-emerald-800 hover:underline">{{ __('View details') }}</a>
-                            @if ($ext->external_url)
-                                <a href="{{ $ext->external_url }}" target="_blank" rel="noopener noreferrer" class="text-sm font-bold text-slate-600 hover:text-emerald-900">{{ __('Visit source') }} →</a>
-                            @endif
-                        </div>
-                    </div>
-                </article>
-            @endforeach
-        </div>
-
-        @if ($internalNews->isEmpty() && $externalNews->isEmpty())
+        @if ($bothEmpty)
             <p class="mt-12 text-slate-600">{{ $searchActive ? __('site.media_hub_search_empty') : __('site.media_hub_empty') }}</p>
+        @elseif ($filter === 'all')
+            @if ($internalTotal > 0)
+                <section class="mt-12" aria-labelledby="media-hub-internal-heading">
+                    <h2 id="media-hub-internal-heading" class="font-display text-xl font-bold text-emerald-950 sm:text-2xl">{{ __('Our news') }}</h2>
+                    <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        @include('public.partials.media-hub-internal-cards', ['pages' => $internalPaginator])
+                    </div>
+                    @if ($internalPaginator->hasPages())
+                        <div class="mt-10">
+                            {{ $internalPaginator->links() }}
+                        </div>
+                    @endif
+                </section>
+            @endif
+            @if ($externalTotal > 0)
+                <section class="@if($internalTotal > 0) mt-16 border-t border-slate-200 pt-14 @else mt-12 @endif" aria-labelledby="media-hub-external-heading">
+                    <h2 id="media-hub-external-heading" class="font-display text-xl font-bold text-emerald-950 sm:text-2xl">{{ __('External updates') }}</h2>
+                    <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        @include('public.partials.media-hub-external-cards', ['items' => $externalPaginator])
+                    </div>
+                    @if ($externalPaginator->hasPages())
+                        <div class="mt-10">
+                            {{ $externalPaginator->links() }}
+                        </div>
+                    @endif
+                </section>
+            @endif
+        @elseif ($filter === 'internal')
+            <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                @include('public.partials.media-hub-internal-cards', ['pages' => $internalPaginator])
+            </div>
+            @if ($internalPaginator->hasPages())
+                <div class="mt-10">
+                    {{ $internalPaginator->links() }}
+                </div>
+            @endif
+        @else
+            <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                @include('public.partials.media-hub-external-cards', ['items' => $externalPaginator])
+            </div>
+            @if ($externalPaginator->hasPages())
+                <div class="mt-10">
+                    {{ $externalPaginator->links() }}
+                </div>
+            @endif
         @endif
     </div>
 </x-public-layout>

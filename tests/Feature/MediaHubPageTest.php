@@ -232,4 +232,34 @@ class MediaHubPageTest extends TestCase
         $this->get('/media?q='.str_repeat('x', 121))
             ->assertSessionHasErrors('q');
     }
+
+    public function test_media_hub_paginates_internal_list(): void
+    {
+        for ($i = 1; $i <= 15; $i++) {
+            CmsPage::query()->create([
+                'slug' => 'paginate-media-item-'.$i,
+                'locale' => 'en',
+                'title' => 'Paginated story '.$i,
+                'meta_description' => null,
+                'og_image' => null,
+                'excerpt' => null,
+                'body' => '## Body',
+                'status' => CmsPage::STATUS_PUBLISHED,
+                'published_at' => now()->subMinutes($i),
+                'author_id' => null,
+                'show_on_home' => false,
+                'show_on_programs' => false,
+                'show_on_media' => true,
+            ]);
+        }
+
+        $this->get('/media?filter=internal')
+            ->assertOk()
+            ->assertSeeText('Paginated story 1')
+            ->assertDontSee('Paginated story 15', false);
+
+        $this->get('/media?filter=internal&page=2')
+            ->assertOk()
+            ->assertSeeText('Paginated story 15');
+    }
 }

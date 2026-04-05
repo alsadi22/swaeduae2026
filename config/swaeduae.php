@@ -19,11 +19,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Open Graph / Twitter image
+    | Default Open Graph / Twitter image (Phase C7)
     |--------------------------------------------------------------------------
     |
-    | Used on the home page and as a fallback for CMS pages that omit og_image.
-    | Set to a full https URL or a path starting with / (resolved with url()).
+    | Used on the home page, media hub, programs fallback, and as a fallback for CMS
+    | pages that omit og_image. Prefer a 1200×630 HTTPS URL or a path starting with /
+    | (resolved with url()). When unset, some pages may omit og:image.
     |
     */
     'default_og_image_url' => env('DEFAULT_OG_IMAGE_URL'),

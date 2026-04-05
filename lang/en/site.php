@@ -49,6 +49,12 @@ return [
 
     'news_placeholder' => 'Latest updates from our CMS and approved external sources will appear here once content is published.',
 
+    'media_hub_meta_description' => 'SwaedUAE media center — our news, articles, and curated external updates in English and Arabic.',
+
+    'programs_meta_description' => 'Explore SwaedUAE programs and initiatives — published pages and featured community work.',
+
+    'gallery_meta_description' => 'Photo highlights, cultural moments, and official downloads from SwaedUAE.',
+
     'media_hub_intro' => 'Browse our articles and curated updates from trusted external sources. External items are clearly labeled and link to the original publisher.',
 
     'media_hub_list_hint' => '“Our news” lists published CMS pages that have “Show in media center” enabled in Admin (institutional routes use their own pages).',

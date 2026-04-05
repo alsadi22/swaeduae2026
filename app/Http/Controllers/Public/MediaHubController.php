@@ -11,6 +11,8 @@ use Illuminate\View\View;
 
 class MediaHubController extends Controller
 {
+    private const PER_PAGE = 12;
+
     public function __invoke(Request $request): View
     {
         $page = CmsPage::findPublished('media');
@@ -67,13 +69,19 @@ class MediaHubController extends Controller
             $externalQuery->where('source_id', $sourceId);
         }
 
-        $internalNews = (clone $internalQuery)->limit(40)->get();
-        $externalNews = (clone $externalQuery)->limit(40)->get();
-
         if ($filter === 'internal') {
-            $externalNews = collect();
+            $internalPaginator = (clone $internalQuery)->paginate(self::PER_PAGE)->withQueryString();
+            $externalPaginator = null;
         } elseif ($filter === 'external') {
-            $internalNews = collect();
+            $internalPaginator = null;
+            $externalPaginator = (clone $externalQuery)->paginate(self::PER_PAGE)->withQueryString();
+        } else {
+            $internalPaginator = (clone $internalQuery)
+                ->paginate(self::PER_PAGE, ['*'], 'internal_page')
+                ->withQueryString();
+            $externalPaginator = (clone $externalQuery)
+                ->paginate(self::PER_PAGE, ['*'], 'external_page')
+                ->withQueryString();
         }
 
         $sources = ExternalNewsSource::query()
@@ -82,8 +90,8 @@ class MediaHubController extends Controller
             ->get();
 
         return view('public.media-hub', [
-            'internalNews' => $internalNews,
-            'externalNews' => $externalNews,
+            'internalPaginator' => $internalPaginator,
+            'externalPaginator' => $externalPaginator,
             'filter' => $filter,
             'sourceId' => $sourceId,
             'sources' => $sources,

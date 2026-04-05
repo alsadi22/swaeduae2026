@@ -2,7 +2,7 @@
     $pageTitle = __('Gallery').' — '.__('SwaedUAE');
     $downloads = config('swaeduae.document_downloads', []);
 @endphp
-<x-public-layout :title="$pageTitle" :metaDescription="__('site.meta_description')">
+<x-public-layout :title="$pageTitle" :metaDescription="__('site.gallery_meta_description')">
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
         <div class="max-w-3xl">
             <h1 class="public-page-title">{{ __('Gallery') }}</h1>
