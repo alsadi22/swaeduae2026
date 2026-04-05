@@ -17,6 +17,20 @@ class AuthRedirect
             default => route('dashboard', absolute: false),
         };
 
-        return $withVerifiedQuery ? $path.'?verified=1' : $path;
+        $queries = [];
+        if (is_string($user->locale_preferred) && in_array($user->locale_preferred, ['en', 'ar'], true)) {
+            $queries['lang'] = $user->locale_preferred;
+        }
+        if ($withVerifiedQuery) {
+            $queries['verified'] = '1';
+        }
+
+        if ($queries === []) {
+            return $path;
+        }
+
+        $sep = str_contains($path, '?') ? '&' : '?';
+
+        return $path.$sep.http_build_query($queries);
     }
 }

@@ -19,6 +19,14 @@ class PasswordConfirmationTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_confirm_password_form_includes_lang_in_action_when_ar_requested(): void
+    {
+        $user = User::factory()->create();
+
+        $html = $this->actingAs($user)->get('/confirm-password?lang=ar')->assertOk()->getContent();
+        $this->assertStringContainsString('lang=ar', $html);
+    }
+
     public function test_password_can_be_confirmed(): void
     {
         $user = User::factory()->create();

@@ -35,7 +35,7 @@ class IntendedUrlAuthTest extends TestCase
             'password' => 'password',
         ]);
 
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect(route('dashboard', ['lang' => 'en'], absolute: false));
     }
 
     public function test_admin_login_accepts_return_query_and_shows_portal(): void

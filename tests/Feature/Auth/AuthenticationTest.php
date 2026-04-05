@@ -34,7 +34,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect(route('dashboard', ['lang' => 'en'], absolute: false));
     }
 
     public function test_admin_redirects_to_admin_area_after_login(): void
@@ -49,7 +49,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('admin.cms-pages.index', absolute: false));
+        $response->assertRedirect(route('admin.cms-pages.index', ['lang' => 'en'], absolute: false));
     }
 
     public function test_admin_login_screen_renders(): void
@@ -76,7 +76,7 @@ class AuthenticationTest extends TestCase
         $response = $this->actingAs($user)->post('/logout');
 
         $this->assertGuest();
-        $response->assertRedirect('/');
+        $response->assertRedirect(route('home', ['lang' => 'en'], absolute: false));
     }
 
     public function test_login_post_is_throttled_per_ip(): void
