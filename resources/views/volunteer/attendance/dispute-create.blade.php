@@ -5,6 +5,9 @@
         </h2>
     </x-slot>
 
+    @php
+        $attLocaleQ = \App\Support\PublicLocale::query();
+    @endphp
     <div class="py-12">
         <div class="mx-auto max-w-3xl sm:px-6 lg:px-8">
             @if ($errors->any())
@@ -35,7 +38,7 @@
                     </div>
                     <div class="flex flex-wrap gap-3">
                         <x-primary-button type="submit">{{ __('Submit dispute') }}</x-primary-button>
-                        <a href="{{ route('dashboard.attendance.index') }}" class="btn-secondary-muted">{{ __('Back') }}</a>
+                        <a href="{{ route('dashboard.attendance.index', $attLocaleQ) }}" class="btn-secondary-muted">{{ __('Back') }}</a>
                     </div>
                 </form>
             </div>

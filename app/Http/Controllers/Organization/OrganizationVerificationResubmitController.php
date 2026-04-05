@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Organization;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Organization\ResubmitRejectedOrganizationRequest;
 use App\Models\Organization;
+use App\Support\AuthRedirect;
 use Illuminate\Http\RedirectResponse;
 
 class OrganizationVerificationResubmitController extends Controller
@@ -26,7 +27,7 @@ class OrganizationVerificationResubmitController extends Controller
         ]);
 
         return redirect()
-            ->route('organization.dashboard')
+            ->to(AuthRedirect::homeForUser($request->user()))
             ->with('status', __('Organization verification resubmitted.'));
     }
 }

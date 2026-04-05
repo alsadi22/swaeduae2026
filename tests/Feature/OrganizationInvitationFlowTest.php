@@ -36,7 +36,7 @@ class OrganizationInvitationFlowTest extends TestCase
         $this->actingAs($owner)->post(route('organization.invitations.store'), [
             'email' => 'staff@example.org',
             'role' => OrganizationInvitation::ROLE_MANAGER,
-        ])->assertRedirect(route('organization.dashboard', [], false));
+        ])->assertRedirect(route('organization.dashboard', ['lang' => 'en'], false));
 
         $this->assertDatabaseHas('organization_invitations', [
             'organization_id' => $organization->id,
@@ -102,7 +102,7 @@ class OrganizationInvitationFlowTest extends TestCase
         $joiner->assignRole('volunteer');
 
         $this->actingAs($joiner)->get('/organization/join/'.$plain)
-            ->assertRedirect(route('organization.dashboard', [], false));
+            ->assertRedirect(route('organization.dashboard', ['lang' => 'en'], false));
 
         $joiner->refresh();
         $this->assertSame($organization->id, $joiner->organization_id);
@@ -165,7 +165,7 @@ class OrganizationInvitationFlowTest extends TestCase
         ]);
 
         $this->actingAs($owner)->delete(route('organization.invitations.destroy', $invitation))
-            ->assertRedirect(route('organization.dashboard', [], false));
+            ->assertRedirect(route('organization.dashboard', ['lang' => 'en'], false));
 
         $this->assertDatabaseMissing('organization_invitations', ['id' => $invitation->id]);
     }
@@ -188,7 +188,7 @@ class OrganizationInvitationFlowTest extends TestCase
         $oldHash = $invitation->token_hash;
 
         $this->actingAs($owner)->post(route('organization.invitations.resend', $invitation))
-            ->assertRedirect(route('organization.dashboard', [], false));
+            ->assertRedirect(route('organization.dashboard', ['lang' => 'en'], false));
 
         $invitation->refresh();
         $this->assertNotSame($oldHash, $invitation->token_hash);
@@ -242,7 +242,7 @@ class OrganizationInvitationFlowTest extends TestCase
         ]);
 
         $this->actingAs($owner)->post(route('organization.invitations.resend', $invitation))
-            ->assertRedirect(route('organization.dashboard', [], false));
+            ->assertRedirect(route('organization.dashboard', ['lang' => 'en'], false));
 
         $invitation->refresh();
         $this->assertTrue($invitation->expires_at->isFuture());
@@ -264,7 +264,7 @@ class OrganizationInvitationFlowTest extends TestCase
         ]);
 
         for ($i = 0; $i < 10; $i++) {
-            $this->actingAs($owner)->post(route('organization.invitations.resend', $invitation))->assertRedirect(route('organization.dashboard', [], false));
+            $this->actingAs($owner)->post(route('organization.invitations.resend', $invitation))->assertRedirect(route('organization.dashboard', ['lang' => 'en'], false));
         }
 
         $this->actingAs($owner)->post(route('organization.invitations.resend', $invitation))->assertStatus(429);
@@ -280,7 +280,7 @@ class OrganizationInvitationFlowTest extends TestCase
             $this->actingAs($owner)->post(route('organization.invitations.store'), [
                 'email' => "throttle-store-{$i}@example.org",
                 'role' => OrganizationInvitation::ROLE_VIEWER,
-            ])->assertRedirect(route('organization.dashboard', [], false));
+            ])->assertRedirect(route('organization.dashboard', ['lang' => 'en'], false));
         }
 
         $this->actingAs($owner)->post(route('organization.invitations.store'), [

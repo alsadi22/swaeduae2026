@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\OrganizationInvitation;
 use App\Models\User;
+use App\Support\AuthRedirect;
 use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -45,7 +46,7 @@ class AcceptOrganizationInvitationController extends Controller
 
         if ((int) $user->organization_id === (int) $invitation->organization_id) {
             return redirect()
-                ->to(route('organization.dashboard', [], false))
+                ->to(AuthRedirect::homeForUser($user))
                 ->with('status', __('Already an organization member.'));
         }
 
@@ -61,13 +62,27 @@ class AcceptOrganizationInvitationController extends Controller
     private function redirectAfterInvitation(string $message, ?User $user): RedirectResponse
     {
         if ($user !== null && ! $user->hasVerifiedEmail()) {
+            $noticeQuery = $this->verificationNoticeQuery($user);
+
             return redirect()
-                ->to(route('verification.notice', [], false))
+                ->to(route('verification.notice', $noticeQuery, false))
                 ->with('status', $message);
         }
 
         return redirect()
-            ->to(route('organization.dashboard', [], false))
+            ->to($user !== null ? AuthRedirect::homeForUser($user) : route('home', PublicLocale::query(), false))
             ->with('status', $message);
+    }
+
+    /**
+     * @return array{lang: string}
+     */
+    private function verificationNoticeQuery(User $user): array
+    {
+        if (is_string($user->locale_preferred) && in_array($user->locale_preferred, ['en', 'ar'], true)) {
+            return ['lang' => $user->locale_preferred];
+        }
+
+        return PublicLocale::query();
     }
 }

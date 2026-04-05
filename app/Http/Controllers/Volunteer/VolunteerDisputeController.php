@@ -7,6 +7,7 @@ use App\Mail\DisputeOpenedStaffMail;
 use App\Models\Attendance;
 use App\Models\Dispute;
 use App\Services\Attendance\AttendanceJournal;
+use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -56,7 +57,7 @@ class VolunteerDisputeController extends Controller
         }
 
         return redirect()
-            ->route('dashboard.attendance.index')
+            ->route('dashboard.attendance.index', PublicLocale::query())
             ->with('status', __('Your dispute was submitted. An administrator will review it.'));
     }
 }

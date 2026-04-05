@@ -128,7 +128,7 @@ class OrganizationDashboardTest extends TestCase
                 'name_en' => 'Updated Org Name',
                 'name_ar' => 'اسم',
             ])
-            ->assertRedirect(route('organization.dashboard', [], false))
+            ->assertRedirect(route('organization.dashboard', ['lang' => 'en'], false))
             ->assertSessionHas('status');
 
         $organization->refresh();

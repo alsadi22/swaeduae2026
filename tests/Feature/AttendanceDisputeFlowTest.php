@@ -52,7 +52,7 @@ class AttendanceDisputeFlowTest extends TestCase
             ->post(route('dashboard.attendance.disputes.store', $attendance), [
                 'description' => str_repeat('a', 25).' problem with my hours.',
             ])
-            ->assertRedirect(route('dashboard.attendance.index'))
+            ->assertRedirect(route('dashboard.attendance.index', ['lang' => 'en'], absolute: false))
             ->assertSessionHas('status');
 
         $this->assertDatabaseHas('disputes', [
@@ -96,7 +96,7 @@ class AttendanceDisputeFlowTest extends TestCase
             ->post(route('dashboard.attendance.disputes.store', $attendance), [
                 'description' => str_repeat('a', 25).' staff mail dispute.',
             ])
-            ->assertRedirect(route('dashboard.attendance.index'));
+            ->assertRedirect(route('dashboard.attendance.index', ['lang' => 'en'], absolute: false));
 
         Mail::assertQueued(DisputeOpenedStaffMail::class, function (DisputeOpenedStaffMail $mail): bool {
             return $mail->hasTo('ops@example.test');

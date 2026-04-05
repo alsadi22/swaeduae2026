@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Organization\StoreOrganizationInvitationRequest;
 use App\Models\OrganizationInvitation;
 use App\Notifications\OrganizationStaffInvitation;
+use App\Support\AuthRedirect;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -54,7 +55,7 @@ class OrganizationInvitationController extends Controller
         $this->sendStaffInvitationEmail($invitation, $plainToken);
 
         return redirect()
-            ->route('organization.dashboard')
+            ->to(AuthRedirect::homeForUser($request->user()))
             ->with('status', __('Organization invitation sent.'));
     }
 
@@ -73,18 +74,18 @@ class OrganizationInvitationController extends Controller
         $this->sendStaffInvitationEmail($invitation, $plainToken);
 
         return redirect()
-            ->route('organization.dashboard')
+            ->to(AuthRedirect::homeForUser($request->user()))
             ->with('status', __('Organization invitation resent.'));
     }
 
-    public function destroy(OrganizationInvitation $invitation): RedirectResponse
+    public function destroy(Request $request, OrganizationInvitation $invitation): RedirectResponse
     {
         $this->authorize('delete', $invitation);
 
         $invitation->delete();
 
         return redirect()
-            ->route('organization.dashboard')
+            ->to(AuthRedirect::homeForUser($request->user()))
             ->with('status', __('Organization invitation cancelled.'));
     }
 

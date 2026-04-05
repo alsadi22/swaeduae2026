@@ -5,6 +5,9 @@
         </h2>
     </x-slot>
 
+    @php
+        $attLocaleQ = \App\Support\PublicLocale::query();
+    @endphp
     <div class="py-12">
         <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
             @if (session('status'))
@@ -17,7 +20,7 @@
                 <div class="border-b border-slate-100 px-6 py-4">
                     <h3 class="text-sm font-semibold text-slate-900">{{ __('Filter attendance') }}</h3>
                 </div>
-                <form method="get" action="{{ route('dashboard.attendance.index') }}" class="flex flex-wrap items-end gap-4 border-b border-slate-100 px-6 py-4">
+                <form method="get" action="{{ route('dashboard.attendance.index', $attLocaleQ) }}" class="flex flex-wrap items-end gap-4 border-b border-slate-100 px-6 py-4">
                     <div>
                         <label for="filter_attendance_state" class="block text-xs font-bold uppercase tracking-wide text-slate-500">{{ __('Attendance state') }}</label>
                         <select id="filter_attendance_state" name="state" class="mt-1 block w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:w-56">
@@ -31,7 +34,7 @@
                     </div>
                     <div class="flex flex-wrap gap-2">
                         <button type="submit" class="inline-flex items-center rounded-lg bg-emerald-700 px-4 py-2 text-xs font-bold uppercase tracking-wide text-white shadow-sm hover:bg-emerald-800">{{ __('Apply filters') }}</button>
-                        <a href="{{ route('dashboard.attendance.index') }}" class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-bold uppercase tracking-wide text-slate-700 shadow-sm hover:bg-slate-50">{{ __('Clear filters') }}</a>
+                        <a href="{{ route('dashboard.attendance.index', $attLocaleQ) }}" class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-bold uppercase tracking-wide text-slate-700 shadow-sm hover:bg-slate-50">{{ __('Clear filters') }}</a>
                     </div>
                 </form>
                 <div class="border-b border-slate-100 px-6 py-4">
@@ -46,7 +49,7 @@
                                 {{ __('No attendance records yet.') }}
                             @endif
                         </p>
-                        <a href="{{ route('volunteer.opportunities.index') }}" class="mt-3 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Browse opportunities') }} →</a>
+                        <a href="{{ route('volunteer.opportunities.index', $attLocaleQ) }}" class="mt-3 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Browse opportunities') }} →</a>
                     @else
                         <ul class="divide-y divide-slate-100">
                             @foreach ($attendances as $row)
@@ -125,7 +128,7 @@
                                         </p>
                                     @endif
                                     @can('dispute', $row)
-                                        <a href="{{ route('dashboard.attendance.disputes.create', $row) }}" class="mt-2 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Open dispute') }} →</a>
+                                        <a href="{{ route('dashboard.attendance.disputes.create', array_merge(['attendance' => $row], $attLocaleQ)) }}" class="mt-2 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Open dispute') }} →</a>
                                     @endcan
                                 </li>
                             @endforeach

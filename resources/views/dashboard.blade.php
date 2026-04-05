@@ -5,6 +5,9 @@
         </h2>
     </x-slot>
 
+    @php
+        $dashLocaleQ = \App\Support\PublicLocale::query();
+    @endphp
     <div class="py-12">
         <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
             <div class="overflow-hidden border border-slate-200 bg-white shadow-sm sm:rounded-lg">
@@ -21,7 +24,7 @@
                             <p class="mt-1 text-sm text-amber-900/90">{{ __('Dashboard volunteer profile hint') }}</p>
                         </div>
                         <div class="p-6">
-                            <a href="{{ route('volunteer.profile.edit') }}" class="inline-flex text-sm font-bold text-emerald-900 hover:underline">{{ __('Complete volunteer profile') }} →</a>
+                            <a href="{{ route('volunteer.profile.edit', $dashLocaleQ) }}" class="inline-flex text-sm font-bold text-emerald-900 hover:underline">{{ __('Complete volunteer profile') }} →</a>
                         </div>
                     </div>
                 @endif
@@ -50,7 +53,7 @@
                             </div>
                         </div>
                         <div class="mt-6 flex flex-wrap gap-4 border-t border-slate-100 pt-6">
-                            <a href="{{ route('dashboard.attendance.index') }}" class="text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('My attendance') }} →</a>
+                            <a href="{{ route('dashboard.attendance.index', $dashLocaleQ) }}" class="text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('My attendance') }} →</a>
                         </div>
                     </div>
                 </div>
@@ -71,7 +74,7 @@
                         <p class="mt-1 text-sm text-slate-600">{{ __('Stay informed dashboard intro') }}</p>
                     </div>
                     <div class="p-6 space-y-3">
-                        <a href="{{ route('volunteer.profile.edit') }}" class="inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Manage email preferences') }} →</a>
+                        <a href="{{ route('volunteer.profile.edit', $dashLocaleQ) }}" class="inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Manage email preferences') }} →</a>
                         <p class="text-xs text-slate-500">{{ __('Stay informed in-app note') }}</p>
                     </div>
                 </div>
@@ -81,7 +84,7 @@
                         <h3 class="font-display text-lg font-bold text-slate-900">{{ __('Your opportunity applications') }}</h3>
                         <p class="mt-1 text-sm text-slate-600">{{ __('Applications you submitted for events that require approval.') }}</p>
                     </div>
-                    <form method="get" action="{{ route('dashboard') }}" class="flex flex-wrap items-end gap-3 border-b border-slate-100 px-6 py-4">
+                    <form method="get" action="{{ route('dashboard', $dashLocaleQ) }}" class="flex flex-wrap items-end gap-3 border-b border-slate-100 px-6 py-4">
                         @foreach (['past_page', 'upcoming_page'] as $dashPageKey)
                             @if (filled(request($dashPageKey)))
                                 <input type="hidden" name="{{ $dashPageKey }}" value="{{ request($dashPageKey) }}" />
@@ -99,7 +102,7 @@
                         </div>
                         <div class="flex flex-wrap gap-2">
                             <button type="submit" class="inline-flex items-center rounded-lg bg-emerald-700 px-4 py-2 text-xs font-bold uppercase tracking-wide text-white shadow-sm hover:bg-emerald-800">{{ __('Apply filters') }}</button>
-                            <a href="{{ route('dashboard') }}" class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-bold uppercase tracking-wide text-slate-700 shadow-sm hover:bg-slate-50">{{ __('Clear filters') }}</a>
+                            <a href="{{ route('dashboard', $dashLocaleQ) }}" class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-bold uppercase tracking-wide text-slate-700 shadow-sm hover:bg-slate-50">{{ __('Clear filters') }}</a>
                         </div>
                     </form>
                     <div class="p-6">
@@ -111,13 +114,13 @@
                                     {{ __('No applications yet.') }}
                                 @endif
                             </p>
-                            <a href="{{ route('volunteer.opportunities.index') }}" class="mt-3 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Browse opportunities') }} →</a>
+                            <a href="{{ route('volunteer.opportunities.index', $dashLocaleQ) }}" class="mt-3 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Browse opportunities') }} →</a>
                         @else
                             <ul class="divide-y divide-slate-100">
                                 @foreach ($myApplications as $app)
                                     <li class="py-4 first:pt-0">
                                         @if ($app->event)
-                                            <a href="{{ route('volunteer.opportunities.show', $app->event) }}" class="font-semibold text-slate-900 hover:text-emerald-800 hover:underline">{{ $app->event->titleForLocale() }}</a>
+                                            <a href="{{ route('volunteer.opportunities.show', array_merge(['event' => $app->event], $dashLocaleQ)) }}" class="font-semibold text-slate-900 hover:text-emerald-800 hover:underline">{{ $app->event->titleForLocale() }}</a>
                                             @if ($app->event->organization)
                                                 <p class="text-xs text-slate-500">{{ $app->event->organization->nameForLocale() }}</p>
                                             @endif
@@ -167,12 +170,12 @@
                     <div class="p-6">
                         @if ($upcomingRosterEvents->isEmpty())
                             <p class="text-sm text-slate-600">{{ __('No upcoming rostered events.') }}</p>
-                            <a href="{{ route('volunteer.opportunities.index') }}" class="mt-3 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Browse opportunities') }} →</a>
+                            <a href="{{ route('volunteer.opportunities.index', $dashLocaleQ) }}" class="mt-3 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Browse opportunities') }} →</a>
                         @else
                             <ul class="divide-y divide-slate-100">
                                 @foreach ($upcomingRosterEvents as $ev)
                                     <li class="py-4 first:pt-0">
-                                        <a href="{{ route('volunteer.opportunities.show', $ev) }}" class="font-semibold text-slate-900 hover:text-emerald-800 hover:underline">{{ $ev->titleForLocale() }}</a>
+                                        <a href="{{ route('volunteer.opportunities.show', array_merge(['event' => $ev], $dashLocaleQ)) }}" class="font-semibold text-slate-900 hover:text-emerald-800 hover:underline">{{ $ev->titleForLocale() }}</a>
                                         @if ($ev->organization)
                                             <p class="text-xs text-slate-500">{{ $ev->organization->nameForLocale() }}</p>
                                         @endif
@@ -181,7 +184,7 @@
                                             — {{ $ev->event_ends_at->locale(app()->getLocale())->isoFormat('LLL') }}
                                         </p>
                                         <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
-                                            <a href="{{ route('volunteer.opportunities.attendance', $ev) }}" class="inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Open attendance check-in') }} →</a>
+                                            <a href="{{ route('volunteer.opportunities.attendance', array_merge(['event' => $ev], $dashLocaleQ)) }}" class="inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Open attendance check-in') }} →</a>
                                             @can('leaveRoster', $ev)
                                                 <form action="{{ route('volunteer.opportunities.leave', $ev) }}" method="post" class="inline" onsubmit="return confirm(@json(__('Leave this opportunity? You can join again before the event starts if slots allow.')));">
                                                     @csrf
@@ -197,7 +200,7 @@
                                     {{ $upcomingRosterEvents->links() }}
                                 </div>
                             @endif
-                            <a href="{{ route('volunteer.opportunities.index') }}" class="mt-4 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Browse more opportunities') }} →</a>
+                            <a href="{{ route('volunteer.opportunities.index', $dashLocaleQ) }}" class="mt-4 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Browse more opportunities') }} →</a>
                         @endif
                     </div>
                 </div>
