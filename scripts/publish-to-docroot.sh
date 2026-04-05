@@ -24,7 +24,7 @@ rsync -a --delete \
 
 echo "==> web-writable dirs (PHP-FPM typically runs as www-data)"
 chmod -f a+rw "${TARGET}/database/database.sqlite" 2>/dev/null || true
-chmod -R a+rwX "${TARGET}/storage/framework" "${TARGET}/bootstrap/cache" 2>/dev/null || true
+chmod -R a+rwX "${TARGET}/storage/framework" "${TARGET}/bootstrap/cache" "${TARGET}/storage/logs" 2>/dev/null || true
 
 rm -f "${TARGET}/public/hot"
 
