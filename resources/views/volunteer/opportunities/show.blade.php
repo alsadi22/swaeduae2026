@@ -97,13 +97,13 @@
                         @if (! $volunteerProfileCompleteForCommitments)
                             <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950" role="status">
                                 <p class="font-semibold">{{ __('Opportunity profile required hint') }}</p>
-                                <a href="{{ route('volunteer.profile.edit') }}" class="mt-2 inline-flex font-bold text-emerald-900 hover:underline">{{ __('Complete volunteer profile') }} →</a>
+                                <a href="{{ route('volunteer.profile.edit', $localeQ) }}" class="mt-2 inline-flex font-bold text-emerald-900 hover:underline">{{ __('Complete volunteer profile') }} →</a>
                             </div>
                         @endif
                         @if ($event->userIsOnRoster(auth()->user()))
                             <p class="mt-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-900">{{ __('You are on the roster for this opportunity.') }}</p>
                             <div class="mt-4 flex flex-wrap gap-3">
-                                <a href="{{ route('volunteer.opportunities.attendance', $event) }}" class="btn-primary-solid">{{ __('Open attendance check-in') }}</a>
+                                <a href="{{ route('volunteer.opportunities.attendance', array_merge(['event' => $event], $localeQ)) }}" class="btn-primary-solid">{{ __('Open attendance check-in') }}</a>
                             </div>
                             <p class="mt-2 text-xs text-slate-500">{{ __('Opens a secure link valid for 7 days—same technology as QR codes from your coordinator.') }}</p>
                             @can('leaveRoster', $event)

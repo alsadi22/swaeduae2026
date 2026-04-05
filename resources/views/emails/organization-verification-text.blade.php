@@ -11,6 +11,6 @@
 @endif
 @endif
 
-{{ __('Organization dashboard') }}: {{ route('organization.dashboard') }}
+{{ __('Organization dashboard') }}: {{ route('organization.dashboard', \App\Support\PublicLocale::queryForUser($recipient), true) }}
 
 — {{ config('app.name') }}

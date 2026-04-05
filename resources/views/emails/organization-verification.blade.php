@@ -17,7 +17,7 @@
     @endif
 
     <p style="margin-top: 1.5rem;">
-        <a href="{{ route('organization.dashboard') }}" style="color: #047857; font-weight: 600;">{{ __('Organization dashboard') }}</a>
+        <a href="{{ route('organization.dashboard', \App\Support\PublicLocale::queryForUser($recipient), true) }}" style="color: #047857; font-weight: 600;">{{ __('Organization dashboard') }}</a>
     </p>
 
     <p style="margin-top: 1.5rem; font-size: 0.875rem; color: #78716c;">{{ config('app.name') }}</p>

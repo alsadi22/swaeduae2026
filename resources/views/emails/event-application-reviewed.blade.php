@@ -18,7 +18,7 @@
 
     @if ($application->event)
         <p style="margin-top: 1.5rem;">
-            <a href="{{ route('volunteer.opportunities.show', $application->event) }}" style="color: #047857; font-weight: 600;">{{ __('View opportunity') }}</a>
+            <a href="{{ route('volunteer.opportunities.show', array_merge(['event' => $application->event], \App\Support\PublicLocale::queryForUser($application->user)), true) }}" style="color: #047857; font-weight: 600;">{{ __('View opportunity') }}</a>
         </p>
     @endif
 

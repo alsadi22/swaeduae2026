@@ -5,6 +5,9 @@
         </h2>
     </x-slot>
 
+    @php
+        $cpLocaleQ = \App\Support\PublicLocale::query();
+    @endphp
     <div class="pb-[max(2rem,env(safe-area-inset-bottom))] pt-6 sm:pt-8">
         <div class="mx-auto max-w-lg px-4 sm:px-6 lg:px-8">
             <div class="mb-4 rounded-lg border border-slate-200 bg-slate-50/90 p-4 text-sm text-slate-700" role="note">
@@ -109,7 +112,7 @@
 
                     @can('accessAttendanceCheckpoint', $event)
                         <div class="border-t border-slate-100 pt-4 text-center">
-                            <a href="{{ route('volunteer.opportunities.show', $event) }}" class="text-sm font-semibold text-emerald-800 underline decoration-emerald-300 underline-offset-2 hover:text-emerald-950">
+                            <a href="{{ route('volunteer.opportunities.show', array_merge(['event' => $event], $cpLocaleQ)) }}" class="text-sm font-semibold text-emerald-800 underline decoration-emerald-300 underline-offset-2 hover:text-emerald-950">
                                 {{ __('Back to opportunity') }}
                             </a>
                         </div>

@@ -12,7 +12,7 @@
 @endif
 
 @if ($application->event)
-{{ __('View opportunity') }}: {{ route('volunteer.opportunities.show', $application->event) }}
+{{ __('View opportunity') }}: {{ route('volunteer.opportunities.show', array_merge(['event' => $application->event], \App\Support\PublicLocale::queryForUser($application->user)), true) }}
 @endif
 
 — {{ config('app.name') }}

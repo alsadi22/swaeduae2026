@@ -7,10 +7,7 @@
     @php
         $volunteer = $dispute->attendance?->user;
         $event = $dispute->attendance?->event;
-        $mailLocaleQ = [];
-        if (is_string($volunteer?->locale_preferred) && in_array($volunteer->locale_preferred, ['en', 'ar'], true)) {
-            $mailLocaleQ['lang'] = $volunteer->locale_preferred;
-        }
+        $mailLocaleQ = \App\Support\PublicLocale::queryForUser($volunteer);
     @endphp
     <p>{{ __('Hello :name,', ['name' => $volunteer?->name ?? __('Volunteer')]) }}</p>
 

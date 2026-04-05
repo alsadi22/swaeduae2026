@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use App\Models\User;
+
 final class PublicLocale
 {
     /**
@@ -21,5 +23,19 @@ final class PublicLocale
     public static function mergeQuery(array $params): array
     {
         return array_merge(self::query(), $params);
+    }
+
+    /**
+     * Use a user's saved preferred locale when present; otherwise fall back to the active app locale.
+     *
+     * @return array{lang: string}
+     */
+    public static function queryForUser(?User $user): array
+    {
+        if ($user !== null && is_string($user->locale_preferred) && in_array($user->locale_preferred, ['en', 'ar'], true)) {
+            return ['lang' => $user->locale_preferred];
+        }
+
+        return self::query();
     }
 }

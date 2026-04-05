@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Organization;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Organization\StoreOrganizationInvitationRequest;
 use App\Models\OrganizationInvitation;
+use App\Models\User;
 use App\Notifications\OrganizationStaffInvitation;
 use App\Support\AuthRedirect;
+use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -52,7 +54,7 @@ class OrganizationInvitationController extends Controller
             ->latest('id')
             ->firstOrFail();
 
-        $this->sendStaffInvitationEmail($invitation, $plainToken);
+        $this->sendStaffInvitationEmail($invitation, $plainToken, $request->user());
 
         return redirect()
             ->to(AuthRedirect::homeForUser($request->user()))
@@ -71,7 +73,7 @@ class OrganizationInvitationController extends Controller
         ]);
         $invitation->refresh();
 
-        $this->sendStaffInvitationEmail($invitation, $plainToken);
+        $this->sendStaffInvitationEmail($invitation, $plainToken, $request->user());
 
         return redirect()
             ->to(AuthRedirect::homeForUser($request->user()))
@@ -89,10 +91,10 @@ class OrganizationInvitationController extends Controller
             ->with('status', __('Organization invitation cancelled.'));
     }
 
-    private function sendStaffInvitationEmail(OrganizationInvitation $invitation, string $plainToken): void
+    private function sendStaffInvitationEmail(OrganizationInvitation $invitation, string $plainToken, User $inviter): void
     {
         $invitation->load('organization');
-        $acceptUrl = url('/organization/join/'.$plainToken);
+        $acceptUrl = url('/organization/join/'.$plainToken.'?'.http_build_query(PublicLocale::queryForUser($inviter)));
 
         Notification::route('mail', $invitation->email)->notify(
             new OrganizationStaffInvitation($invitation, $acceptUrl)

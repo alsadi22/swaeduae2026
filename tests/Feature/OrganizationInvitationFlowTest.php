@@ -47,6 +47,28 @@ class OrganizationInvitationFlowTest extends TestCase
         Notification::assertSentOnDemand(OrganizationStaffInvitation::class);
     }
 
+    public function test_organization_invitation_accept_url_includes_inviter_preferred_locale(): void
+    {
+        Notification::fake();
+
+        [$organization, $owner] = $this->approvedOrgWithOwner();
+        $owner->forceFill(['locale_preferred' => 'ar'])->save();
+
+        $this->actingAs($owner)->post(route('organization.invitations.store'), [
+            'email' => 'staff-locale@example.org',
+            'role' => OrganizationInvitation::ROLE_MANAGER,
+        ])->assertRedirect(route('organization.dashboard', ['lang' => 'ar'], false));
+
+        $this->assertDatabaseHas('organization_invitations', [
+            'organization_id' => $organization->id,
+            'email' => 'staff-locale@example.org',
+        ]);
+
+        Notification::assertSentOnDemand(OrganizationStaffInvitation::class, function (OrganizationStaffInvitation $notification): bool {
+            return str_contains($notification->acceptUrl, 'lang=ar');
+        });
+    }
+
     public function test_org_manager_cannot_send_invitation(): void
     {
         $this->seed(RoleSeeder::class);
