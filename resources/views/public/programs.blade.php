@@ -11,7 +11,9 @@
     $metaDescription = $cmsPage
         ? ($cmsPage->meta_description ?? $cmsPage->excerpt)
         : __('site.programs_meta_description');
-    $pageAbsoluteUrl = $cmsPage ? $cmsPage->absolutePublicUrl() : url()->route('programs.index');
+    $pageAbsoluteUrl = $cmsPage
+        ? $cmsPage->absolutePublicUrl()
+        : route('programs.index', \App\Support\PublicLocale::query(), true);
     $ogTitle = $cmsPage ? $cmsPage->title : __('Programs & initiatives');
     $ogDescription = $metaDescription ?? __('site.meta_description');
     $ogImage = $cmsPage ? $cmsPage->resolvedOgImageUrl() : \App\Models\CmsPage::resolveShareImageUrl(config('swaeduae.default_og_image_url'));

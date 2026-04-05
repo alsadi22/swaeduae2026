@@ -38,6 +38,8 @@ class PublicLayoutSeoTest extends TestCase
         $response->assertSee('rel="canonical"', false);
         $response->assertSee('rel="alternate" hreflang="en"', false);
         $response->assertSee('rel="alternate" hreflang="ar"', false);
+        $response->assertSee('rel="alternate" type="application/atom+xml"', false);
+        $response->assertSee('feed.xml', false);
         $response->assertSee('property="og:locale"', false);
         $response->assertSee('property="og:locale:alternate"', false);
         $response->assertSee('name="twitter:card"', false);
@@ -87,6 +89,7 @@ class PublicLayoutSeoTest extends TestCase
         $response->assertDontSee('application/ld+json', false);
         $response->assertDontSee('hreflang="en"', false);
         $response->assertDontSee('property="og:locale"', false);
+        $response->assertDontSee('application/atom+xml', false);
         $response->assertSee('property="og:title"', false);
     }
 

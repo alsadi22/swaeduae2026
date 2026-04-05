@@ -24,7 +24,9 @@ final class HomeImpactStats
 
         $volunteersCount = VerifiedAttendanceMinutes::distinctVolunteerCount();
 
-        $partnersCount = (int) Organization::query()->count();
+        $partnersCount = (int) Organization::query()
+            ->where('verification_status', Organization::VERIFICATION_APPROVED)
+            ->count();
 
         $eventsWithVerifiedTimeCount = VerifiedAttendanceMinutes::distinctEventCount();
 

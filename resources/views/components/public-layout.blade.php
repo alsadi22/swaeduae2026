@@ -59,6 +59,7 @@
             <link rel="alternate" hreflang="en" href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}">
             <link rel="alternate" hreflang="ar" href="{{ request()->fullUrlWithQuery(['lang' => 'ar']) }}">
             <link rel="alternate" hreflang="x-default" href="{{ request()->fullUrlWithQuery(['lang' => config('app.locale', 'en')]) }}">
+            <link rel="alternate" type="application/atom+xml" title="{{ __('News feed') }}" href="{{ route('feed', \App\Support\PublicLocale::query(), true) }}">
         @endif
 
         @if ($resolvedOgUrl)

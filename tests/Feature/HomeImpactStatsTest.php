@@ -59,6 +59,15 @@ class HomeImpactStatsTest extends TestCase
         $response->assertSee('data-testid="impact-stat-events">1', false);
     }
 
+    public function test_home_impact_counts_only_approved_organizations_as_partner_hosts(): void
+    {
+        Organization::factory()->create(['verification_status' => Organization::VERIFICATION_APPROVED]);
+        Organization::factory()->pendingVerification()->create();
+
+        $this->get('/')->assertOk()
+            ->assertSee('data-testid="impact-stat-partners">1', false);
+    }
+
     public function test_home_impact_sums_minutes_adjustments_into_verified_total(): void
     {
         $this->seed(RoleSeeder::class);

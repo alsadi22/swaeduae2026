@@ -23,10 +23,11 @@ class ProgramsPageTest extends TestCase
 
     public function test_programs_page_renders_fallback_intro_when_no_cms_programs_row(): void
     {
-        $this->get('/programs')
-            ->assertOk()
+        $response = $this->get('/programs');
+        $response->assertOk()
             ->assertSeeText(__('Programs & initiatives'))
             ->assertSeeText(__('Featured program pages'));
+        $response->assertSee(route('programs.index', ['lang' => app()->getLocale()], true), false);
     }
 
     public function test_programs_index_search_filters_by_title_or_body(): void
