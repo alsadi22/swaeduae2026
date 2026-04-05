@@ -162,6 +162,10 @@ class PublicEventsAndSitemapTest extends TestCase
         $response = $this->get('/sitemap.xml');
         $response->assertOk();
         $response->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
+        $cacheControl = $response->headers->get('Cache-Control');
+        $this->assertNotNull($cacheControl);
+        $this->assertStringContainsString('max-age=3600', $cacheControl);
+        $this->assertStringContainsString('public', $cacheControl);
 
         $body = $response->getContent();
         $this->assertStringContainsString(route('home', [], true), $body);
@@ -183,6 +187,10 @@ class PublicEventsAndSitemapTest extends TestCase
         $response = $this->get('/robots.txt');
         $response->assertOk();
         $response->assertHeader('Content-Type', 'text/plain; charset=UTF-8');
+        $robotsCache = $response->headers->get('Cache-Control');
+        $this->assertNotNull($robotsCache);
+        $this->assertStringContainsString('max-age=3600', $robotsCache);
+        $this->assertStringContainsString('public', $robotsCache);
         $response->assertSee('Sitemap: '.route('sitemap', [], true), false);
     }
 

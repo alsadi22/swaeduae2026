@@ -3,7 +3,11 @@
     $metaDescription = __('site.media_hub_meta_description');
     $hubCanonical = request()->fullUrl();
     $ogImage = \App\Models\CmsPage::resolveShareImageUrl(config('swaeduae.default_og_image_url'));
-    $qParams = $search !== '' ? ['q' => $search] : [];
+    $localeQ = \App\Support\PublicLocale::query();
+    $breadcrumbItems = [
+        ['name' => __('Home'), 'url' => route('home', $localeQ, true)],
+        ['name' => __('Media center'), 'url' => route('media.index', $localeQ, true)],
+    ];
     $internalTotal = $internalPaginator?->total() ?? 0;
     $externalTotal = $externalPaginator?->total() ?? 0;
     $bothEmpty = $internalTotal === 0 && $externalTotal === 0;
@@ -16,6 +20,7 @@
     :ogTitle="$pageTitle"
     :ogDescription="$metaDescription"
     :ogImage="$ogImage"
+    :breadcrumbItems="$breadcrumbItems"
 >
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
         <h1 class="public-page-title">{{ __('Media center') }}</h1>
@@ -23,6 +28,9 @@
         <p class="mt-4 max-w-2xl text-sm text-slate-500">{{ __('site.media_hub_list_hint') }}</p>
 
         <form method="get" action="{{ route('media.index') }}" class="mt-8 flex max-w-xl flex-col gap-3 sm:flex-row sm:items-end" role="search">
+            @foreach ($localeQ as $lk => $lv)
+                <input type="hidden" name="{{ $lk }}" value="{{ $lv }}">
+            @endforeach
             <input type="hidden" name="filter" value="{{ $filter }}">
             @if ($sourceId)
                 <input type="hidden" name="source_id" value="{{ $sourceId }}">
@@ -36,7 +44,7 @@
             <div class="flex flex-wrap gap-2">
                 <button type="submit" class="rounded-xl bg-emerald-800 px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-emerald-900">{{ __('Search') }}</button>
                 @if ($search !== '')
-                    <a href="{{ route('media.index', array_filter(['filter' => $filter, 'source_id' => $sourceId])) }}" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">{{ __('Clear search') }}</a>
+                    <a href="{{ route('media.index', array_merge($localeQ, array_filter(['filter' => $filter, 'source_id' => $sourceId]))) }}" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">{{ __('Clear search') }}</a>
                 @endif
             </div>
         </form>
@@ -45,13 +53,16 @@
         @enderror
 
         <div class="mt-10 flex flex-wrap gap-2">
-            <a href="{{ route('media.index', array_merge(['filter' => 'all'], $qParams)) }}" class="rounded-full px-4 py-2 text-sm font-semibold {{ $filter === 'all' && ! $sourceId ? 'bg-emerald-800 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">{{ __('All updates') }}</a>
-            <a href="{{ route('media.index', array_merge(['filter' => 'internal'], $qParams)) }}" class="rounded-full px-4 py-2 text-sm font-semibold {{ $filter === 'internal' ? 'bg-emerald-800 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">{{ __('Our news') }}</a>
-            <a href="{{ route('media.index', array_merge(['filter' => 'external'], $qParams)) }}" class="rounded-full px-4 py-2 text-sm font-semibold {{ $filter === 'external' ? 'bg-emerald-800 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">{{ __('External updates') }}</a>
+            <a href="{{ route('media.index', array_merge($localeQ, ['filter' => 'all'], $search !== '' ? ['q' => $search] : [])) }}" class="rounded-full px-4 py-2 text-sm font-semibold {{ $filter === 'all' && ! $sourceId ? 'bg-emerald-800 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">{{ __('All updates') }}</a>
+            <a href="{{ route('media.index', array_merge($localeQ, ['filter' => 'internal'], $search !== '' ? ['q' => $search] : [])) }}" class="rounded-full px-4 py-2 text-sm font-semibold {{ $filter === 'internal' ? 'bg-emerald-800 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">{{ __('Our news') }}</a>
+            <a href="{{ route('media.index', array_merge($localeQ, ['filter' => 'external'], $search !== '' ? ['q' => $search] : [])) }}" class="rounded-full px-4 py-2 text-sm font-semibold {{ $filter === 'external' ? 'bg-emerald-800 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">{{ __('External updates') }}</a>
         </div>
 
         @if ($sources->isNotEmpty())
             <form method="get" action="{{ route('media.index') }}" class="mt-6 flex flex-wrap items-end gap-3">
+                @foreach ($localeQ as $lk => $lv)
+                    <input type="hidden" name="{{ $lk }}" value="{{ $lv }}">
+                @endforeach
                 <input type="hidden" name="filter" value="{{ $filter }}">
                 @if ($search !== '')
                     <input type="hidden" name="q" value="{{ $search }}">

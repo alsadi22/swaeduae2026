@@ -1,6 +1,10 @@
 @php
     /** @var \App\Models\CmsPage|null $cmsPage */
     /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, \App\Models\CmsPage> $programPages */
+    $breadcrumbItems = [
+        ['name' => __('Home'), 'url' => route('home', \App\Support\PublicLocale::query(), true)],
+        ['name' => __('Programs'), 'url' => route('programs.index', \App\Support\PublicLocale::query(), true)],
+    ];
     $pageTitle = $cmsPage
         ? $cmsPage->title.' — '.__('SwaedUAE')
         : __('Programs').' — '.__('SwaedUAE');
@@ -20,6 +24,7 @@
     :ogTitle="$ogTitle"
     :ogDescription="$ogDescription"
     :ogImage="$ogImage"
+    :breadcrumbItems="$breadcrumbItems"
 >
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
         @if ($cmsPage)
@@ -49,7 +54,10 @@
             </div>
             <p class="mt-3 max-w-2xl text-sm text-slate-600">{{ __('site.programs_grid_hint') }}</p>
 
-            <form method="get" action="{{ route('programs.index', ['lang' => app()->getLocale()]) }}" class="card-surface mt-8 flex flex-col gap-4 p-4 sm:flex-row sm:flex-wrap sm:items-end">
+            <form method="get" action="{{ route('programs.index') }}" class="card-surface mt-8 flex flex-col gap-4 p-4 sm:flex-row sm:flex-wrap sm:items-end">
+                @foreach (\App\Support\PublicLocale::query() as $lk => $lv)
+                    <input type="hidden" name="{{ $lk }}" value="{{ $lv }}">
+                @endforeach
                 <div class="min-w-0 flex-1">
                     <label for="public_programs_q" class="block text-xs font-bold uppercase tracking-wide text-slate-500">{{ __('Search programs') }}</label>
                     <input type="search" id="public_programs_q" name="q" value="{{ $search }}" maxlength="120" placeholder="{{ __('Search by title or body') }}" class="mt-1 block w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
@@ -57,7 +65,7 @@
                 <div class="flex flex-wrap gap-2">
                     <button type="submit" class="btn-primary-solid">{{ __('Apply') }}</button>
                     @if (filled($search))
-                        <a href="{{ route('programs.index', ['lang' => app()->getLocale()]) }}" class="btn-secondary-muted">{{ __('Clear') }}</a>
+                        <a href="{{ route('programs.index', \App\Support\PublicLocale::query()) }}" class="btn-secondary-muted">{{ __('Clear') }}</a>
                     @endif
                 </div>
             </form>

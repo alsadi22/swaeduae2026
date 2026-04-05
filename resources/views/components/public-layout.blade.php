@@ -7,6 +7,8 @@
     'ogType' => 'website',
     'canonicalUrl' => null,
     'ogImage' => null,
+    /** @var list<array{name: string, url: string}>|null */
+    'breadcrumbItems' => null,
 ])
 
 @php
@@ -22,6 +24,10 @@
         $resolvedCanonical = $resolvedOgUrl;
     }
     $swaeduaeJsonLd = \App\Support\SwaedUaeStructuredData::publicLayoutGraph($isAdminCmsPreview);
+    $breadcrumbJsonLd = null;
+    if (is_array($breadcrumbItems) && $breadcrumbItems !== [] && ! $isAdminCmsPreview) {
+        $breadcrumbJsonLd = \App\Support\SwaedUaeStructuredData::breadcrumbGraph($breadcrumbItems);
+    }
 @endphp
 
 <!DOCTYPE html>
@@ -81,6 +87,11 @@
         @if ($swaeduaeJsonLd !== null)
             <script type="application/ld+json">
                 {!! json_encode($swaeduaeJsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
+            </script>
+        @endif
+        @if ($breadcrumbJsonLd !== null)
+            <script type="application/ld+json">
+                {!! json_encode($breadcrumbJsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
             </script>
         @endif
     </head>
@@ -189,6 +200,26 @@
         </header>
 
         <main id="main-content" tabindex="-1">
+            @if (is_array($breadcrumbItems) && $breadcrumbItems !== [])
+                <div class="mx-auto max-w-content px-4 pt-8 sm:px-6">
+                    <nav aria-label="{{ __('Breadcrumb') }}" class="text-sm">
+                        <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                            @foreach ($breadcrumbItems as $index => $crumb)
+                                <li class="inline-flex items-center gap-2">
+                                    @if ($index > 0)
+                                        <span class="select-none text-slate-300" aria-hidden="true">/</span>
+                                    @endif
+                                    @if ($index === count($breadcrumbItems) - 1)
+                                        <span class="font-semibold text-slate-900" aria-current="page">{{ $crumb['name'] }}</span>
+                                    @else
+                                        <a href="{{ $crumb['url'] }}" class="font-medium text-emerald-800 hover:text-emerald-950 hover:underline">{{ $crumb['name'] }}</a>
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ol>
+                    </nav>
+                </div>
+            @endif
             {{ $slot }}
         </main>
 

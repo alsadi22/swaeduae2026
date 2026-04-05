@@ -44,6 +44,15 @@ class PublicLayoutSeoTest extends TestCase
         $response->assertSee('name="twitter:description"', false);
     }
 
+    public function test_events_index_emits_breadcrumb_list_json_ld(): void
+    {
+        $response = $this->get('/events');
+
+        $response->assertOk();
+        $response->assertSee('"@type":"BreadcrumbList"', false);
+        $response->assertSee('aria-label="Breadcrumb"', false);
+    }
+
     public function test_youth_councils_page_emits_article_og_and_canonical(): void
     {
         $response = $this->get(route('youth-councils', ['lang' => 'en']));

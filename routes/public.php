@@ -47,7 +47,8 @@ Route::get('/robots.txt', function () {
     ];
 
     return response(implode("\n", $lines), 200)
-        ->header('Content-Type', 'text/plain; charset=UTF-8');
+        ->header('Content-Type', 'text/plain; charset=UTF-8')
+        ->header('Cache-Control', 'public, max-age=3600');
 })->name('robots');
 
 Route::get('/', HomeController::class)->name('home');

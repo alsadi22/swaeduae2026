@@ -50,4 +50,27 @@ final class SwaedUaeStructuredData
             '@graph' => [$org, $website],
         ];
     }
+
+    /**
+     * @param  list<array{name: string, url: string}>  $items
+     * @return array<string, mixed>
+     */
+    public static function breadcrumbGraph(array $items): array
+    {
+        $elements = [];
+        foreach ($items as $i => $item) {
+            $elements[] = [
+                '@type' => 'ListItem',
+                'position' => $i + 1,
+                'name' => $item['name'],
+                'item' => $item['url'],
+            ];
+        }
+
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => $elements,
+        ];
+    }
 }
