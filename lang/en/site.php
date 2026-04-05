@@ -7,7 +7,7 @@ return [
 
     'hero_subline' => 'Programs, Youth Councils, media, and a volunteer platform aligned with national community-development priorities — transparent, bilingual, and built for measurable impact.',
 
-    'start_here_tagline' => 'Programs, Youth Councils & events',
+    'start_here_tagline' => 'Programs, Youth Councils, events, media & gallery',
 
     'about_snapshot' => 'We bring together volunteers, partners, and local leaders to deliver cultural and community initiatives with transparency and measurable impact.',
 

@@ -86,6 +86,15 @@
                         <span class="mt-0.5 block text-sm text-slate-600">{{ __('Media center card hint') }}</span>
                     </span>
                 </a>
+                <a href="{{ route('gallery') }}" class="card-interactive group flex gap-4">
+                    <span class="card-icon-tile" aria-hidden="true">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </span>
+                    <span class="min-w-0 text-start">
+                        <span class="block font-display font-bold text-slate-900 group-hover:text-emerald-900">{{ __('Gallery') }}</span>
+                        <span class="mt-0.5 block text-sm text-slate-600">{{ __('Gallery card hint') }}</span>
+                    </span>
+                </a>
                 <a href="{{ route('contact.show') }}" class="card-interactive group flex gap-4">
                     <span class="card-icon-tile" aria-hidden="true">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -286,25 +295,7 @@
             @if (count($homePartners) > 0)
                 <h2 id="home-partners-heading" class="public-section-title public-section-title--center mx-auto w-fit max-w-full text-center">{{ __('Partners') }}</h2>
                 <p class="mx-auto mt-4 max-w-2xl text-center text-sm text-slate-600">{{ __('site.partners_intro') }}</p>
-                <ul class="mt-10 flex flex-wrap items-center justify-center gap-8 sm:gap-12">
-                    @foreach ($homePartners as $partner)
-                        @php
-                            $plabel = app()->getLocale() === 'ar' && ! empty($partner['label_ar']) ? $partner['label_ar'] : ($partner['label'] ?? '');
-                            $purl = $partner['url'] ?? '#';
-                            $plogo = $partner['logo'] ?? '';
-                        @endphp
-                        <li>
-                            <a href="{{ $purl }}" class="group flex flex-col items-center gap-2 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2" target="_blank" rel="noopener noreferrer">
-                                @if ($plogo !== '')
-                                    <span class="flex h-16 w-40 items-center justify-center rounded-xl bg-slate-50 px-3 py-2 ring-1 ring-slate-200/80 transition group-hover:bg-white group-hover:shadow-sm sm:h-20 sm:w-48">
-                                        <img src="{{ \Illuminate\Support\Str::startsWith($plogo, ['http://', 'https://']) ? $plogo : url($plogo) }}" alt="{{ $plabel }}" class="max-h-14 max-w-full object-contain opacity-90 group-hover:opacity-100" width="160" height="64" loading="lazy" decoding="async">
-                                    </span>
-                                @endif
-                                <span class="max-w-[10rem] text-xs font-semibold text-slate-600 group-hover:text-emerald-900">{{ $plabel }}</span>
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
+                <x-public-partners-logo-grid class="mt-10" :partners="$homePartners" />
             @else
                 {{ __('site.partners_strip') }}
             @endif

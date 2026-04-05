@@ -30,9 +30,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Home page — partner logos (Phase C5)
+    | Public partner logos (Phase C5)
     |--------------------------------------------------------------------------
     |
+    | Shown on the home page and on /partners when non-empty.
     | Each item: label (EN), optional label_ar, url, logo (https URL or /path under public).
     | Leave empty to show the bilingual placeholder line from lang files.
     |

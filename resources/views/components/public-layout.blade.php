@@ -109,6 +109,7 @@
                         <a href="{{ route('youth-councils') }}" class="public-nav-link {{ request()->routeIs('youth-councils') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('Youth Councils') }}</a>
                         <a href="{{ route('events.index') }}" class="public-nav-link {{ request()->routeIs('events.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('Events') }}</a>
                         <a href="{{ route('media.index') }}" class="public-nav-link {{ request()->routeIs('media.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('Media') }}</a>
+                        <a href="{{ route('gallery') }}" class="public-nav-link {{ request()->routeIs('gallery') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('Gallery') }}</a>
                         <a href="{{ route('volunteer.index') }}" class="public-nav-link {{ request()->routeIs('volunteer.index') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('Volunteer') }}</a>
                         @role('volunteer')
                             <a href="{{ route('volunteer.opportunities.index') }}" class="public-nav-link {{ request()->routeIs('volunteer.opportunities.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('Opportunities') }}</a>
@@ -143,6 +144,7 @@
                         <a href="{{ route('youth-councils') }}" class="public-nav-link {{ request()->routeIs('youth-councils') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('Youth Councils') }}</a>
                         <a href="{{ route('events.index') }}" class="public-nav-link {{ request()->routeIs('events.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('Events') }}</a>
                         <a href="{{ route('media.index') }}" class="public-nav-link {{ request()->routeIs('media.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('Media') }}</a>
+                        <a href="{{ route('gallery') }}" class="public-nav-link {{ request()->routeIs('gallery') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('Gallery') }}</a>
                         <a href="{{ route('volunteer.index') }}" class="public-nav-link {{ request()->routeIs('volunteer.index') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('Volunteer') }}</a>
                         @role('volunteer')
                             <a href="{{ route('volunteer.opportunities.index') }}" class="public-nav-link {{ request()->routeIs('volunteer.opportunities.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('Opportunities') }}</a>
@@ -187,6 +189,7 @@
                             <li><a href="{{ route('youth-councils') }}" class="footer-link">{{ __('Youth Councils') }}</a></li>
                             <li><a href="{{ route('events.index') }}" class="footer-link">{{ __('Events') }}</a></li>
                             <li><a href="{{ route('media.index') }}" class="footer-link">{{ __('Media') }}</a></li>
+                            <li><a href="{{ route('gallery') }}" class="footer-link">{{ __('Gallery') }}</a></li>
                             <li><a href="{{ route('volunteer.index') }}" class="footer-link">{{ __('Volunteer') }}</a></li>
                         </ul>
                     </div>
@@ -196,7 +199,6 @@
                             <li><a href="{{ route('about') }}" class="footer-link">{{ __('About') }}</a></li>
                             <li><a href="{{ route('leadership') }}" class="footer-link">{{ __('Leadership') }}</a></li>
                             <li><a href="{{ route('partners') }}" class="footer-link">{{ __('Partners') }}</a></li>
-                            <li><a href="{{ route('gallery') }}" class="footer-link">{{ __('Gallery') }}</a></li>
                             <li><a href="{{ route('faq') }}" class="footer-link">{{ __('FAQ') }}</a></li>
                             <li><a href="{{ route('support.show') }}" class="footer-link">{{ __('Help and support') }}</a></li>
                             <li><a href="{{ route('contact.show') }}" class="footer-link">{{ __('Contact') }}</a></li>
