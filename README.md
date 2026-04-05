@@ -2,6 +2,11 @@
 
 This directory is the **Laravel codebase** (Composer, Vite, `artisan`, `routes/`, `app/`, etc.).
 
+## Repository & production deploy
+
+- **GitHub:** [github.com/alsadi22/swaeduae2026](https://github.com/alsadi22/swaeduae2026) (branch **`master`**).
+- **On the server** (after `git pull` in this directory): `./scripts/deploy-on-server.sh` — see comments in that script and **[../Documents/PRODUCTION-ENV.md](../Documents/PRODUCTION-ENV.md)** (also: optional GitHub Actions **Deploy to production** in `.github/workflows/deploy.yml`).
+
 ## Documentation
 
 All product specs, architecture, design notes, and the full developer guide live in one place:
