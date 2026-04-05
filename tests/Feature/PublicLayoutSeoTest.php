@@ -70,6 +70,7 @@ class PublicLayoutSeoTest extends TestCase
         $response->assertOk();
         $response->assertDontSee('rel="canonical"', false);
         $response->assertDontSee('property="og:url"', false);
+        $response->assertDontSee('application/ld+json', false);
         $response->assertSee('property="og:title"', false);
     }
 

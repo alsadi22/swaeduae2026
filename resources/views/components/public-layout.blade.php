@@ -21,6 +21,7 @@
     if ($resolvedCanonical === null && $resolvedOgUrl !== null && ! $isAdminCmsPreview) {
         $resolvedCanonical = $resolvedOgUrl;
     }
+    $swaeduaeJsonLd = \App\Support\SwaedUaeStructuredData::publicLayoutGraph($isAdminCmsPreview);
 @endphp
 
 <!DOCTYPE html>
@@ -66,6 +67,12 @@
         <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        @if ($swaeduaeJsonLd !== null)
+            <script type="application/ld+json">
+                {!! json_encode($swaeduaeJsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
+            </script>
+        @endif
     </head>
     <body class="theme-page font-sans antialiased">
         <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-white focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-emerald-900 focus:shadow-card focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2">

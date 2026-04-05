@@ -20,7 +20,8 @@ class ProgramsIndexController extends Controller
             ->where('show_on_programs', true)
             ->whereNotIn('slug', CmsPage::INSTITUTIONAL_SLUGS)
             ->orderByDesc('published_at')
-            ->get();
+            ->paginate(12)
+            ->withQueryString();
 
         return view('public.programs', [
             'cmsPage' => $cmsPage,

@@ -185,4 +185,15 @@ class PublicEventsAndSitemapTest extends TestCase
         $response->assertHeader('Content-Type', 'text/plain; charset=UTF-8');
         $response->assertSee('Sitemap: '.route('sitemap', [], true), false);
     }
+
+    public function test_robots_txt_disallows_private_app_paths(): void
+    {
+        $response = $this->get('/robots.txt');
+        $response->assertOk();
+        $body = $response->getContent();
+        $this->assertStringContainsString('Disallow: /admin', $body);
+        $this->assertStringContainsString('Disallow: /dashboard', $body);
+        $this->assertStringContainsString('Disallow: /profile', $body);
+        $this->assertStringContainsString('Disallow: /organization/', $body);
+    }
 }

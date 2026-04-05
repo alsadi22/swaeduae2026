@@ -52,6 +52,37 @@ class ProgramsPageTest extends TestCase
             ->assertSee('Books and mentors for teens.', false);
     }
 
+    public function test_programs_page_paginates_featured_grid(): void
+    {
+        for ($i = 0; $i < 13; $i++) {
+            CmsPage::query()->create([
+                'slug' => 'programs-paginate-'.$i,
+                'locale' => 'en',
+                'title' => 'Programs Paginate Title '.$i,
+                'meta_description' => null,
+                'og_image' => null,
+                'excerpt' => 'Excerpt '.$i,
+                'body' => '## Body',
+                'status' => CmsPage::STATUS_PUBLISHED,
+                'published_at' => now()->subDays(30 - $i),
+                'author_id' => null,
+                'show_on_home' => false,
+                'show_on_programs' => true,
+            ]);
+        }
+
+        $this->get('/programs')
+            ->assertOk()
+            ->assertSee('Programs Paginate Title 12', false)
+            ->assertSee('Programs Paginate Title 1', false)
+            ->assertDontSee('Programs Paginate Title 0', false);
+
+        $this->get('/programs?page=2')
+            ->assertOk()
+            ->assertSee('Programs Paginate Title 0', false)
+            ->assertDontSee('Programs Paginate Title 12', false);
+    }
+
     public function test_programs_page_excludes_institutional_slugs_from_grid(): void
     {
         CmsPage::query()->create([

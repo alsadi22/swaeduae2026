@@ -1,6 +1,6 @@
 @php
     /** @var \App\Models\CmsPage|null $cmsPage */
-    /** @var \Illuminate\Support\Collection<int, \App\Models\CmsPage> $programPages */
+    /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, \App\Models\CmsPage> $programPages */
     $pageTitle = $cmsPage
         ? $cmsPage->title.' — '.__('SwaedUAE')
         : __('Programs').' — '.__('SwaedUAE');
@@ -72,6 +72,11 @@
                     </div>
                 @endforelse
             </div>
+            @if ($programPages->hasPages())
+                <div class="mt-10">
+                    {{ $programPages->links('vendor.pagination.tailwind-public') }}
+                </div>
+            @endif
         </section>
     </div>
 </x-public-layout>

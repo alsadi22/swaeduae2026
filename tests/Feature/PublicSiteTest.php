@@ -16,6 +16,15 @@ class PublicSiteTest extends TestCase
         $this->get('/')->assertOk();
     }
 
+    public function test_home_includes_organization_json_ld(): void
+    {
+        $response = $this->get('/');
+        $response->assertOk();
+        $response->assertSee('application/ld+json', false);
+        $response->assertSee('"@type":"NGO"', false);
+        $response->assertSee('"@type":"WebSite"', false);
+    }
+
     public function test_volunteer_page_is_ok(): void
     {
         $this->get('/volunteer')->assertOk();

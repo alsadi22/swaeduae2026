@@ -79,7 +79,7 @@
                     </div>
                     @if ($internalPaginator->hasPages())
                         <div class="mt-10">
-                            {{ $internalPaginator->links() }}
+                            {{ $internalPaginator->links('vendor.pagination.tailwind-public') }}
                         </div>
                     @endif
                 </section>
@@ -92,7 +92,7 @@
                     </div>
                     @if ($externalPaginator->hasPages())
                         <div class="mt-10">
-                            {{ $externalPaginator->links() }}
+                            {{ $externalPaginator->links('vendor.pagination.tailwind-public') }}
                         </div>
                     @endif
                 </section>
@@ -103,7 +103,7 @@
             </div>
             @if ($internalPaginator->hasPages())
                 <div class="mt-10">
-                    {{ $internalPaginator->links() }}
+                    {{ $internalPaginator->links('vendor.pagination.tailwind-public') }}
                 </div>
             @endif
         @else
@@ -112,7 +112,7 @@
             </div>
             @if ($externalPaginator->hasPages())
                 <div class="mt-10">
-                    {{ $externalPaginator->links() }}
+                    {{ $externalPaginator->links('vendor.pagination.tailwind-public') }}
                 </div>
             @endif
         @endif

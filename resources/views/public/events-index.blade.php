@@ -77,7 +77,7 @@
                     @endforeach
                 </ul>
                 <div class="mt-10">
-                    {{ $events->links() }}
+                    {{ $events->links('vendor.pagination.tailwind-public') }}
                 </div>
                 <a href="{{ route('volunteer.opportunities.index') }}" class="mt-8 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Volunteer opportunities') }} →</a>
             @endif

@@ -40,6 +40,7 @@
                                 <th class="pb-3 pe-4 font-medium">{{ __('Slug') }}</th>
                                 <th class="pb-3 pe-4 font-medium">{{ __('Lang') }}</th>
                                 <th class="pb-3 pe-4 font-medium">{{ __('Status') }}</th>
+                                <th class="pb-3 pe-4 font-medium">{{ __('Visibility') }}</th>
                                 <th class="pb-3 pe-4 font-medium">{{ __('Updated') }}</th>
                                 <th class="pb-3 font-medium text-end">{{ __('Actions') }}</th>
                             </tr>
@@ -52,6 +53,19 @@
                                     <td class="py-3 pe-4 uppercase">{{ $p->locale }}</td>
                                     <td class="py-3 pe-4">
                                         <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs">{{ $p->status }}</span>
+                                    </td>
+                                    <td class="py-3 pe-4">
+                                        <span class="inline-flex flex-wrap gap-1">
+                                            @if ($p->show_on_home)
+                                                <abbr title="{{ __('Show on home page') }}" class="rounded bg-emerald-100 px-1.5 py-0.5 text-xs font-bold text-emerald-900">H</abbr>
+                                            @endif
+                                            @if ($p->show_on_programs)
+                                                <abbr title="{{ __('Show on programs page') }}" class="rounded bg-sky-100 px-1.5 py-0.5 text-xs font-bold text-sky-900">P</abbr>
+                                            @endif
+                                            @if ($p->show_on_media)
+                                                <abbr title="{{ __('Show in media center') }}" class="rounded bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-900">M</abbr>
+                                            @endif
+                                        </span>
                                     </td>
                                     <td class="py-3 pe-4 text-gray-600">{{ $p->updated_at->diffForHumans() }}</td>
                                     <td class="py-3 text-end space-x-2">
@@ -66,7 +80,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="py-8 text-center text-gray-500">
+                                    <td colspan="7" class="py-8 text-center text-gray-500">
                                         @if (filled($search))
                                             {{ __('No CMS pages match your filters.') }}
                                         @else

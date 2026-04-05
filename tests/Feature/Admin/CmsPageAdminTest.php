@@ -47,6 +47,29 @@ class CmsPageAdminTest extends TestCase
         $this->actingAs($user)->get('/admin/cms-pages')->assertOk();
     }
 
+    public function test_admin_cms_index_shows_visibility_badges_when_flags_set(): void
+    {
+        $user = $this->adminUser();
+        CmsPage::query()->create([
+            'slug' => 'visibility-flags-row',
+            'locale' => 'en',
+            'title' => 'Visibility Flags Row Title',
+            'body' => 'x',
+            'status' => CmsPage::STATUS_DRAFT,
+            'author_id' => $user->id,
+            'show_on_home' => true,
+            'show_on_programs' => true,
+            'show_on_media' => true,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('admin.cms-pages.index'))
+            ->assertOk()
+            ->assertSee('title="'.__('Show on home page').'"', false)
+            ->assertSee('title="'.__('Show on programs page').'"', false)
+            ->assertSee('title="'.__('Show in media center').'"', false);
+    }
+
     public function test_admin_cms_index_search_filters_by_title_or_slug(): void
     {
         $user = $this->adminUser();

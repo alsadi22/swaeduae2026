@@ -34,6 +34,15 @@ Route::get('/robots.txt', function () {
     $lines = [
         'User-agent: *',
         'Allow: /',
+        'Disallow: /admin',
+        'Disallow: /dashboard',
+        'Disallow: /profile',
+        'Disallow: /organization/',
+        'Disallow: /attendance/',
+        'Disallow: /login',
+        'Disallow: /register',
+        'Disallow: /forgot-password',
+        'Disallow: /reset-password',
         '',
         'Sitemap: '.route('sitemap', [], true),
     ];
