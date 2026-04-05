@@ -1,7 +1,12 @@
 @php
+    use App\Support\PublicBreadcrumbs;
+    use App\Support\PublicLocale;
+
     $pageTitle = __('FAQ').' — '.__('SwaedUAE');
+    $localeQ = PublicLocale::query();
+    $breadcrumbItems = PublicBreadcrumbs::homeAndCurrent(__('FAQ'), route('faq', $localeQ, true));
 @endphp
-<x-public-layout :title="$pageTitle" :metaDescription="__('site.meta_description')">
+<x-public-layout :title="$pageTitle" :metaDescription="__('site.meta_description')" :breadcrumbItems="$breadcrumbItems">
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
         <div class="max-w-3xl">
             <h1 class="public-page-title">{{ __('FAQ') }}</h1>

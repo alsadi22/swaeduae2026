@@ -4,6 +4,8 @@ namespace App\Support;
 
 use App\Models\CmsPage;
 use App\Models\Event;
+use App\Models\ExternalNewsItem;
+use Illuminate\Support\Str;
 
 final class SwaedUaeStructuredData
 {
@@ -112,6 +114,46 @@ final class SwaedUaeStructuredData
                 ],
             ];
         }
+
+        return $data;
+    }
+
+    /**
+     * Schema.org NewsArticle for external (syndicated) news detail pages.
+     *
+     * @return array<string, mixed>
+     */
+    public static function externalNewsArticleForJsonLd(ExternalNewsItem $item, string $pageUrl): array
+    {
+        $data = [
+            '@context' => 'https://schema.org',
+            '@type' => 'NewsArticle',
+            'headline' => $item->titleForLocale(),
+            'url' => $pageUrl,
+            'mainEntityOfPage' => $pageUrl,
+        ];
+
+        if ($item->published_at !== null) {
+            $data['datePublished'] = $item->published_at->toIso8601String();
+        }
+
+        $data['dateModified'] = $item->updated_at->toIso8601String();
+
+        $sum = $item->summaryForLocale();
+        if (is_string($sum) && $sum !== '') {
+            $data['description'] = Str::limit(strip_tags($sum), 500);
+        }
+
+        $img = $item->featureImageUrl();
+        if (is_string($img) && $img !== '') {
+            $data['image'] = [$img];
+        }
+
+        $data['publisher'] = [
+            '@type' => 'Organization',
+            'name' => __('SwaedUAE'),
+            'url' => url('/'),
+        ];
 
         return $data;
     }

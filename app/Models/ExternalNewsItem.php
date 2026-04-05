@@ -88,6 +88,15 @@ class ExternalNewsItem extends Model
         return route('media.external.show', $this);
     }
 
+    public function absolutePublicUrl(?string $locale = null): string
+    {
+        $locale ??= app()->getLocale();
+        $base = route('media.external.show', ['external_news_item' => $this], true);
+        $sep = str_contains($base, '?') ? '&' : '?';
+
+        return $base.$sep.'lang='.rawurlencode($locale);
+    }
+
     public function titleForLocale(?string $locale = null): string
     {
         $locale = $locale ?? app()->getLocale();

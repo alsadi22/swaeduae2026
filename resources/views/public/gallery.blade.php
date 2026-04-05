@@ -1,14 +1,19 @@
 @php
+    use App\Support\PublicBreadcrumbs;
+    use App\Support\PublicLocale;
+
     $pageTitle = __('Gallery').' — '.__('SwaedUAE');
     $downloads = config('swaeduae.document_downloads', []);
+    $localeQ = PublicLocale::query();
+    $breadcrumbItems = PublicBreadcrumbs::homeAndCurrent(__('Gallery'), route('gallery', $localeQ, true));
 @endphp
-<x-public-layout :title="$pageTitle" :metaDescription="__('site.gallery_meta_description')">
+<x-public-layout :title="$pageTitle" :metaDescription="__('site.gallery_meta_description')" :breadcrumbItems="$breadcrumbItems">
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
         <div class="max-w-3xl">
             <h1 class="public-page-title">{{ __('Gallery') }}</h1>
             <p class="mt-8 text-slate-600 leading-relaxed">{{ __('site.gallery_page_intro') }}</p>
             <p class="mt-4">
-                <a href="{{ route('media.index') }}" class="text-sm font-bold text-emerald-800 hover:underline">{{ __('Media center') }} →</a>
+                <a href="{{ route('media.index', $localeQ) }}" class="text-sm font-bold text-emerald-800 hover:underline">{{ __('Media center') }} →</a>
             </p>
         </div>
 

@@ -1,8 +1,13 @@
 @php
+    use App\Support\PublicBreadcrumbs;
+    use App\Support\PublicLocale;
+
     $pageTitle = __('Terms').' — '.__('SwaedUAE');
     $metaDescription = __('site.terms_intro');
+    $localeQ = PublicLocale::query();
+    $breadcrumbItems = PublicBreadcrumbs::homeAndCurrent(__('Terms of use'), route('legal.terms', $localeQ, true));
 @endphp
-<x-public-layout :title="$pageTitle" :metaDescription="$metaDescription">
+<x-public-layout :title="$pageTitle" :metaDescription="$metaDescription" :breadcrumbItems="$breadcrumbItems">
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
         <div class="max-w-3xl">
             @include('public.legal.placeholder-notice')

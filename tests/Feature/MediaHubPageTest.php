@@ -262,4 +262,75 @@ class MediaHubPageTest extends TestCase
             ->assertOk()
             ->assertSeeText('Paginated story 15');
     }
+
+    public function test_media_atom_feed_merges_internal_and_external_entries(): void
+    {
+        CmsPage::query()->create([
+            'slug' => 'atom-feed-cms-item',
+            'locale' => 'en',
+            'title' => 'Atom feed CMS item',
+            'meta_description' => null,
+            'og_image' => null,
+            'excerpt' => 'CMS excerpt for atom.',
+            'body' => '## Body',
+            'status' => CmsPage::STATUS_PUBLISHED,
+            'published_at' => now()->subDay(),
+            'author_id' => null,
+            'show_on_home' => false,
+            'show_on_programs' => false,
+            'show_on_media' => true,
+        ]);
+
+        CmsPage::query()->create([
+            'slug' => 'about',
+            'locale' => 'en',
+            'title' => 'Institutional about in feed test',
+            'meta_description' => null,
+            'og_image' => null,
+            'excerpt' => null,
+            'body' => 'x',
+            'status' => CmsPage::STATUS_PUBLISHED,
+            'published_at' => now()->subDay(),
+            'author_id' => null,
+            'show_on_home' => false,
+            'show_on_programs' => false,
+            'show_on_media' => true,
+        ]);
+
+        $source = ExternalNewsSource::query()->create([
+            'name' => 'Atom wire',
+            'slug' => 'atom-wire',
+            'type' => ExternalNewsSource::TYPE_MANUAL,
+            'endpoint_url' => 'https://example.org/feed',
+            'website_url' => 'https://example.org',
+            'label_en' => 'Wire EN',
+            'label_ar' => 'Wire AR',
+            'is_active' => true,
+            'fetch_interval_minutes' => 60,
+            'priority' => 0,
+        ]);
+
+        ExternalNewsItem::query()->create([
+            'source_id' => $source->id,
+            'external_guid' => 'g-atom-ext-1',
+            'external_url' => 'https://example.org/atom',
+            'original_title' => 'Atom feed external item',
+            'original_summary' => 'External summary.',
+            'status' => ExternalNewsItem::STATUS_PUBLISHED,
+            'import_hash' => hash('sha256', 'atom-ext-1'),
+            'fetched_at' => now(),
+            'published_at' => now(),
+            'show_in_media_center' => true,
+            'show_on_home' => false,
+            'normalized_title_en' => 'Atom feed external item',
+        ]);
+
+        $response = $this->get('/feed.xml');
+        $response->assertOk();
+        $this->assertStringContainsString('application/atom+xml', (string) $response->headers->get('Content-Type'));
+        $this->assertStringContainsString('max-age=600', (string) $response->headers->get('Cache-Control'));
+        $response->assertSee('Atom feed CMS item', false);
+        $response->assertSee('Atom feed external item', false);
+        $response->assertDontSee('Institutional about in feed test', false);
+    }
 }

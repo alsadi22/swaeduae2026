@@ -1,14 +1,20 @@
 @php
+    use App\Support\PublicBreadcrumbs;
+    use App\Support\PublicLocale;
+
     $pageTitle = __('Leadership').' — '.__('SwaedUAE');
     $metaDescription = __('site.leadership_meta');
     $ogImage = \App\Models\CmsPage::resolveShareImageUrl(config('swaeduae.default_og_image_url'));
     $board = __('site.leadership_board');
     $board = is_array($board) ? $board : [];
+    $localeQ = PublicLocale::query();
+    $breadcrumbItems = PublicBreadcrumbs::homeAndCurrent(__('Leadership'), route('leadership', $localeQ, true));
 @endphp
 <x-public-layout
     :title="$pageTitle"
     :metaDescription="$metaDescription"
     :ogImage="$ogImage"
+    :breadcrumbItems="$breadcrumbItems"
 >
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
         <header class="max-w-3xl">

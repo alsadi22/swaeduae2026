@@ -1,5 +1,7 @@
 @php
     use App\Models\CmsPage;
+    use App\Support\PublicBreadcrumbs;
+    use App\Support\PublicLocale;
 
     $previewMode = $previewMode ?? false;
     $cmsPage = $cmsPage ?? null;
@@ -31,6 +33,14 @@
     }
 
     $youthEmail = config('swaeduae.mail.youth_councils');
+    $localeQ = PublicLocale::query();
+    $breadcrumbItems = null;
+    if (! $previewMode) {
+        $breadcrumbItems = PublicBreadcrumbs::homeAndCurrent(
+            $cmsPage !== null ? $cmsPage->title : $heroTitle,
+            $cmsPage !== null ? $cmsPage->absolutePublicUrl() : $pageAbsoluteUrl
+        );
+    }
 @endphp
 <x-public-layout
     :title="$pageTitle"
@@ -41,6 +51,7 @@
     :ogDescription="$ogDescription"
     :ogImage="$ogImage"
     ogType="article"
+    :breadcrumbItems="$breadcrumbItems"
 >
     @if ($previewMode)
         <div class="border-b border-amber-200 bg-amber-50">
@@ -97,11 +108,11 @@
         <section class="mx-auto mt-14 max-w-3xl border-t border-slate-200 pt-12" aria-labelledby="youth-related-heading">
             <h2 id="youth-related-heading" class="font-display text-xl font-bold text-emerald-950 sm:text-2xl">{{ __('Youth councils related pages') }}</h2>
             <ul class="mt-6 grid gap-3 text-sm font-semibold text-emerald-900 sm:grid-cols-2">
-                <li><a href="{{ route('about') }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('About the Association') }}</a></li>
-                <li><a href="{{ route('programs.index') }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Programs & initiatives') }}</a></li>
-                <li><a href="{{ route('volunteer.index') }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Volunteer') }}</a></li>
-                <li><a href="{{ route('contact.show') }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Contact') }}</a></li>
-                <li><a href="{{ route('support.show') }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Help and support') }}</a></li>
+                <li><a href="{{ route('about', $localeQ) }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('About the Association') }}</a></li>
+                <li><a href="{{ route('programs.index', $localeQ) }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Programs & initiatives') }}</a></li>
+                <li><a href="{{ route('volunteer.index', $localeQ) }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Volunteer') }}</a></li>
+                <li><a href="{{ route('contact.show', $localeQ) }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Contact') }}</a></li>
+                <li><a href="{{ route('support.show', $localeQ) }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Help and support') }}</a></li>
             </ul>
         </section>
 

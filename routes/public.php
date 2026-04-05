@@ -6,6 +6,7 @@ use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\ExternalNewsPublicController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\InstitutionalPageController;
+use App\Http\Controllers\Public\MediaAtomFeedController;
 use App\Http\Controllers\Public\MediaHubController;
 use App\Http\Controllers\Public\OrganizationRegistrationController;
 use App\Http\Controllers\Public\ProgramsIndexController;
@@ -67,6 +68,7 @@ Route::get('/events', [PublicEventController::class, 'index'])->name('events.ind
 Route::get('/events/{event}', [PublicEventController::class, 'show'])->name('events.show');
 
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+Route::get('/feed.xml', MediaAtomFeedController::class)->name('feed');
 Route::get('/media', MediaHubController::class)->name('media.index');
 Route::get('/media/external/{external_news_item}', [ExternalNewsPublicController::class, 'show'])
     ->name('media.external.show');
