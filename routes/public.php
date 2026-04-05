@@ -61,6 +61,10 @@ Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/media', MediaHubController::class)->name('media.index');
 Route::get('/media/external/{external_news_item}', [ExternalNewsPublicController::class, 'show'])
     ->name('media.external.show');
+Route::get('/gallery', [InstitutionalPageController::class, 'show'])
+    ->defaults('cms_slug', 'gallery')
+    ->defaults('fallback_view', 'public.gallery')
+    ->name('gallery');
 Route::get('/partners', [InstitutionalPageController::class, 'show'])
     ->defaults('cms_slug', 'partners')
     ->defaults('fallback_view', 'public.partners')

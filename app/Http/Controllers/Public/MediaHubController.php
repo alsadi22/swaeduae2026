@@ -18,6 +18,12 @@ class MediaHubController extends Controller
             return view('public.cms-page', ['cmsPage' => $page]);
         }
 
+        $validated = $request->validate([
+            'q' => ['nullable', 'string', 'max:120'],
+        ]);
+        $searchInput = isset($validated['q']) ? trim((string) $validated['q']) : '';
+        $searchTerm = $searchInput === '' ? null : mb_substr($searchInput, 0, 120);
+
         $locale = app()->getLocale();
 
         $filter = $request->query('filter', 'all');
@@ -40,6 +46,22 @@ class MediaHubController extends Controller
             ->visibleInMediaCenter()
             ->orderByDesc('is_featured')
             ->orderByDesc('published_at');
+
+        if ($searchTerm !== null) {
+            $internalQuery->where(function ($q) use ($searchTerm): void {
+                $q->whereRaw('strpos(lower(title::text), lower(?::text)) > 0', [$searchTerm])
+                    ->orWhereRaw('strpos(lower(coalesce(excerpt::text, \'\')), lower(?::text)) > 0', [$searchTerm])
+                    ->orWhereRaw('strpos(lower(body::text), lower(?::text)) > 0', [$searchTerm]);
+            });
+            $externalQuery->where(function ($q) use ($searchTerm): void {
+                $q->whereRaw('strpos(lower(coalesce(normalized_title_en::text, \'\')), lower(?::text)) > 0', [$searchTerm])
+                    ->orWhereRaw('strpos(lower(coalesce(normalized_title_ar::text, \'\')), lower(?::text)) > 0', [$searchTerm])
+                    ->orWhereRaw('strpos(lower(coalesce(original_title::text, \'\')), lower(?::text)) > 0', [$searchTerm])
+                    ->orWhereRaw('strpos(lower(coalesce(normalized_summary_en::text, \'\')), lower(?::text)) > 0', [$searchTerm])
+                    ->orWhereRaw('strpos(lower(coalesce(normalized_summary_ar::text, \'\')), lower(?::text)) > 0', [$searchTerm])
+                    ->orWhereRaw('strpos(lower(coalesce(original_summary::text, \'\')), lower(?::text)) > 0', [$searchTerm]);
+            });
+        }
 
         if ($sourceId !== null) {
             $externalQuery->where('source_id', $sourceId);
@@ -65,6 +87,8 @@ class MediaHubController extends Controller
             'filter' => $filter,
             'sourceId' => $sourceId,
             'sources' => $sources,
+            'search' => $searchInput,
+            'searchActive' => $searchTerm !== null,
         ]);
     }
 }

@@ -196,6 +196,7 @@
                             <li><a href="{{ route('about') }}" class="footer-link">{{ __('About') }}</a></li>
                             <li><a href="{{ route('leadership') }}" class="footer-link">{{ __('Leadership') }}</a></li>
                             <li><a href="{{ route('partners') }}" class="footer-link">{{ __('Partners') }}</a></li>
+                            <li><a href="{{ route('gallery') }}" class="footer-link">{{ __('Gallery') }}</a></li>
                             <li><a href="{{ route('faq') }}" class="footer-link">{{ __('FAQ') }}</a></li>
                             <li><a href="{{ route('support.show') }}" class="footer-link">{{ __('Help and support') }}</a></li>
                             <li><a href="{{ route('contact.show') }}" class="footer-link">{{ __('Contact') }}</a></li>

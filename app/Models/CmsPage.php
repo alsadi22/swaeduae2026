@@ -33,6 +33,7 @@ class CmsPage extends Model
         'privacy',
         'cookies',
         'youth-councils',
+        'gallery',
     ];
 
     protected $fillable = [
@@ -107,6 +108,7 @@ class CmsPage extends Model
             'privacy' => 'legal.privacy',
             'cookies' => 'legal.cookies',
             'youth-councils' => 'youth-councils',
+            'gallery' => 'gallery',
         ];
 
         if (isset($routeBySlug[$this->slug])) {

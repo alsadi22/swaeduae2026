@@ -167,6 +167,7 @@ class PublicEventsAndSitemapTest extends TestCase
         $this->assertStringContainsString(route('home', [], true), $body);
         $this->assertStringContainsString(route('leadership', [], true), $body);
         $this->assertStringContainsString(route('events.index', [], true), $body);
+        $this->assertStringContainsString(route('gallery', [], true), $body);
         $this->assertStringContainsString(route('events.show', $event, true), $body);
         $this->assertStringContainsString(route('volunteer.opportunities.show', $event, true), $body);
 

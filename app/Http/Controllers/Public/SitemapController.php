@@ -29,6 +29,7 @@ class SitemapController extends Controller
             route('youth-councils', [], true),
             route('events.index', [], true),
             route('media.index', [], true),
+            route('gallery', [], true),
             route('partners', [], true),
             route('faq', [], true),
             route('volunteer.index', [], true),

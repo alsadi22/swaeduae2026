@@ -41,4 +41,16 @@ return [
         // ['label' => 'Example partner', 'label_ar' => 'شريك', 'url' => 'https://example.org', 'logo' => '/images/partners/example.svg'],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Gallery page — report / document links (Phase C4)
+    |--------------------------------------------------------------------------
+    |
+    | Shown on /gallery when non-empty. Each item: label, optional label_ar, url (https or path).
+    |
+    */
+    'document_downloads' => [
+        // ['label' => 'Annual report (PDF)', 'label_ar' => 'التقرير السنوي', 'url' => 'https://example.org/report.pdf'],
+    ],
+
 ];

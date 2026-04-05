@@ -56,6 +56,7 @@ class PublicSiteTest extends TestCase
             '/programs',
             '/events',
             '/media',
+            '/gallery',
             '/partners',
             '/faq',
             '/support',

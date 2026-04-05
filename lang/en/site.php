@@ -59,6 +59,14 @@ return [
 
     'gallery_placeholder' => 'Photo gallery preview — coming with the media module.',
 
+    'gallery_page_intro' => 'Event photos, cultural highlights, and community moments will be published here. Editors can override this page with a CMS slug “gallery” for a full narrative.',
+
+    'gallery_downloads_intro' => 'Official PDFs and publications linked from configuration until a dedicated media library ships.',
+
+    'media_hub_search_placeholder' => 'Search titles and summaries…',
+
+    'media_hub_search_empty' => 'No articles match your search. Try different words or clear the search.',
+
     'programs_intro' => 'Explore our published program pages below. Editors can add a full narrative for this route with the CMS slug “programs”, and surface individual initiatives with “Show on programs page” in admin.',
 
     'programs_grid_hint' => 'These cards are published CMS pages (not institutional routes). Toggle visibility in Admin → CMS pages.',

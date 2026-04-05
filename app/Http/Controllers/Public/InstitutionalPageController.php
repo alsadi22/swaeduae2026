@@ -21,6 +21,7 @@ class InstitutionalPageController extends Controller
         'public.legal.terms',
         'public.legal.privacy',
         'public.legal.cookies',
+        'public.gallery',
     ];
 
     public function show(Request $request): View

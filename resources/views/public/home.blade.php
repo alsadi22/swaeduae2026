@@ -312,7 +312,10 @@
 
         {{-- Gallery preview --}}
         <section>
-            <h2 class="public-section-title">{{ __('Gallery') }}</h2>
+            <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+                <h2 class="public-section-title">{{ __('Gallery') }}</h2>
+                <a href="{{ route('gallery') }}" class="shrink-0 text-sm font-bold text-emerald-800 hover:underline">{{ __('View gallery') }}</a>
+            </div>
             <p class="mt-8 text-slate-600">{{ __('site.gallery_placeholder') }}</p>
             <div class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 @foreach (range(1, 4) as $i)
