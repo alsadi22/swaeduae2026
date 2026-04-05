@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('CMS pages') }}
             </h2>
-            <a href="{{ route('admin.cms-pages.create') }}" class="inline-flex items-center rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold text-white hover:bg-gray-700">
+            <a href="{{ route('admin.cms-pages.create', $adminLocaleQ) }}" class="inline-flex items-center rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold text-white hover:bg-gray-700">
                 {{ __('New page') }}
             </a>
         </div>
@@ -18,7 +18,7 @@
                 </div>
             @endif
 
-            <form method="get" action="{{ route('admin.cms-pages.index') }}" class="mb-6 flex flex-wrap items-end gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+            <form method="get" action="{{ route('admin.cms-pages.index', $adminLocaleQ) }}" class="mb-6 flex flex-wrap items-end gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                 <div>
                     <x-input-label for="cms_pages_search" :value="__('Search CMS pages')" />
                     <x-text-input id="cms_pages_search" name="search" type="search" class="mt-1 block w-64 max-w-full" :value="$search" maxlength="100" autocomplete="off" placeholder="{{ __('Title or slug') }}" />
@@ -26,7 +26,7 @@
                 <div class="flex flex-wrap gap-2">
                     <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
                     @if (filled($search))
-                        <a href="{{ route('admin.cms-pages.index') }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
+                        <a href="{{ route('admin.cms-pages.index', $adminLocaleQ) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
                     @endif
                 </div>
             </form>
@@ -69,9 +69,9 @@
                                     </td>
                                     <td class="py-3 pe-4 text-gray-600">{{ $p->updated_at->diffForHumans() }}</td>
                                     <td class="py-3 text-end space-x-2">
-                                        <a href="{{ route('admin.cms-pages.preview', $p) }}?lang={{ $p->locale }}" target="_blank" rel="noopener" class="text-indigo-600 hover:text-indigo-900">{{ __('Preview') }}</a>
-                                        <a href="{{ route('admin.cms-pages.edit', $p) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
-                                        <form action="{{ route('admin.cms-pages.destroy', $p) }}" method="post" class="inline" onsubmit="return confirm(@json(__('Delete this page?')));">
+                                        <a href="{{ route('admin.cms-pages.preview', array_merge(['cms_page' => $p], $adminLocaleQ, ['lang' => $p->locale])) }}" target="_blank" rel="noopener" class="text-indigo-600 hover:text-indigo-900">{{ __('Preview') }}</a>
+                                        <a href="{{ route('admin.cms-pages.edit', array_merge(['cms_page' => $p], $adminLocaleQ)) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
+                                        <form action="{{ route('admin.cms-pages.destroy', array_merge(['cms_page' => $p], $adminLocaleQ)) }}" method="post" class="inline" onsubmit="return confirm(@json(__('Delete this page?')));">
                                             @csrf
                                             @method('delete')
                                             <button type="submit" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</button>

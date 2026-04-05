@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Fetch logs') }} — {{ $source->name }}</h2>
-            <a href="{{ route('admin.external-news-sources.index') }}" class="text-sm text-indigo-600 hover:text-indigo-900">{{ __('Back to sources') }}</a>
+            <a href="{{ route('admin.external-news-sources.index', $adminLocaleQ) }}" class="text-sm text-indigo-600 hover:text-indigo-900">{{ __('Back to sources') }}</a>
         </div>
     </x-slot>
 

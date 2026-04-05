@@ -14,7 +14,7 @@
                 <div class="border-b border-gray-100 px-6 py-4">
                     <h3 class="text-sm font-semibold text-gray-900">{{ __('Filter flagged attendance') }}</h3>
                 </div>
-                <form method="get" action="{{ route('admin.flagged-attendance.index') }}" class="flex flex-wrap items-end gap-4 p-6">
+                <form method="get" action="{{ route('admin.flagged-attendance.index', $adminLocaleQ) }}" class="flex flex-wrap items-end gap-4 p-6">
                     <div>
                         <x-input-label for="flagged_volunteer_search" :value="__('Search volunteer')" />
                         <x-text-input id="flagged_volunteer_search" name="search" type="search" class="mt-1 block w-56 max-w-full" :value="$search" maxlength="100" autocomplete="off" placeholder="{{ __('Volunteer name or email') }}" />
@@ -31,7 +31,7 @@
                     <div class="flex flex-wrap gap-2">
                         <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
                         @if (filled($search) || $eventId !== null)
-                            <a href="{{ route('admin.flagged-attendance.index') }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
+                            <a href="{{ route('admin.flagged-attendance.index', $adminLocaleQ) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
                         @endif
                     </div>
                 </form>
@@ -103,7 +103,7 @@
                                             </td>
                                             <td class="min-w-[12rem] px-2 py-2 align-top text-gray-700">
                                                 @can('adjustMinutes', $row)
-                                                    <form method="post" action="{{ route('admin.attendances.minutes-adjustment.update', $row) }}" class="space-y-1">
+                                                    <form method="post" action="{{ route('admin.attendances.minutes-adjustment.update', array_merge(['attendance' => $row], $adminLocaleQ)) }}" class="space-y-1">
                                                         @csrf
                                                         <label class="sr-only" for="adj_{{ $row->id }}">{{ __('Minutes adjustment') }}</label>
                                                         <input id="adj_{{ $row->id }}" type="number" name="minutes_adjustment" value="{{ old('minutes_adjustment', $row->minutes_adjustment) }}" min="-10080" max="10080" step="1" class="block w-full rounded border-gray-300 text-xs shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ __('Delta minutes') }}" />

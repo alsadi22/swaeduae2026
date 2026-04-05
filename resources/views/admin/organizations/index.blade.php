@@ -4,7 +4,7 @@
             <h2 class="text-xl font-semibold leading-tight text-gray-800">
                 {{ __('Organizations') }}
             </h2>
-            <a href="{{ route('admin.organizations.create') }}" class="inline-flex items-center rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold text-white hover:bg-gray-700">
+            <a href="{{ route('admin.organizations.create', $adminLocaleQ) }}" class="inline-flex items-center rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold text-white hover:bg-gray-700">
                 {{ __('New organization') }}
             </a>
         </div>
@@ -23,7 +23,7 @@
                 </div>
             @endif
 
-            <form method="get" action="{{ route('admin.organizations.index') }}" class="mb-6 flex flex-wrap items-end gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+            <form method="get" action="{{ route('admin.organizations.index', $adminLocaleQ) }}" class="mb-6 flex flex-wrap items-end gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                 @if ($filter !== 'all')
                     <input type="hidden" name="verification" value="{{ $filter }}">
                 @endif
@@ -34,22 +34,22 @@
                 <div class="flex flex-wrap gap-2">
                     <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
                     @if (filled($search))
-                        <a href="{{ route('admin.organizations.index', array_filter(['verification' => $filter !== 'all' ? $filter : null])) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
+                        <a href="{{ route('admin.organizations.index', array_merge($adminLocaleQ, array_filter(['verification' => $filter !== 'all' ? $filter : null]))) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
                     @endif
                 </div>
             </form>
 
             <div class="mb-4 flex flex-wrap items-center gap-3 text-sm">
                 <span class="font-medium text-gray-600">{{ __('Filter') }}:</span>
-                <a href="{{ route('admin.organizations.index', array_filter(['verification' => 'all', 'search' => $search ?: null])) }}" class="rounded-md px-2 py-1 hover:bg-gray-100 {{ $filter === 'all' ? 'bg-gray-200 font-semibold' : '' }}">{{ __('All') }}</a>
-                <a href="{{ route('admin.organizations.index', array_filter(['verification' => 'pending', 'search' => $search ?: null])) }}" class="inline-flex items-center gap-1.5 rounded-md px-2 py-1 hover:bg-gray-100 {{ $filter === 'pending' ? 'bg-amber-100 font-semibold text-amber-950' : '' }}">
+                <a href="{{ route('admin.organizations.index', array_merge($adminLocaleQ, array_filter(['verification' => 'all', 'search' => $search ?: null]))) }}" class="rounded-md px-2 py-1 hover:bg-gray-100 {{ $filter === 'all' ? 'bg-gray-200 font-semibold' : '' }}">{{ __('All') }}</a>
+                <a href="{{ route('admin.organizations.index', array_merge($adminLocaleQ, array_filter(['verification' => 'pending', 'search' => $search ?: null]))) }}" class="inline-flex items-center gap-1.5 rounded-md px-2 py-1 hover:bg-gray-100 {{ $filter === 'pending' ? 'bg-amber-100 font-semibold text-amber-950' : '' }}">
                     {{ __('Pending verification') }}
                     @if ($pendingCount > 0)
                         <span data-testid="pending-organizations-badge" class="rounded-full bg-amber-200 px-1.5 py-0.5 text-[10px] font-bold leading-none text-amber-950">{{ $pendingCount > 99 ? '99+' : $pendingCount }}</span>
                     @endif
                 </a>
-                <a href="{{ route('admin.organizations.index', array_filter(['verification' => 'approved', 'search' => $search ?: null])) }}" class="rounded-md px-2 py-1 hover:bg-gray-100 {{ $filter === 'approved' ? 'bg-gray-200 font-semibold' : '' }}">{{ __('Approved') }}</a>
-                <a href="{{ route('admin.organizations.index', array_filter(['verification' => 'rejected', 'search' => $search ?: null])) }}" class="rounded-md px-2 py-1 hover:bg-gray-100 {{ $filter === 'rejected' ? 'bg-gray-200 font-semibold' : '' }}">{{ __('Rejected') }}</a>
+                <a href="{{ route('admin.organizations.index', array_merge($adminLocaleQ, array_filter(['verification' => 'approved', 'search' => $search ?: null]))) }}" class="rounded-md px-2 py-1 hover:bg-gray-100 {{ $filter === 'approved' ? 'bg-gray-200 font-semibold' : '' }}">{{ __('Approved') }}</a>
+                <a href="{{ route('admin.organizations.index', array_merge($adminLocaleQ, array_filter(['verification' => 'rejected', 'search' => $search ?: null]))) }}" class="rounded-md px-2 py-1 hover:bg-gray-100 {{ $filter === 'rejected' ? 'bg-gray-200 font-semibold' : '' }}">{{ __('Rejected') }}</a>
             </div>
 
             <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
@@ -82,20 +82,20 @@
                                     <td class="py-3 text-end">
                                         <div class="flex flex-wrap items-center justify-end gap-2">
                                             @can('approve', $org)
-                                                <form action="{{ route('admin.organizations.approve', $org) }}" method="post" class="inline">
+                                                <form action="{{ route('admin.organizations.approve', array_merge(['organization' => $org], $adminLocaleQ)) }}" method="post" class="inline">
                                                     @csrf
                                                     <button type="submit" class="text-sm font-semibold text-emerald-700 hover:text-emerald-900">{{ __('Approve') }}</button>
                                                 </form>
                                             @endcan
                                             @can('reject', $org)
-                                                <form action="{{ route('admin.organizations.reject', $org) }}" method="post" class="inline-flex max-w-xs flex-wrap items-center gap-2">
+                                                <form action="{{ route('admin.organizations.reject', array_merge(['organization' => $org], $adminLocaleQ)) }}" method="post" class="inline-flex max-w-xs flex-wrap items-center gap-2">
                                                     @csrf
                                                     <input type="text" name="review_note" placeholder="{{ __('Rejection note (optional)') }}" class="min-w-[8rem] rounded border-gray-300 text-xs shadow-sm" />
                                                     <button type="submit" class="text-sm font-semibold text-red-600 hover:text-red-900" onclick="return confirm(@json(__('Reject this organization registration?')));">{{ __('Reject') }}</button>
                                                 </form>
                                             @endcan
-                                            <a href="{{ route('admin.organizations.edit', $org) }}" class="text-sm text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
-                                            <form action="{{ route('admin.organizations.destroy', $org) }}" method="post" class="inline" onsubmit="return confirm(@json(__('Delete this organization?')));">
+                                            <a href="{{ route('admin.organizations.edit', array_merge(['organization' => $org], $adminLocaleQ)) }}" class="text-sm text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
+                                            <form action="{{ route('admin.organizations.destroy', array_merge(['organization' => $org], $adminLocaleQ)) }}" method="post" class="inline" onsubmit="return confirm(@json(__('Delete this organization?')));">
                                                 @csrf
                                                 @method('delete')
                                                 <button type="submit" class="text-sm text-red-600 hover:text-red-800">{{ __('Delete') }}</button>

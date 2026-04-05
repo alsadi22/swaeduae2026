@@ -87,7 +87,7 @@
                     <div class="border-b border-gray-100 px-6 py-4">
                         <h3 class="text-sm font-semibold text-gray-900">{{ __('Resolution') }}</h3>
                     </div>
-                    <form method="post" action="{{ route('admin.disputes.resolve', $dispute) }}" class="space-y-4 p-6">
+                    <form method="post" action="{{ route('admin.disputes.resolve', array_merge(['dispute' => $dispute], $adminLocaleQ)) }}" class="space-y-4 p-6">
                         @csrf
                         <div>
                             <x-input-label for="resolution" :value="__('Resolution')" />
@@ -106,7 +106,7 @@
             @endcan
 
             <div class="mt-6">
-                <a href="{{ route('admin.disputes.index') }}" class="text-sm font-semibold text-indigo-700 hover:text-indigo-900">{{ __('Back') }}</a>
+                <a href="{{ route('admin.disputes.index', $adminLocaleQ) }}" class="text-sm font-semibold text-indigo-700 hover:text-indigo-900">{{ __('Back') }}</a>
             </div>
         </div>
     </div>

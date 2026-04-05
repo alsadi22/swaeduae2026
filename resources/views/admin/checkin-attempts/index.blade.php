@@ -11,7 +11,7 @@
                 <div class="border-b border-gray-100 px-6 py-4">
                     <h3 class="text-sm font-semibold text-gray-900">{{ __('Filter check-in attempts') }}</h3>
                 </div>
-                <form method="get" action="{{ route('admin.checkin-attempts.index') }}" class="flex flex-wrap items-end gap-4 p-6">
+                <form method="get" action="{{ route('admin.checkin-attempts.index', $adminLocaleQ) }}" class="flex flex-wrap items-end gap-4 p-6">
                     <div>
                         <x-input-label for="filter_outcome" :value="__('Outcome')" />
                         <select id="filter_outcome" name="outcome" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:w-48">
@@ -36,7 +36,7 @@
                     </div>
                     <div class="flex flex-wrap gap-2">
                         <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
-                        <a href="{{ route('admin.checkin-attempts.index') }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
+                        <a href="{{ route('admin.checkin-attempts.index', $adminLocaleQ) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
                     </div>
                 </form>
             </div>

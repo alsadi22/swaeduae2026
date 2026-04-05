@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('External news') }}</h2>
-            <a href="{{ route('admin.external-news-sources.index') }}" class="text-sm text-indigo-600 hover:text-indigo-900">{{ __('Manage sources') }}</a>
+            <a href="{{ route('admin.external-news-sources.index', $adminLocaleQ) }}" class="text-sm text-indigo-600 hover:text-indigo-900">{{ __('Manage sources') }}</a>
         </div>
     </x-slot>
 
@@ -12,7 +12,7 @@
                 <div class="rounded-md bg-green-50 p-4 text-sm text-green-800" role="status">{{ session('status') }}</div>
             @endif
 
-            <form method="get" action="{{ route('admin.external-news-items.index') }}" class="flex flex-wrap items-end gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+            <form method="get" action="{{ route('admin.external-news-items.index', $adminLocaleQ) }}" class="flex flex-wrap items-end gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                 <div>
                     <x-input-label for="en_filter_status" :value="__('Status')" />
                     <select id="en_filter_status" name="status" class="mt-1 block w-48 rounded-md border-gray-300 shadow-sm">
@@ -35,7 +35,7 @@
                 <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
             </form>
 
-            <form method="post" action="{{ route('admin.external-news-items.bulk') }}" class="bg-white p-4 shadow-sm sm:rounded-lg border border-gray-100">
+            <form method="post" action="{{ route('admin.external-news-items.bulk', $adminLocaleQ) }}" class="bg-white p-4 shadow-sm sm:rounded-lg border border-gray-100">
                 @csrf
                 <div class="flex flex-wrap items-center gap-3">
                     <span class="text-sm font-medium text-gray-700">{{ __('Bulk action') }}</span>
@@ -70,7 +70,7 @@
                                     <td class="py-3 pe-4"><span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs">{{ $item->status }}</span></td>
                                     <td class="py-3 pe-4 text-gray-600">{{ $item->fetched_at?->diffForHumans() }}</td>
                                     <td class="py-3 text-end space-x-2">
-                                        <a href="{{ route('admin.external-news-items.edit', $item) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
+                                        <a href="{{ route('admin.external-news-items.edit', array_merge(['external_news_item' => $item], $adminLocaleQ)) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
                                         @if ($item->external_url)
                                             <a href="{{ $item->external_url }}" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900">{{ __('Original') }}</a>
                                         @endif

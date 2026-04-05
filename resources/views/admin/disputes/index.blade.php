@@ -17,7 +17,7 @@
                 <div class="border-b border-gray-100 px-6 py-4">
                     <h3 class="text-sm font-semibold text-gray-900">{{ __('Filter disputes') }}</h3>
                 </div>
-                <form method="get" action="{{ route('admin.disputes.index') }}" class="flex flex-wrap items-end gap-4 p-6">
+                <form method="get" action="{{ route('admin.disputes.index', $adminLocaleQ) }}" class="flex flex-wrap items-end gap-4 p-6">
                     <div>
                         <x-input-label for="filter_status" :value="__('Status')" />
                         <select id="filter_status" name="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:w-48">
@@ -42,7 +42,7 @@
                     </div>
                     <div class="flex flex-wrap gap-2">
                         <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
-                        <a href="{{ route('admin.disputes.index') }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
+                        <a href="{{ route('admin.disputes.index', $adminLocaleQ) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
                     </div>
                 </form>
             </div>
@@ -91,7 +91,7 @@
                                             </td>
                                             <td class="px-3 py-2 text-gray-600">{{ $d->updated_at->diffForHumans() }}</td>
                                             <td class="px-3 py-2 text-end">
-                                                <a href="{{ route('admin.disputes.show', $d) }}" class="font-semibold text-indigo-700 hover:text-indigo-900">{{ __('Details') }}</a>
+                                                <a href="{{ route('admin.disputes.show', array_merge(['dispute' => $d], $adminLocaleQ)) }}" class="font-semibold text-indigo-700 hover:text-indigo-900">{{ __('Details') }}</a>
                                             </td>
                                         </tr>
                                     @endforeach

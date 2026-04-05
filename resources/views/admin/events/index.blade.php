@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Admin events') }}
             </h2>
-            <a href="{{ route('admin.events.create') }}" class="inline-flex items-center rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold text-white hover:bg-gray-700">
+            <a href="{{ route('admin.events.create', $adminLocaleQ) }}" class="inline-flex items-center rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold text-white hover:bg-gray-700">
                 {{ __('New event') }}
             </a>
         </div>
@@ -18,7 +18,7 @@
                 </div>
             @endif
 
-            <form method="get" action="{{ route('admin.events.index') }}" class="mb-6 flex flex-wrap items-end gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+            <form method="get" action="{{ route('admin.events.index', $adminLocaleQ) }}" class="mb-6 flex flex-wrap items-end gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                 <div>
                     <x-input-label for="admin_events_search" :value="__('Search events')" />
                     <x-text-input id="admin_events_search" name="search" type="search" class="mt-1 block w-64 max-w-full" :value="$search" maxlength="100" autocomplete="off" placeholder="{{ __('Title or organization name') }}" />
@@ -26,7 +26,7 @@
                 <div class="flex flex-wrap gap-2">
                     <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
                     @if (filled($search))
-                        <a href="{{ route('admin.events.index') }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
+                        <a href="{{ route('admin.events.index', $adminLocaleQ) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
                     @endif
                 </div>
             </form>
@@ -53,8 +53,8 @@
                                     <td class="py-3 pe-4 text-gray-600">{{ $e->capacity ?? '—' }}</td>
                                     <td class="py-3 pe-4 text-gray-600">{{ $e->volunteers_count }}</td>
                                     <td class="py-3 text-end space-x-2">
-                                        <a href="{{ route('admin.events.edit', $e) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
-                                        <form action="{{ route('admin.events.destroy', $e) }}" method="post" class="inline" onsubmit="return confirm(@json(__('Delete this event?')));">
+                                        <a href="{{ route('admin.events.edit', array_merge(['event' => $e], $adminLocaleQ)) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
+                                        <form action="{{ route('admin.events.destroy', array_merge(['event' => $e], $adminLocaleQ)) }}" method="post" class="inline" onsubmit="return confirm(@json(__('Delete this event?')));">
                                             @csrf
                                             @method('delete')
                                             <button type="submit" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</button>

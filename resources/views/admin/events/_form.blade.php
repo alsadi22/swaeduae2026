@@ -41,7 +41,7 @@
                     <x-input-error :messages="$errors->get('organization_id')" class="mt-2" />
                     @if ($organizations->isEmpty())
                         <p class="mt-2 text-sm text-amber-800">
-                            <a href="{{ route('admin.organizations.create') }}" class="underline font-medium">{{ __('Create an organization first') }}</a>
+                            <a href="{{ route('admin.organizations.create', $adminLocaleQ) }}" class="underline font-medium">{{ __('Create an organization first') }}</a>
                         </p>
                     @endif
                 </div>

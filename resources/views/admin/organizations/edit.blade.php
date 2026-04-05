@@ -8,14 +8,14 @@
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <form method="post" action="{{ route('admin.organizations.update', $organization) }}" class="p-6 space-y-6">
+                <form method="post" action="{{ route('admin.organizations.update', array_merge(['organization' => $organization], $adminLocaleQ)) }}" class="p-6 space-y-6">
                     @csrf
                     @method('put')
                     @include('admin.organizations._form', ['organization' => $organization])
 
                     <div class="flex flex-wrap items-center gap-4">
                         <x-primary-button>{{ __('Save') }}</x-primary-button>
-                        <a href="{{ route('admin.organizations.index') }}" class="text-sm text-gray-600 hover:text-gray-900">{{ __('Cancel') }}</a>
+                        <a href="{{ route('admin.organizations.index', $adminLocaleQ) }}" class="text-sm text-gray-600 hover:text-gray-900">{{ __('Cancel') }}</a>
                     </div>
                 </form>
             </div>

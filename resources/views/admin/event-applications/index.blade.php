@@ -32,7 +32,7 @@
                 <div class="border-b border-gray-100 px-6 py-4">
                     <h3 class="text-sm font-semibold text-gray-900">{{ __('Filter applications') }}</h3>
                 </div>
-                <form method="get" action="{{ route('admin.event-applications.index') }}" class="flex flex-wrap items-end gap-4 p-6">
+                <form method="get" action="{{ route('admin.event-applications.index', $adminLocaleQ) }}" class="flex flex-wrap items-end gap-4 p-6">
                     <div>
                         <x-input-label for="admin_app_search" :value="__('Search applications')" />
                         <x-text-input id="admin_app_search" name="search" type="search" class="mt-1 block w-64 max-w-full" :value="$search" maxlength="100" autocomplete="off" placeholder="{{ __('Volunteer name or email') }}" />
@@ -67,7 +67,7 @@
                     <div class="flex flex-wrap gap-2">
                         <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
                         @if (filled($search) || $statusFilter !== 'all' || $eventId !== null || $sort !== 'default')
-                            <a href="{{ route('admin.event-applications.index') }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
+                            <a href="{{ route('admin.event-applications.index', $adminLocaleQ) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
                         @endif
                     </div>
                 </form>
@@ -92,9 +92,9 @@
                                 <tr>
                                     <td class="py-3 pe-4 font-medium text-gray-900">
                                         @if ($app->event)
-                                            <a href="{{ route('admin.events.edit', $app->event) }}" class="text-indigo-600 hover:text-indigo-900">{{ $app->event->title_en }}</a>
+                                            <a href="{{ route('admin.events.edit', array_merge(['event' => $app->event], $adminLocaleQ)) }}" class="text-indigo-600 hover:text-indigo-900">{{ $app->event->title_en }}</a>
                                             <div class="mt-1">
-                                                <a href="{{ route('volunteer.opportunities.show', $app->event) }}" target="_blank" rel="noopener" class="text-xs font-medium text-gray-500 hover:text-gray-800">{{ __('Public view') }} ↗</a>
+                                                <a href="{{ route('volunteer.opportunities.show', array_merge(['event' => $app->event], $adminLocaleQ)) }}" target="_blank" rel="noopener" class="text-xs font-medium text-gray-500 hover:text-gray-800">{{ __('Public view') }} ↗</a>
                                             </div>
                                         @else
                                             —
@@ -130,11 +130,11 @@
                                     <td class="py-3 text-end align-top">
                                         @if ($app->isPending())
                                             <div class="flex flex-col items-end gap-2">
-                                                <form action="{{ route('admin.event-applications.approve', $app) }}" method="post">
+                                                <form action="{{ route('admin.event-applications.approve', array_merge(['event_application' => $app], $adminLocaleQ)) }}" method="post">
                                                     @csrf
                                                     <button type="submit" class="text-emerald-700 hover:text-emerald-900">{{ __('Approve') }}</button>
                                                 </form>
-                                                <form action="{{ route('admin.event-applications.reject', $app) }}" method="post" class="w-full max-w-xs space-y-1" onsubmit="return confirm(@json(__('Reject this application?')));">
+                                                <form action="{{ route('admin.event-applications.reject', array_merge(['event_application' => $app], $adminLocaleQ)) }}" method="post" class="w-full max-w-xs space-y-1" onsubmit="return confirm(@json(__('Reject this application?')));">
                                                     @csrf
                                                     <label for="reject_note_{{ $app->id }}" class="sr-only">{{ __('Note to volunteer (optional)') }}</label>
                                                     <textarea id="reject_note_{{ $app->id }}" name="review_note" rows="2" maxlength="1000" class="block w-full rounded-md border-gray-300 text-xs shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="{{ __('Note to volunteer (optional)') }}"></textarea>

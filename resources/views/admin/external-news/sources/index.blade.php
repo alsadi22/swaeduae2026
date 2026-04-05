@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('News sources') }}</h2>
-            <a href="{{ route('admin.external-news-sources.create') }}" class="inline-flex items-center rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold text-white hover:bg-gray-700">
+            <a href="{{ route('admin.external-news-sources.create', $adminLocaleQ) }}" class="inline-flex items-center rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold text-white hover:bg-gray-700">
                 {{ __('Add source') }}
             </a>
         </div>
@@ -41,9 +41,9 @@
                                         @endif
                                     </td>
                                     <td class="py-3 text-end space-x-2">
-                                        <a href="{{ route('admin.external-news-sources.logs', $s) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('Logs') }}</a>
-                                        <a href="{{ route('admin.external-news-sources.edit', $s) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
-                                        <form action="{{ route('admin.external-news-sources.fetch', $s) }}" method="post" class="inline">
+                                        <a href="{{ route('admin.external-news-sources.logs', array_merge(['external_news_source' => $s], $adminLocaleQ)) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('Logs') }}</a>
+                                        <a href="{{ route('admin.external-news-sources.edit', array_merge(['external_news_source' => $s], $adminLocaleQ)) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
+                                        <form action="{{ route('admin.external-news-sources.fetch', array_merge(['external_news_source' => $s], $adminLocaleQ)) }}" method="post" class="inline">
                                             @csrf
                                             <button type="submit" class="text-indigo-600 hover:text-indigo-900">{{ __('Fetch now') }}</button>
                                         </form>
