@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Models\Dispute;
 use App\Models\Event;
 use App\Models\User;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -122,9 +123,9 @@ class AdminDisputeIndexTest extends TestCase
         $admin = $this->adminUser();
 
         $this->actingAs($admin)
-            ->from(route('admin.disputes.index'))
-            ->get(route('admin.disputes.index', ['event_id' => 999999]))
-            ->assertRedirect(route('admin.disputes.index'))
+            ->from(route('admin.disputes.index', PublicLocale::query()))
+            ->get(route('admin.disputes.index', PublicLocale::mergeQuery(['event_id' => 999999])))
+            ->assertRedirect(route('admin.disputes.index', PublicLocale::query()))
             ->assertSessionHasErrors('event_id');
     }
 

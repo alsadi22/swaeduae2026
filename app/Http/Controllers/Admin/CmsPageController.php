@@ -55,7 +55,7 @@ class CmsPageController extends Controller
         CmsPage::query()->create($data);
 
         return redirect()
-            ->route('admin.cms-pages.index')
+            ->route('admin.cms-pages.index', PublicLocale::query())
             ->with('status', __('CMS page created.'));
     }
 
@@ -93,7 +93,7 @@ class CmsPageController extends Controller
         $cms_page->update($request->validated());
 
         return redirect()
-            ->route('admin.cms-pages.index')
+            ->route('admin.cms-pages.index', PublicLocale::query())
             ->with('status', __('CMS page updated.'));
     }
 
@@ -104,7 +104,7 @@ class CmsPageController extends Controller
         $cms_page->delete();
 
         return redirect()
-            ->route('admin.cms-pages.index')
+            ->route('admin.cms-pages.index', PublicLocale::query())
             ->with('status', __('CMS page deleted.'));
     }
 }

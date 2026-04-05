@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Models\CmsPage;
 use App\Models\User;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -159,7 +160,7 @@ class CmsPageAdminTest extends TestCase
             'show_on_home' => '0',
         ]);
 
-        $response->assertRedirect(route('admin.cms-pages.index'));
+        $response->assertRedirect(route('admin.cms-pages.index', PublicLocale::query()));
         $this->assertDatabaseHas('cms_pages', [
             'slug' => 'admin-test-page',
             'author_id' => $user->id,
@@ -212,7 +213,7 @@ class CmsPageAdminTest extends TestCase
             'show_on_home' => '0',
         ]);
 
-        $response->assertRedirect(route('admin.cms-pages.index'));
+        $response->assertRedirect(route('admin.cms-pages.index', PublicLocale::query()));
         $this->assertDatabaseHas('cms_pages', [
             'id' => $page->id,
             'title' => 'After',
@@ -233,7 +234,7 @@ class CmsPageAdminTest extends TestCase
 
         $response = $this->actingAs($user)->delete("/admin/cms-pages/{$page->id}");
 
-        $response->assertRedirect(route('admin.cms-pages.index'));
+        $response->assertRedirect(route('admin.cms-pages.index', PublicLocale::query()));
         $this->assertDatabaseMissing('cms_pages', ['id' => $page->id]);
     }
 
@@ -333,7 +334,7 @@ class CmsPageAdminTest extends TestCase
             'show_on_home' => '0',
         ]);
 
-        $response->assertRedirect(route('admin.cms-pages.index'));
+        $response->assertRedirect(route('admin.cms-pages.index', PublicLocale::query()));
         $this->assertDatabaseHas('cms_pages', [
             'slug' => 'pair-ok',
             'locale' => 'en',
@@ -358,7 +359,7 @@ class CmsPageAdminTest extends TestCase
             'allow_partial_locale_publish' => '1',
         ]);
 
-        $response->assertRedirect(route('admin.cms-pages.index'));
+        $response->assertRedirect(route('admin.cms-pages.index', PublicLocale::query()));
         $this->assertDatabaseHas('cms_pages', [
             'slug' => 'en-only-exception',
             'locale' => 'en',

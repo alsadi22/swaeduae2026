@@ -76,7 +76,7 @@ class OrganizationController extends Controller
         Organization::query()->create($request->validated());
 
         return redirect()
-            ->route('admin.organizations.index')
+            ->route('admin.organizations.index', PublicLocale::query())
             ->with('status', __('Organization created.'));
     }
 
@@ -92,7 +92,7 @@ class OrganizationController extends Controller
         $organization->update($request->validated());
 
         return redirect()
-            ->route('admin.organizations.index')
+            ->route('admin.organizations.index', PublicLocale::query())
             ->with('status', __('Organization updated.'));
     }
 
@@ -102,14 +102,14 @@ class OrganizationController extends Controller
 
         if ($organization->events()->exists()) {
             return redirect()
-                ->route('admin.organizations.index')
+                ->route('admin.organizations.index', PublicLocale::query())
                 ->with('error', __('Cannot delete an organization that still has events.'));
         }
 
         $organization->delete();
 
         return redirect()
-            ->route('admin.organizations.index')
+            ->route('admin.organizations.index', PublicLocale::query())
             ->with('status', __('Organization deleted.'));
     }
 
@@ -126,7 +126,7 @@ class OrganizationController extends Controller
         $this->queueVerificationMailToRegistrant($organization->fresh(), approved: true);
 
         return redirect()
-            ->route('admin.organizations.index', ['verification' => 'pending'])
+            ->route('admin.organizations.index', PublicLocale::mergeQuery(['verification' => 'pending']))
             ->with('status', __('Organization approved.'));
     }
 
@@ -143,7 +143,7 @@ class OrganizationController extends Controller
         $this->queueVerificationMailToRegistrant($organization->fresh(), approved: false);
 
         return redirect()
-            ->route('admin.organizations.index', ['verification' => 'pending'])
+            ->route('admin.organizations.index', PublicLocale::mergeQuery(['verification' => 'pending']))
             ->with('status', __('Organization registration rejected.'));
     }
 

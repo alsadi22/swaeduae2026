@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Volunteer;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Volunteer\VolunteerProfileUpdateRequest;
 use App\Models\VolunteerProfile;
+use App\Support\PublicLocale;
 use App\Support\VolunteerProfileCompletion;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -41,7 +42,7 @@ class VolunteerProfileController extends Controller
         );
 
         return redirect()
-            ->route('volunteer.profile.edit')
+            ->route('volunteer.profile.edit', PublicLocale::queryForUser($user))
             ->with('status', __('Volunteer profile updated.'));
     }
 }

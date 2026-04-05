@@ -82,7 +82,7 @@ class ExternalNewsItemController extends Controller
         $external_news_item->update($data);
 
         return redirect()
-            ->route('admin.external-news-items.edit', $external_news_item)
+            ->route('admin.external-news-items.edit', array_merge(['external_news_item' => $external_news_item], PublicLocale::query()))
             ->with('status', __('External news item saved.'));
     }
 

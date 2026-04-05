@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\Organization;
 use App\Models\User;
 use App\Support\AttendanceCheckpointUrl;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
@@ -83,7 +84,7 @@ class EventAdminTest extends TestCase
 
         $response = $this->actingAs($user)->post('/admin/events', $payload);
 
-        $response->assertRedirect(route('admin.events.index'));
+        $response->assertRedirect(route('admin.events.index', PublicLocale::query()));
         $this->assertDatabaseHas('events', [
             'organization_id' => $org->id,
             'title_en' => 'Admin-managed event',
@@ -101,7 +102,7 @@ class EventAdminTest extends TestCase
         $response = $this->actingAs($user)
             ->put('/admin/events/'.$event->uuid, $payload);
 
-        $response->assertRedirect(route('admin.events.index'));
+        $response->assertRedirect(route('admin.events.index', PublicLocale::query()));
         $this->assertDatabaseHas('events', [
             'id' => $event->id,
             'title_en' => 'Updated title',
@@ -116,7 +117,7 @@ class EventAdminTest extends TestCase
         $response = $this->actingAs($user)
             ->delete('/admin/events/'.$event->uuid);
 
-        $response->assertRedirect(route('admin.events.index'));
+        $response->assertRedirect(route('admin.events.index', PublicLocale::query()));
         $this->assertDatabaseMissing('events', ['id' => $event->id]);
     }
 
@@ -154,7 +155,7 @@ class EventAdminTest extends TestCase
             route('admin.events.checkpoint-signed-url', $event),
             ['days' => 14]
         )
-            ->assertRedirect(route('admin.events.edit', $event))
+            ->assertRedirect(route('admin.events.edit', array_merge(['event' => $event], PublicLocale::query())))
             ->assertSessionHas('checkpoint_signed_url');
 
         $url = session('checkpoint_signed_url');

@@ -123,7 +123,7 @@ class DisputeController extends Controller
         }
 
         return redirect()
-            ->route('admin.disputes.show', $dispute)
+            ->route('admin.disputes.show', array_merge(['dispute' => $dispute], PublicLocale::query()))
             ->with('status', __('Dispute updated.'));
     }
 }

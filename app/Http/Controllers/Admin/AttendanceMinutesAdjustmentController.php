@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Services\Attendance\AttendanceJournal;
+use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -44,7 +45,7 @@ class AttendanceMinutesAdjustmentController extends Controller
         ]);
 
         return redirect()
-            ->route('admin.flagged-attendance.index')
+            ->route('admin.flagged-attendance.index', PublicLocale::query())
             ->with('status', __('Attendance minutes adjustment saved.'));
     }
 }

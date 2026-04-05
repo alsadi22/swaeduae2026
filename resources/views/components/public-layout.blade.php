@@ -275,7 +275,7 @@
                             <li><a href="{{ route('legal.privacy', $footerLocaleQ) }}" class="footer-link">{{ __('Privacy') }}</a></li>
                             <li><a href="{{ route('legal.cookies', $footerLocaleQ) }}" class="footer-link">{{ __('Cookies') }}</a></li>
                             <li><a href="{{ route('feed', $footerLocaleQ) }}" class="footer-link">{{ __('News feed') }}</a></li>
-                            <li><a href="{{ route('sitemap') }}" class="footer-link">{{ __('Sitemap') }}</a></li>
+                            <li><a href="{{ route('sitemap', $footerLocaleQ) }}" class="footer-link">{{ __('Sitemap') }}</a></li>
                         </ul>
                     </div>
                 </div>

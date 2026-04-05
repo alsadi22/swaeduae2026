@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Models\AttendanceLog;
 use App\Models\Event;
 use App\Models\User;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -47,7 +48,7 @@ class AttendanceMinutesAdjustmentTest extends TestCase
                 'minutes_adjustment' => 30,
                 'minutes_adjustment_note' => 'Coordinator confirmed late stay.',
             ]
-        )->assertRedirect(route('admin.flagged-attendance.index', [], false));
+        )->assertRedirect(route('admin.flagged-attendance.index', PublicLocale::query(), false));
 
         $attendance->refresh();
         $this->assertSame(30, $attendance->minutes_adjustment);

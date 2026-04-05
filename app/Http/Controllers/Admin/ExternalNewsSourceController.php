@@ -48,7 +48,7 @@ class ExternalNewsSourceController extends Controller
         ExternalNewsSource::query()->create($data);
 
         return redirect()
-            ->route('admin.external-news-sources.index')
+            ->route('admin.external-news-sources.index', PublicLocale::query())
             ->with('status', __('News source created.'));
     }
 
@@ -71,7 +71,7 @@ class ExternalNewsSourceController extends Controller
         $external_news_source->update($data);
 
         return redirect()
-            ->route('admin.external-news-sources.index')
+            ->route('admin.external-news-sources.index', PublicLocale::query())
             ->with('status', __('News source updated.'));
     }
 
@@ -82,7 +82,7 @@ class ExternalNewsSourceController extends Controller
         $external_news_source->delete();
 
         return redirect()
-            ->route('admin.external-news-sources.index')
+            ->route('admin.external-news-sources.index', PublicLocale::query())
             ->with('status', __('News source removed.'));
     }
 

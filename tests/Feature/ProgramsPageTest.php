@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\CmsPage;
 use App\Models\User;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -192,7 +193,7 @@ class ProgramsPageTest extends TestCase
                 'show_on_programs' => '1',
                 'allow_partial_locale_publish' => '1',
             ])
-            ->assertRedirect(route('admin.cms-pages.index'));
+            ->assertRedirect(route('admin.cms-pages.index', PublicLocale::query()));
 
         $row = CmsPage::query()->where('slug', 'pilot-initiative')->where('locale', 'en')->first();
         $this->assertNotNull($row);

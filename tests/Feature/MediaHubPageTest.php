@@ -6,6 +6,7 @@ use App\Models\CmsPage;
 use App\Models\ExternalNewsItem;
 use App\Models\ExternalNewsSource;
 use App\Models\User;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -131,7 +132,7 @@ class MediaHubPageTest extends TestCase
                 'show_on_media' => '0',
                 'allow_partial_locale_publish' => '1',
             ])
-            ->assertRedirect(route('admin.cms-pages.index'));
+            ->assertRedirect(route('admin.cms-pages.index', PublicLocale::query()));
 
         $row = CmsPage::query()->where('slug', 'media-off-demo')->where('locale', 'en')->first();
         $this->assertNotNull($row);

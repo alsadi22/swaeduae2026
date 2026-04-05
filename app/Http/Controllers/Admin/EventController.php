@@ -65,7 +65,7 @@ class EventController extends Controller
         Event::query()->create($request->validated());
 
         return redirect()
-            ->route('admin.events.index')
+            ->route('admin.events.index', PublicLocale::query())
             ->with('status', __('Event created.'));
     }
 
@@ -83,7 +83,7 @@ class EventController extends Controller
         $event->update($request->validated());
 
         return redirect()
-            ->route('admin.events.index')
+            ->route('admin.events.index', PublicLocale::query())
             ->with('status', __('Event updated.'));
     }
 
@@ -94,7 +94,7 @@ class EventController extends Controller
         $event->delete();
 
         return redirect()
-            ->route('admin.events.index')
+            ->route('admin.events.index', PublicLocale::query())
             ->with('status', __('Event deleted.'));
     }
 
@@ -109,7 +109,7 @@ class EventController extends Controller
         $days = (int) ($validated['days'] ?? 7);
 
         return redirect()
-            ->route('admin.events.edit', $event)
+            ->route('admin.events.edit', array_merge(['event' => $event], PublicLocale::query()))
             ->with('checkpoint_signed_url', AttendanceCheckpointUrl::temporarySignedShowUrl($event, $days));
     }
 }

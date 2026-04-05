@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin;
 use App\Mail\OrganizationVerificationMail;
 use App\Models\Organization;
 use App\Models\User;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
@@ -30,7 +31,7 @@ class OrganizationVerificationAdminTest extends TestCase
 
         $this->actingAs($admin)
             ->post(route('admin.organizations.approve', $org))
-            ->assertRedirect(route('admin.organizations.index', ['verification' => 'pending'], false));
+            ->assertRedirect(route('admin.organizations.index', PublicLocale::mergeQuery(['verification' => 'pending']), false));
 
         $this->assertTrue($org->fresh()->isApproved());
         $this->assertNotNull($org->fresh()->verification_reviewed_at);
@@ -43,7 +44,7 @@ class OrganizationVerificationAdminTest extends TestCase
 
         $this->actingAs($admin)
             ->post(route('admin.organizations.reject', $org), ['review_note' => 'Incomplete details.'])
-            ->assertRedirect(route('admin.organizations.index', ['verification' => 'pending'], false));
+            ->assertRedirect(route('admin.organizations.index', PublicLocale::mergeQuery(['verification' => 'pending']), false));
 
         $org->refresh();
         $this->assertTrue($org->isRejected());
@@ -97,7 +98,7 @@ class OrganizationVerificationAdminTest extends TestCase
 
         $this->actingAs($admin)
             ->post(route('admin.organizations.approve', $org))
-            ->assertRedirect(route('admin.organizations.index', ['verification' => 'pending'], false));
+            ->assertRedirect(route('admin.organizations.index', PublicLocale::mergeQuery(['verification' => 'pending']), false));
 
         Mail::assertQueued(OrganizationVerificationMail::class, function (OrganizationVerificationMail $mail) use ($registrant, $org): bool {
             return $mail->approved === true
@@ -120,7 +121,7 @@ class OrganizationVerificationAdminTest extends TestCase
 
         $this->actingAs($admin)
             ->post(route('admin.organizations.reject', $org), ['review_note' => 'Incomplete details.'])
-            ->assertRedirect(route('admin.organizations.index', ['verification' => 'pending'], false));
+            ->assertRedirect(route('admin.organizations.index', PublicLocale::mergeQuery(['verification' => 'pending']), false));
 
         $org->refresh();
         Mail::assertQueued(OrganizationVerificationMail::class, function (OrganizationVerificationMail $mail) use ($registrant, $org): bool {
@@ -143,7 +144,7 @@ class OrganizationVerificationAdminTest extends TestCase
 
         $this->actingAs($admin)
             ->post(route('admin.organizations.approve', $org))
-            ->assertRedirect(route('admin.organizations.index', ['verification' => 'pending'], false));
+            ->assertRedirect(route('admin.organizations.index', PublicLocale::mergeQuery(['verification' => 'pending']), false));
 
         Mail::assertNothingQueued();
     }

@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin;
 use App\Models\Event;
 use App\Models\Organization;
 use App\Models\User;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -57,7 +58,7 @@ class OrganizationAdminTest extends TestCase
             'name_ar' => 'تجريبي',
         ]);
 
-        $response->assertRedirect(route('admin.organizations.index'));
+        $response->assertRedirect(route('admin.organizations.index', PublicLocale::query()));
         $this->assertDatabaseHas('organizations', [
             'name_en' => 'SwaedUAE Demo Org',
             'name_ar' => 'تجريبي',
@@ -75,7 +76,7 @@ class OrganizationAdminTest extends TestCase
             'name_ar' => null,
         ]);
 
-        $response->assertRedirect(route('admin.organizations.index'));
+        $response->assertRedirect(route('admin.organizations.index', PublicLocale::query()));
         $this->assertDatabaseHas('organizations', [
             'id' => $org->id,
             'name_en' => 'New name',
@@ -89,7 +90,7 @@ class OrganizationAdminTest extends TestCase
 
         $response = $this->actingAs($user)->delete('/admin/organizations/'.$org->id);
 
-        $response->assertRedirect(route('admin.organizations.index'));
+        $response->assertRedirect(route('admin.organizations.index', PublicLocale::query()));
         $this->assertDatabaseMissing('organizations', ['id' => $org->id]);
     }
 
@@ -101,7 +102,7 @@ class OrganizationAdminTest extends TestCase
 
         $response = $this->actingAs($user)->delete('/admin/organizations/'.$org->id);
 
-        $response->assertRedirect(route('admin.organizations.index'));
+        $response->assertRedirect(route('admin.organizations.index', PublicLocale::query()));
         $response->assertSessionHas('error');
         $this->assertDatabaseHas('organizations', ['id' => $org->id]);
     }

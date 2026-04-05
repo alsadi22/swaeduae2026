@@ -9,6 +9,7 @@ use App\Models\AttendanceLog;
 use App\Models\Dispute;
 use App\Models\Event;
 use App\Models\User;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
@@ -186,7 +187,7 @@ class AttendanceDisputeFlowTest extends TestCase
                 'resolution' => Dispute::STATUS_RESOLVED,
                 'resolution_note' => 'Verified with coordinator.',
             ])
-            ->assertRedirect(route('admin.disputes.show', $dispute))
+            ->assertRedirect(route('admin.disputes.show', array_merge(['dispute' => $dispute], PublicLocale::query())))
             ->assertSessionHas('status');
 
         $dispute->refresh();
@@ -241,7 +242,7 @@ class AttendanceDisputeFlowTest extends TestCase
                 'resolution' => Dispute::STATUS_RESOLVED,
                 'resolution_note' => 'Done.',
             ])
-            ->assertRedirect(route('admin.disputes.show', $dispute));
+            ->assertRedirect(route('admin.disputes.show', array_merge(['dispute' => $dispute], PublicLocale::query())));
 
         Mail::assertQueued(DisputeResolvedVolunteerMail::class, function (DisputeResolvedVolunteerMail $mail) use ($volunteer): bool {
             if (! $mail->hasTo($volunteer->email)) {

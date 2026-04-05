@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Models\VolunteerProfile;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -50,7 +51,7 @@ class VolunteerProfileTest extends TestCase
                 'emirates_id_masked' => '***784',
                 'notification_email_opt_in' => '1',
             ])
-            ->assertRedirect(route('volunteer.profile.edit'))
+            ->assertRedirect(route('volunteer.profile.edit', PublicLocale::queryForUser($user)))
             ->assertSessionHas('status');
 
         $this->actingAs($user)
@@ -100,7 +101,7 @@ class VolunteerProfileTest extends TestCase
                 ->patch(route('volunteer.profile.update'), array_merge($basePayload, [
                     'bio' => str_repeat('a', 20).(string) $i,
                 ]))
-                ->assertRedirect(route('volunteer.profile.edit'));
+                ->assertRedirect(route('volunteer.profile.edit', PublicLocale::queryForUser($user)));
         }
 
         $this->actingAs($user)
