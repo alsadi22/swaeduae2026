@@ -3,9 +3,11 @@
 return [
     'meta_description' => 'SwaedUAE Association for Culture and Community Empowerment — official bilingual site, programs, events, and volunteer platform for the UAE.',
 
-    'hero_mission' => 'Empowering communities and strengthening cultural life across the UAE through programs, partnerships, and trusted volunteering.',
+    'hero_mission' => 'Empowering communities and strengthening cultural life across the UAE through programs, youth participation, partnerships, and trusted volunteering.',
 
-    'hero_subline' => 'Programs, media, and a volunteer platform aligned with national community-development priorities — transparent, bilingual, and built for measurable impact.',
+    'hero_subline' => 'Programs, Youth Councils, media, and a volunteer platform aligned with national community-development priorities — transparent, bilingual, and built for measurable impact.',
+
+    'start_here_tagline' => 'Programs, Youth Councils & events',
 
     'about_snapshot' => 'We bring together volunteers, partners, and local leaders to deliver cultural and community initiatives with transparency and measurable impact.',
 
