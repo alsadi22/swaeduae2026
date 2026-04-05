@@ -5,6 +5,7 @@
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
         <h1 class="public-page-title">{{ __('Media center') }}</h1>
         <p class="mt-8 max-w-2xl text-slate-600 leading-relaxed">{{ __('site.media_hub_intro') }}</p>
+        <p class="mt-4 max-w-2xl text-sm text-slate-500">{{ __('site.media_hub_list_hint') }}</p>
 
         <div class="mt-10 flex flex-wrap gap-2">
             <a href="{{ route('media.index', ['filter' => 'all', 'source_id' => null]) }}" class="rounded-full px-4 py-2 text-sm font-semibold {{ $filter === 'all' && ! $sourceId ? 'bg-emerald-800 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">{{ __('All updates') }}</a>

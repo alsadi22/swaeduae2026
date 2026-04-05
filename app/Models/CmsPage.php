@@ -48,6 +48,7 @@ class CmsPage extends Model
         'author_id',
         'show_on_home',
         'show_on_programs',
+        'show_on_media',
     ];
 
     protected function casts(): array
@@ -56,6 +57,7 @@ class CmsPage extends Model
             'published_at' => 'datetime',
             'show_on_home' => 'boolean',
             'show_on_programs' => 'boolean',
+            'show_on_media' => 'boolean',
         ];
     }
 

@@ -31,6 +31,7 @@ class MediaHubController extends Controller
         $internalQuery = CmsPage::query()
             ->published()
             ->forLocale($locale)
+            ->where('show_on_media', true)
             ->whereNotIn('slug', CmsPage::INSTITUTIONAL_SLUGS)
             ->orderByDesc('published_at');
 

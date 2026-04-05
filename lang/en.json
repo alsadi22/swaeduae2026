@@ -226,6 +226,8 @@
     "Show on programs page": "Show on programs page",
     "When published, list this page in the “Featured program pages” grid on /programs (not for institutional slugs).": "When published, list this page in the “Featured program pages” grid on /programs (institutional slugs are excluded from the grid automatically).",
     "Featured program pages": "Featured program pages",
+    "Show in media center": "Show in media center",
+    "When published, list this page in the Media center “Our news” stream and home “Latest news” teasers (institutional slugs never appear there).": "When published, list this page in the Media center “Our news” stream and home “Latest news” teasers (institutional slugs never appear there).",
     "CMS page created.": "CMS page created.",
     "CMS page updated.": "CMS page updated.",
     "CMS page deleted.": "CMS page deleted.",

@@ -28,6 +28,7 @@ class HomeController extends Controller
         $latestCmsTeasers = CmsPage::query()
             ->published()
             ->forLocale($locale)
+            ->where('show_on_media', true)
             ->whereNotIn('slug', CmsPage::INSTITUTIONAL_SLUGS)
             ->when($featuredIds !== [], fn ($q) => $q->whereNotIn('id', $featuredIds))
             ->orderByDesc('published_at')

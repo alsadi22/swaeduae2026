@@ -226,6 +226,8 @@
     "Show on programs page": "إظهار في صفحة البرامج",
     "When published, list this page in the “Featured program pages” grid on /programs (not for institutional slugs).": "عند النشر، تُدرَج هذه الصفحة في شبكة «صفحات البرامج المميزة» في /programs (تُستبعد المسارات المؤسسية تلقائيًا من الشبكة).",
     "Featured program pages": "صفحات برامج مميزة",
+    "Show in media center": "إظهار في مركز الإعلام",
+    "When published, list this page in the Media center “Our news” stream and home “Latest news” teasers (institutional slugs never appear there).": "عند النشر، تُدرَج هذه الصفحة في تدفق «أخبارنا» في مركز الإعلام وفي معاينات «آخر الأخبار» في الصفحة الرئيسية (لا تظهر المسارات المؤسسية هناك).",
     "CMS page created.": "تم إنشاء صفحة المحتوى.",
     "CMS page updated.": "تم تحديث صفحة المحتوى.",
     "CMS page deleted.": "تم حذف صفحة المحتوى.",

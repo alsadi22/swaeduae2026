@@ -51,6 +51,8 @@ return [
 
     'media_hub_intro' => 'Browse our articles and curated updates from trusted external sources. External items are clearly labeled and link to the original publisher.',
 
+    'media_hub_list_hint' => '“Our news” lists published CMS pages that have “Show in media center” enabled in Admin (institutional routes use their own pages).',
+
     'media_hub_empty' => 'No articles match these filters yet. Publish CMS pages or approve external items to populate this view.',
 
     'partners_strip' => 'Partner and sponsor logos will be showcased here.',
