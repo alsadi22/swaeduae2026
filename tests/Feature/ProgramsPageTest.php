@@ -73,6 +73,30 @@ class ProgramsPageTest extends TestCase
             ->assertSessionHasErrors('q');
     }
 
+    public function test_programs_page_emits_article_json_ld_when_cms_programs_intro_exists(): void
+    {
+        $user = User::factory()->create();
+        CmsPage::query()->create([
+            'slug' => 'programs',
+            'locale' => 'en',
+            'title' => 'Programs CMS heading',
+            'excerpt' => 'Intro excerpt for programs index.',
+            'body' => '## Intro body',
+            'status' => CmsPage::STATUS_PUBLISHED,
+            'published_at' => now()->subHour(),
+            'author_id' => $user->id,
+            'show_on_home' => false,
+            'show_on_programs' => false,
+            'show_on_media' => false,
+        ]);
+
+        $this->get('/programs?lang=en')
+            ->assertOk()
+            ->assertSee('"@type":"Article"', false)
+            ->assertSee('"headline":"Programs CMS heading"', false)
+            ->assertSee('property="og:type" content="article"', false);
+    }
+
     public function test_programs_page_lists_pages_marked_show_on_programs(): void
     {
         CmsPage::query()->create([

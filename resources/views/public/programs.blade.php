@@ -1,4 +1,6 @@
 @php
+    use App\Support\SwaedUaeStructuredData;
+
     /** @var \App\Models\CmsPage|null $cmsPage */
     /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, \App\Models\CmsPage> $programPages */
     $programsLocaleQ = \App\Support\PublicLocale::query();
@@ -18,6 +20,9 @@
     $ogTitle = $cmsPage ? $cmsPage->title : __('Programs & initiatives');
     $ogDescription = $metaDescription ?? __('site.meta_description');
     $ogImage = $cmsPage ? $cmsPage->resolvedOgImageUrl() : \App\Models\CmsPage::resolveShareImageUrl(config('swaeduae.default_og_image_url'));
+    $programsExtraJsonLd = $cmsPage !== null
+        ? SwaedUaeStructuredData::cmsArticleForJsonLd($cmsPage, $cmsPage->absolutePublicUrl())
+        : null;
 @endphp
 <x-public-layout
     :title="$pageTitle"
@@ -27,7 +32,9 @@
     :ogTitle="$ogTitle"
     :ogDescription="$ogDescription"
     :ogImage="$ogImage"
+    :ogType="$cmsPage !== null ? 'article' : 'website'"
     :breadcrumbItems="$breadcrumbItems"
+    :extraJsonLd="$programsExtraJsonLd"
 >
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
         @if ($cmsPage)

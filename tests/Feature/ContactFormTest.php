@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Mail\ContactFormMail;
+use App\Support\PublicLocale;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
@@ -27,7 +28,7 @@ class ContactFormTest extends TestCase
             'subject' => 'Hello',
             'message' => 'This is a test message body.',
         ])
-            ->assertRedirect(route('contact.show'))
+            ->assertRedirect(route('contact.show', PublicLocale::query()))
             ->assertSessionHas('success');
 
         Mail::assertSent(ContactFormMail::class, function (ContactFormMail $mail) {
@@ -48,7 +49,7 @@ class ContactFormTest extends TestCase
             'message' => str_repeat('x', 50),
             'contact_trap' => 'https://evil.example',
         ])
-            ->assertRedirect(route('contact.show'))
+            ->assertRedirect(route('contact.show', PublicLocale::query()))
             ->assertSessionHas('success');
 
         Mail::assertNothingSent();
@@ -67,7 +68,7 @@ class ContactFormTest extends TestCase
         ];
 
         for ($i = 0; $i < 5; $i++) {
-            $this->post(route('contact.store'), $payload)->assertRedirect(route('contact.show'));
+            $this->post(route('contact.store'), $payload)->assertRedirect(route('contact.show', PublicLocale::query()));
         }
 
         $this->post(route('contact.store'), $payload)->assertStatus(429);

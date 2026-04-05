@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Mail\SupportFormMail;
+use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -27,8 +28,10 @@ class SupportController extends Controller
             'message' => 'required|string|max:5000',
         ]);
 
+        $localeQ = PublicLocale::query();
+
         if (trim((string) $request->input('support_trap', '')) !== '') {
-            return redirect()->route('support.show')->with('success', __('Thank you. We will get back to you soon.'));
+            return redirect()->route('support.show', $localeQ)->with('success', __('Thank you. We will get back to you soon.'));
         }
 
         $validated['topic_label'] = match ($validated['topic']) {
@@ -42,6 +45,6 @@ class SupportController extends Controller
 
         Mail::to(config('swaeduae.mail.support'))->send(new SupportFormMail($validated));
 
-        return redirect()->route('support.show')->with('success', __('Thank you. We will get back to you soon.'));
+        return redirect()->route('support.show', $localeQ)->with('success', __('Thank you. We will get back to you soon.'));
     }
 }

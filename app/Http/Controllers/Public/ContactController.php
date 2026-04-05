@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Mail\ContactFormMail;
+use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -26,12 +27,14 @@ class ContactController extends Controller
             'message' => 'required|string|max:5000',
         ]);
 
+        $localeQ = PublicLocale::query();
+
         if (trim((string) $request->input('contact_trap', '')) !== '') {
-            return redirect()->route('contact.show')->with('success', __('Thank you. We will get back to you soon.'));
+            return redirect()->route('contact.show', $localeQ)->with('success', __('Thank you. We will get back to you soon.'));
         }
 
         Mail::to(config('swaeduae.mail.info'))->send(new ContactFormMail($validated));
 
-        return redirect()->route('contact.show')->with('success', __('Thank you. We will get back to you soon.'));
+        return redirect()->route('contact.show', $localeQ)->with('success', __('Thank you. We will get back to you soon.'));
     }
 }

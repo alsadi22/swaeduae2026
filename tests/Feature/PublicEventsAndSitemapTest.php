@@ -149,7 +149,9 @@ class PublicEventsAndSitemapTest extends TestCase
             ->assertOk()
             ->assertViewIs('public.events-index')
             ->assertSee('CMS Events Heading', false)
-            ->assertSee('Intro from CMS.', false);
+            ->assertSee('Intro from CMS.', false)
+            ->assertSee('"@type":"Article"', false)
+            ->assertSee('property="og:type" content="article"', false);
     }
 
     public function test_sitemap_xml_lists_core_routes_and_upcoming_event(): void

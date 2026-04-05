@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Mail\OrganizationRegistrationStaffMail;
 use App\Models\Organization;
 use App\Models\User;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -37,7 +38,7 @@ class OrganizationRegistrationTest extends TestCase
             'terms' => '1',
         ]);
 
-        $response->assertRedirect(route('verification.notice', [], false));
+        $response->assertRedirect(route('verification.notice', PublicLocale::query(), false));
         $this->assertAuthenticated();
 
         $org = Organization::query()->where('name_en', 'Hope Charity')->first();
@@ -99,7 +100,7 @@ class OrganizationRegistrationTest extends TestCase
                 'password_confirmation' => 'password',
                 'locale_preferred' => 'en',
                 'terms' => '1',
-            ])->assertRedirect(route('verification.notice', [], false));
+            ])->assertRedirect(route('verification.notice', PublicLocale::query(), false));
             Auth::logout();
             $this->flushSession();
         }

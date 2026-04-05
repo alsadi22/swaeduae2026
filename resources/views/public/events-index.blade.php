@@ -1,12 +1,29 @@
 @php
+    use App\Support\SwaedUaeStructuredData;
+
     /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, \App\Models\Event> $events */
+    /** @var \App\Models\CmsPage|null $cmsPage */
     $eventsLocaleQ = \App\Support\PublicLocale::query();
     $breadcrumbItems = [
         ['name' => __('Home'), 'url' => route('home', $eventsLocaleQ, true)],
         ['name' => __('Events'), 'url' => route('events.index', $eventsLocaleQ, true)],
     ];
+    $eventsCmsOgUrl = $cmsPage !== null ? $cmsPage->absolutePublicUrl() : null;
+    $eventsExtraJsonLd = $cmsPage !== null
+        ? SwaedUaeStructuredData::cmsArticleForJsonLd($cmsPage, $cmsPage->absolutePublicUrl())
+        : null;
 @endphp
-<x-public-layout :title="$pageTitle" :metaDescription="$metaDescription" :breadcrumbItems="$breadcrumbItems">
+<x-public-layout
+    :title="$pageTitle"
+    :metaDescription="$metaDescription"
+    :ogUrl="$eventsCmsOgUrl"
+    :canonicalUrl="$eventsCmsOgUrl"
+    :ogTitle="$cmsPage?->title"
+    :ogImage="$cmsPage?->resolvedOgImageUrl()"
+    :ogType="$cmsPage !== null ? 'article' : 'website'"
+    :breadcrumbItems="$breadcrumbItems"
+    :extraJsonLd="$eventsExtraJsonLd"
+>
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
         @if ($cmsPage)
             <article class="mx-auto max-w-3xl">

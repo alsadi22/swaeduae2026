@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Public\RegisterOrganizationRequest;
+use App\Mail\OrganizationRegistrationStaffMail;
 use App\Models\Organization;
 use App\Models\User;
 use App\Support\IntendedUrl;
+use App\Support\PublicLocale;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use App\Mail\OrganizationRegistrationStaffMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -76,6 +77,6 @@ class OrganizationRegistrationController extends Controller
 
         Auth::login($user);
 
-        return redirect()->to(route('verification.notice', [], false));
+        return redirect()->to(route('verification.notice', PublicLocale::query(), false));
     }
 }

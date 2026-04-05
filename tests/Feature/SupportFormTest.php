@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Mail\SupportFormMail;
+use App\Support\PublicLocale;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
@@ -28,7 +29,7 @@ class SupportFormTest extends TestCase
             'subject' => 'Cannot check in',
             'message' => 'GPS issue at the gate.',
         ])
-            ->assertRedirect(route('support.show'))
+            ->assertRedirect(route('support.show', PublicLocale::query()))
             ->assertSessionHas('success');
 
         Mail::assertSent(SupportFormMail::class, function (SupportFormMail $mail) {
@@ -51,7 +52,7 @@ class SupportFormTest extends TestCase
             'message' => str_repeat('x', 50),
             'support_trap' => 'filled',
         ])
-            ->assertRedirect(route('support.show'))
+            ->assertRedirect(route('support.show', PublicLocale::query()))
             ->assertSessionHas('success');
 
         Mail::assertNothingSent();
@@ -71,7 +72,7 @@ class SupportFormTest extends TestCase
         ];
 
         for ($i = 0; $i < 5; $i++) {
-            $this->post(route('support.store'), $payload)->assertRedirect(route('support.show'));
+            $this->post(route('support.store'), $payload)->assertRedirect(route('support.show', PublicLocale::query()));
         }
 
         $this->post(route('support.store'), $payload)->assertStatus(429);
