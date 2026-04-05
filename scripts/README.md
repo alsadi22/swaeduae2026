@@ -35,3 +35,13 @@ export SWAED_REMOTE_PATH=/full/path/to/laravel-on-server
 ```
 
 Runs `ssh swaed-prod`, then `git pull origin master` and **`deploy-on-server.sh`** on the server.
+
+## `publish-to-docroot.sh` (same server: Git working copy → nginx app root)
+
+When nginx’s **`root`** is **`/var/www/.../public`** but you develop in **`/home/.../app`**, run this **on the server** after `git pull` in your working copy so the live docroot matches the repo (your **`/var/www/.../.env` is not overwritten**):
+
+```bash
+./scripts/publish-to-docroot.sh
+```
+
+Optional: `SWAED_SOURCE` and `SWAED_WWW_ROOT` override paths. Then reload PHP-FPM if your host caches opcode (`sudo systemctl reload php8.3-fpm`).
