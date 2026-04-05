@@ -9,6 +9,7 @@ use App\Models\Attendance;
 use App\Models\Event;
 use App\Models\User;
 use App\Support\AttendanceCheckpointUrl;
+use App\Support\PublicLocale;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -71,11 +72,11 @@ class OrganizationEventController extends Controller
             $query->where('event_ends_at', '<', now());
         }
 
-        $events = $query->paginate(15)->appends(array_filter([
+        $events = $query->paginate(15)->appends(PublicLocale::mergeQuery(array_filter([
             'search' => $searchInput,
             'timing' => $timing !== self::EVENT_INDEX_TIMING_ALL ? $timing : null,
             'sort' => $sort !== self::EVENT_INDEX_SORT_STARTS_DESC ? $sort : null,
-        ]));
+        ])));
 
         return view('organization.events.index', [
             'events' => $events,
@@ -93,9 +94,9 @@ class OrganizationEventController extends Controller
 
         $volunteers = $this->volunteersForRosterListing($event, $searchTerm)
             ->paginate(30)
-            ->appends(array_filter([
+            ->appends(PublicLocale::mergeQuery(array_filter([
                 'search' => $searchInput,
-            ]));
+            ])));
 
         $userIds = $volunteers->getCollection()->pluck('id')->all();
         $attendanceByUserId = $userIds === []
@@ -187,7 +188,7 @@ class OrganizationEventController extends Controller
         ]));
 
         return redirect()
-            ->route('organization.events.index')
+            ->route('organization.events.index', PublicLocale::query())
             ->with('status', __('Event created.'));
     }
 
@@ -206,7 +207,7 @@ class OrganizationEventController extends Controller
         $event->update($request->validated());
 
         return redirect()
-            ->route('organization.events.index')
+            ->route('organization.events.index', PublicLocale::query())
             ->with('status', __('Event updated.'));
     }
 
@@ -217,7 +218,7 @@ class OrganizationEventController extends Controller
         $event->delete();
 
         return redirect()
-            ->route('organization.events.index')
+            ->route('organization.events.index', PublicLocale::query())
             ->with('status', __('Event deleted.'));
     }
 
@@ -232,7 +233,7 @@ class OrganizationEventController extends Controller
         $days = (int) ($validated['days'] ?? 7);
 
         return redirect()
-            ->route('organization.events.edit', $event)
+            ->route('organization.events.edit', array_merge(['event' => $event], PublicLocale::query()))
             ->with('checkpoint_signed_url', AttendanceCheckpointUrl::temporarySignedShowUrl($event, $days));
     }
 
@@ -242,7 +243,7 @@ class OrganizationEventController extends Controller
 
         $event->volunteers()->detach($volunteer->id);
 
-        $params = ['event' => $event];
+        $params = array_merge(['event' => $event], PublicLocale::query());
         if ($request->filled('search')) {
             $params['search'] = $request->string('search')->toString();
         }

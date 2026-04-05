@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CmsPage;
 use App\Models\ExternalNewsItem;
 use App\Models\ExternalNewsSource;
+use App\Support\PublicLocale;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -70,18 +71,20 @@ class MediaHubController extends Controller
         }
 
         if ($filter === 'internal') {
-            $internalPaginator = (clone $internalQuery)->paginate(self::PER_PAGE)->withQueryString();
+            $internalPaginator = (clone $internalQuery)->paginate(self::PER_PAGE)->withQueryString()->appends(PublicLocale::query());
             $externalPaginator = null;
         } elseif ($filter === 'external') {
             $internalPaginator = null;
-            $externalPaginator = (clone $externalQuery)->paginate(self::PER_PAGE)->withQueryString();
+            $externalPaginator = (clone $externalQuery)->paginate(self::PER_PAGE)->withQueryString()->appends(PublicLocale::query());
         } else {
             $internalPaginator = (clone $internalQuery)
                 ->paginate(self::PER_PAGE, ['*'], 'internal_page')
-                ->withQueryString();
+                ->withQueryString()
+                ->appends(PublicLocale::query());
             $externalPaginator = (clone $externalQuery)
                 ->paginate(self::PER_PAGE, ['*'], 'external_page')
-                ->withQueryString();
+                ->withQueryString()
+                ->appends(PublicLocale::query());
         }
 
         $sources = ExternalNewsSource::query()

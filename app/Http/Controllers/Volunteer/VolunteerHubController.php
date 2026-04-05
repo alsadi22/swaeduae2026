@@ -62,7 +62,7 @@ class VolunteerHubController extends Controller
             $query->orderBy('event_starts_at');
         }
 
-        $events = $query->paginate(15)->withQueryString();
+        $events = $query->paginate(15)->withQueryString()->appends(PublicLocale::query());
 
         return view('volunteer.opportunities.index', compact('events', 'search', 'sort', 'entry'));
     }

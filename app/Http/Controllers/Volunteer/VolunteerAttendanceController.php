@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Volunteer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Support\PublicLocale;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -40,7 +41,7 @@ class VolunteerAttendanceController extends Controller
             $query->where('state', $stateFilter);
         }
 
-        $attendances = $query->paginate(20)->withQueryString();
+        $attendances = $query->paginate(20)->withQueryString()->appends(PublicLocale::query());
 
         return view('volunteer.attendance.index', compact('attendances', 'stateFilter'));
     }

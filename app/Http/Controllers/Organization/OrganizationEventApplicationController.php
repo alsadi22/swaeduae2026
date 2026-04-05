@@ -7,6 +7,7 @@ use App\Http\Requests\Organization\RejectOrganizationEventApplicationRequest;
 use App\Mail\EventApplicationReviewedMail;
 use App\Models\Event;
 use App\Models\EventApplication;
+use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -85,7 +86,7 @@ class OrganizationEventApplicationController extends Controller
             $query->orderByDesc('created_at');
         }
 
-        $applications = $query->paginate(25)->withQueryString();
+        $applications = $query->paginate(25)->withQueryString()->appends(PublicLocale::query());
 
         $filterEvents = Event::query()
             ->where('organization_id', $organizationId)

@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Models\Event;
 use App\Models\Organization;
 use App\Models\User;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -246,7 +247,7 @@ class OrganizationEventPortalTest extends TestCase
 
         $this->actingAs($manager)
             ->post(route('organization.events.store'), $payload)
-            ->assertRedirect(route('organization.events.index'));
+            ->assertRedirect(route('organization.events.index', PublicLocale::query()));
 
         $this->assertDatabaseHas('events', [
             'organization_id' => $org->id,
@@ -304,7 +305,7 @@ class OrganizationEventPortalTest extends TestCase
 
         $this->actingAs($manager)
             ->delete(route('organization.events.destroy', $event))
-            ->assertRedirect(route('organization.events.index'));
+            ->assertRedirect(route('organization.events.index', PublicLocale::query()));
 
         $this->assertDatabaseMissing('events', ['id' => $event->id]);
     }
@@ -360,7 +361,7 @@ class OrganizationEventPortalTest extends TestCase
 
         $this->actingAs($manager)
             ->post(route('organization.events.checkpoint-signed-url', $event), ['days' => 3])
-            ->assertRedirect(route('organization.events.edit', $event))
+            ->assertRedirect(route('organization.events.edit', array_merge(['event' => $event], PublicLocale::query())))
             ->assertSessionHas('checkpoint_signed_url');
     }
 
@@ -538,7 +539,7 @@ class OrganizationEventPortalTest extends TestCase
 
         $this->actingAs($coordinator)
             ->delete(route('organization.events.roster.volunteers.destroy', [$event, $volunteer]))
-            ->assertRedirect(route('organization.events.roster', $event));
+            ->assertRedirect(route('organization.events.roster', array_merge(['event' => $event], PublicLocale::query())));
 
         $this->assertFalse($event->fresh()->userIsOnRoster($volunteer));
     }

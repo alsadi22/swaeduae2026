@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\CmsPage;
+use App\Support\PublicLocale;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -38,7 +39,8 @@ class ProgramsIndexController extends Controller
         $programPages = $query
             ->orderByDesc('published_at')
             ->paginate(12)
-            ->withQueryString();
+            ->withQueryString()
+            ->appends(PublicLocale::query());
 
         return view('public.programs', [
             'cmsPage' => $cmsPage,

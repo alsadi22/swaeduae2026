@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\CmsPage;
 use App\Models\Event;
+use App\Support\PublicLocale;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -37,7 +38,7 @@ class PublicEventController extends Controller
             });
         }
 
-        $events = $query->orderBy('event_starts_at')->paginate(15)->withQueryString();
+        $events = $query->orderBy('event_starts_at')->paginate(15)->withQueryString()->appends(PublicLocale::query());
 
         $pageTitle = $cmsPage
             ? $cmsPage->title.' — '.__('SwaedUAE')
