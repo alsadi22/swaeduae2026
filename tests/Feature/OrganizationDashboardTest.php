@@ -79,6 +79,22 @@ class OrganizationDashboardTest extends TestCase
             ->assertSee('data-testid="org-dashboard-upcoming-events-count">1<', false);
     }
 
+    public function test_org_dashboard_upcoming_only_link_preserves_locale_query(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $organization = Organization::factory()->create();
+        $user = User::factory()->create();
+        $user->forceFill(['organization_id' => $organization->id])->save();
+        $user->assignRole('org-owner');
+
+        $this->actingAs($user)
+            ->get(route('organization.dashboard', ['lang' => 'ar']))
+            ->assertOk()
+            ->assertSee('lang=ar', false)
+            ->assertSee('timing=upcoming', false)
+            ->assertSee('sort=starts_asc', false);
+    }
+
     public function test_org_owner_can_filter_open_invitations_by_email(): void
     {
         $this->seed(RoleSeeder::class);

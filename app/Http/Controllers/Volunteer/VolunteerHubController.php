@@ -21,17 +21,17 @@ class VolunteerHubController extends Controller
 
     public function opportunities(Request $request): View
     {
-        $sort = $request->query('sort', 'starts_soon');
-        if (! in_array($sort, ['starts_soon', 'starts_late'], true)) {
-            $sort = 'starts_soon';
-        }
+        $validated = $request->validate([
+            'sort' => ['nullable', 'string', 'in:starts_soon,starts_late'],
+            'entry' => ['nullable', 'string', 'in:all,open,application'],
+            'q' => ['nullable', 'string', 'max:120'],
+            'page' => ['nullable', 'integer', 'min:1'],
+        ]);
 
-        $entry = $request->query('entry', 'all');
-        if (! in_array($entry, ['all', 'open', 'application'], true)) {
-            $entry = 'all';
-        }
-
-        $search = mb_substr(trim((string) $request->query('q', '')), 0, 120);
+        $sort = $validated['sort'] ?? 'starts_soon';
+        $entry = $validated['entry'] ?? 'all';
+        $searchInput = isset($validated['q']) ? trim((string) $validated['q']) : '';
+        $search = $searchInput === '' ? '' : mb_substr($searchInput, 0, 120);
 
         $query = Event::query()
             ->with('organization')

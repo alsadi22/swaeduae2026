@@ -25,7 +25,11 @@ class ExternalNewsItemController extends Controller
                 ExternalNewsItem::STATUS_REJECTED,
             ])],
             'source_id' => ['nullable', 'integer', 'exists:external_news_sources,id'],
+            'search' => ['nullable', 'string', 'max:100'],
         ]);
+
+        $searchInput = isset($validated['search']) ? trim((string) $validated['search']) : '';
+        $searchTerm = $searchInput === '' ? null : $searchInput;
 
         $query = ExternalNewsItem::query()
             ->with('source')
@@ -37,6 +41,13 @@ class ExternalNewsItemController extends Controller
         if (! empty($validated['source_id'])) {
             $query->where('source_id', (int) $validated['source_id']);
         }
+        if ($searchTerm !== null) {
+            $query->where(function ($q) use ($searchTerm): void {
+                $q->whereRaw('strpos(lower(coalesce(original_title::text, \'\')), lower(?::text)) > 0', [$searchTerm])
+                    ->orWhereRaw('strpos(lower(coalesce(normalized_title_en::text, \'\')), lower(?::text)) > 0', [$searchTerm])
+                    ->orWhereRaw('strpos(lower(coalesce(normalized_title_ar::text, \'\')), lower(?::text)) > 0', [$searchTerm]);
+            });
+        }
 
         $items = $query->paginate(25)->withQueryString()->appends(PublicLocale::query());
         $sources = ExternalNewsSource::query()->orderBy('name')->get();
@@ -47,6 +58,7 @@ class ExternalNewsItemController extends Controller
             'filters' => [
                 'status' => $validated['status'] ?? '',
                 'source_id' => $validated['source_id'] ?? '',
+                'search' => $searchInput,
             ],
         ]);
     }

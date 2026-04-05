@@ -71,6 +71,39 @@ class CmsPageAdminTest extends TestCase
             ->assertSee('title="'.__('Show in media center').'"', false);
     }
 
+    public function test_admin_cms_index_placement_filter_limits_rows(): void
+    {
+        $user = $this->adminUser();
+        CmsPage::query()->create([
+            'slug' => 'placement-home-only-en',
+            'locale' => 'en',
+            'title' => 'Home Surface Only Title',
+            'body' => 'x',
+            'status' => CmsPage::STATUS_DRAFT,
+            'author_id' => $user->id,
+            'show_on_home' => true,
+            'show_on_programs' => false,
+            'show_on_media' => false,
+        ]);
+        CmsPage::query()->create([
+            'slug' => 'placement-not-on-home-en',
+            'locale' => 'en',
+            'title' => 'Not On Home Row Title',
+            'body' => 'x',
+            'status' => CmsPage::STATUS_DRAFT,
+            'author_id' => $user->id,
+            'show_on_home' => false,
+            'show_on_programs' => true,
+            'show_on_media' => false,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('admin.cms-pages.index', array_merge(PublicLocale::query(), ['placement' => 'home'])))
+            ->assertOk()
+            ->assertSee('Home Surface Only Title', false)
+            ->assertDontSee('Not On Home Row Title', false);
+    }
+
     public function test_admin_cms_index_search_filters_by_title_or_slug(): void
     {
         $user = $this->adminUser();

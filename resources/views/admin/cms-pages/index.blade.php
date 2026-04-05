@@ -23,9 +23,18 @@
                     <x-input-label for="cms_pages_search" :value="__('Search CMS pages')" />
                     <x-text-input id="cms_pages_search" name="search" type="search" class="mt-1 block w-64 max-w-full" :value="$search" maxlength="100" autocomplete="off" placeholder="{{ __('Title or slug') }}" />
                 </div>
+                <div>
+                    <x-input-label for="cms_pages_placement" :value="__('Public placement')" />
+                    <select id="cms_pages_placement" name="placement" class="mt-1 block w-56 rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="all" @selected(($placement ?? 'all') === 'all')>{{ __('All') }}</option>
+                        <option value="home" @selected(($placement ?? 'all') === 'home')>{{ __('Show on home page') }}</option>
+                        <option value="programs" @selected(($placement ?? 'all') === 'programs')>{{ __('Show on programs page') }}</option>
+                        <option value="media" @selected(($placement ?? 'all') === 'media')>{{ __('Show in media center') }}</option>
+                    </select>
+                </div>
                 <div class="flex flex-wrap gap-2">
                     <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
-                    @if (filled($search))
+                    @if (filled($search) || ($placement ?? 'all') !== 'all')
                         <a href="{{ route('admin.cms-pages.index', $adminLocaleQ) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
                     @endif
                 </div>

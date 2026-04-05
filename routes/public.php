@@ -15,6 +15,7 @@ use App\Http\Controllers\Public\SitemapController;
 use App\Http\Controllers\Public\SupportController;
 use App\Http\Controllers\Public\YouthCouncilsController;
 use App\Http\Controllers\Volunteer\VolunteerHubController;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
 Route::permanentRedirect('/volunteerplatform', '/volunteer');
@@ -69,6 +70,25 @@ Route::get('/events/{event}', [PublicEventController::class, 'show'])->name('eve
 
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/feed.xml', MediaAtomFeedController::class)->name('feed');
+Route::get('/site.webmanifest', static function (): Response {
+    $manifest = [
+        'name' => 'SwaedUAE',
+        'short_name' => 'SwaedUAE',
+        'description' => 'SwaedUAE youth volunteering and institutional website.',
+        'start_url' => '/',
+        'scope' => '/',
+        'display' => 'browser',
+        'background_color' => '#ffffff',
+        'theme_color' => '#047857',
+        'lang' => 'en',
+    ];
+
+    return response(
+        json_encode($manifest, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)."\n",
+        200,
+        ['Content-Type' => 'application/manifest+json; charset=UTF-8']
+    );
+})->name('site.webmanifest');
 Route::get('/media', MediaHubController::class)->name('media.index');
 Route::get('/media/external/{external_news_item}', [ExternalNewsPublicController::class, 'show'])
     ->name('media.external.show');

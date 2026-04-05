@@ -75,7 +75,7 @@
                                     {{ __('Open organization events list') }}
                                     →
                                 </a>
-                                <a href="{{ route('organization.events.index', \App\Support\PublicLocale::mergeQuery(['timing' => 'upcoming', 'sort' => 'starts_asc'])) }}" class="inline-flex items-center gap-2 text-sm font-bold text-slate-700 hover:text-emerald-950 hover:underline">
+                                <a href="{{ route('organization.events.index', array_merge($orgLocaleQ, ['timing' => 'upcoming', 'sort' => 'starts_asc'])) }}" class="inline-flex items-center gap-2 text-sm font-bold text-slate-700 hover:text-emerald-950 hover:underline">
                                     {{ __('View upcoming events only') }}
                                     →
                                 </a>

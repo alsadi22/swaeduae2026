@@ -40,6 +40,9 @@ class PublicLayoutSeoTest extends TestCase
         $response->assertSee('rel="alternate" hreflang="ar"', false);
         $response->assertSee('rel="alternate" type="application/atom+xml"', false);
         $response->assertSee('feed.xml', false);
+        $response->assertSee('rel="manifest"', false);
+        $response->assertSee('site.webmanifest', false);
+        $response->assertSee('name="theme-color"', false);
         $response->assertSee('property="og:locale"', false);
         $response->assertSee('property="og:locale:alternate"', false);
         $response->assertSee('name="twitter:card"', false);

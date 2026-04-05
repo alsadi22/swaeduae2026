@@ -56,6 +56,8 @@
         @endif
 
         @if (! $isAdminCmsPreview)
+            <link rel="manifest" href="{{ route('site.webmanifest', absolute: true) }}">
+            <meta name="theme-color" content="#047857">
             <link rel="alternate" hreflang="en" href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}">
             <link rel="alternate" hreflang="ar" href="{{ request()->fullUrlWithQuery(['lang' => 'ar']) }}">
             <link rel="alternate" hreflang="x-default" href="{{ request()->fullUrlWithQuery(['lang' => config('app.locale', 'en')]) }}">

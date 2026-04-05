@@ -32,7 +32,16 @@
                         @endforeach
                     </select>
                 </div>
-                <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
+                <div>
+                    <x-input-label for="en_filter_search" :value="__('Search titles')" />
+                    <x-text-input id="en_filter_search" name="search" type="search" class="mt-1 block w-64 max-w-full" :value="$filters['search'] ?? ''" maxlength="100" autocomplete="off" />
+                </div>
+                <div class="flex flex-wrap items-end gap-2">
+                    <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
+                    @if (filled($filters['status'] ?? '') || filled($filters['source_id'] ?? '') || filled($filters['search'] ?? ''))
+                        <a href="{{ route('admin.external-news-items.index', $adminLocaleQ) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
+                    @endif
+                </div>
             </form>
 
             <form method="post" action="{{ route('admin.external-news-items.bulk', $adminLocaleQ) }}" class="bg-white p-4 shadow-sm sm:rounded-lg border border-gray-100">

@@ -16,6 +16,14 @@ class PublicSiteTest extends TestCase
         $this->get('/')->assertOk();
     }
 
+    public function test_site_webmanifest_is_served_as_json(): void
+    {
+        $this->get('/site.webmanifest')
+            ->assertOk()
+            ->assertHeader('content-type', 'application/manifest+json; charset=UTF-8')
+            ->assertJsonFragment(['name' => 'SwaedUAE', 'display' => 'browser']);
+    }
+
     public function test_home_includes_organization_json_ld(): void
     {
         $response = $this->get('/');

@@ -365,6 +365,18 @@ class VolunteerOpportunitiesTest extends TestCase
             ->assertDontSee('Summer Festival Day', false);
     }
 
+    public function test_opportunities_index_rejects_oversized_search_query(): void
+    {
+        $this->get(route('volunteer.opportunities.index', ['q' => str_repeat('x', 121)]))
+            ->assertSessionHasErrors('q');
+    }
+
+    public function test_opportunities_index_rejects_invalid_sort(): void
+    {
+        $this->get(route('volunteer.opportunities.index', ['sort' => 'not-a-valid-sort']))
+            ->assertSessionHasErrors('sort');
+    }
+
     public function test_opportunities_sort_starts_late_orders_newest_first(): void
     {
         $org = Organization::query()->create(['name_en' => 'Sort Org', 'name_ar' => null]);

@@ -19,9 +19,12 @@ class CmsPageController extends Controller
 
         $validated = $request->validate([
             'search' => ['nullable', 'string', 'max:100'],
+            'placement' => ['nullable', 'string', 'in:all,home,programs,media'],
         ]);
         $searchInput = isset($validated['search']) ? trim((string) $validated['search']) : '';
         $searchTerm = $searchInput === '' ? null : $searchInput;
+
+        $placement = $validated['placement'] ?? 'all';
 
         $query = CmsPage::query()->orderByDesc('updated_at');
 
@@ -32,11 +35,20 @@ class CmsPageController extends Controller
             });
         }
 
+        if ($placement === 'home') {
+            $query->where('show_on_home', true);
+        } elseif ($placement === 'programs') {
+            $query->where('show_on_programs', true);
+        } elseif ($placement === 'media') {
+            $query->where('show_on_media', true);
+        }
+
         $pages = $query->paginate(20)->withQueryString()->appends(PublicLocale::query());
 
         return view('admin.cms-pages.index', [
             'pages' => $pages,
             'search' => $searchInput,
+            'placement' => $placement,
         ]);
     }
 
