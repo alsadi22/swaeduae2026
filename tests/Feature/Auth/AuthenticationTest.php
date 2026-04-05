@@ -18,6 +18,12 @@ class AuthenticationTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_login_form_includes_lang_in_action_when_ar_requested(): void
+    {
+        $html = $this->get('/login?lang=ar')->assertOk()->getContent();
+        $this->assertStringContainsString('lang=ar', $html);
+    }
+
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
         $user = User::factory()->create();

@@ -160,12 +160,12 @@
                         @auth
                             <a href="{{ route('dashboard') }}" class="ms-2 inline-flex items-center rounded-xl border border-slate-200/80 bg-slate-50/90 px-3 py-2 text-sm font-bold text-slate-800 shadow-sm transition duration-200 hover:border-slate-300 hover:bg-white">{{ __('Dashboard') }}</a>
                         @else
-                            <a href="{{ route('login', \App\Support\IntendedUrl::queryParamsForRequestUri(request())) }}" class="ms-2 public-nav-link public-nav-link--inactive">{{ __('Sign In') }}</a>
+                            <a href="{{ route('login', array_merge(\App\Support\IntendedUrl::queryParamsForRequestUri(request()), $navLocaleQ)) }}" class="ms-2 public-nav-link public-nav-link--inactive">{{ __('Sign In') }}</a>
                             @if (Route::has('register.volunteer'))
-                                <a href="{{ route('register.volunteer') }}" class="btn-primary-solid !px-3 !py-2 text-sm">{{ __('Join as Volunteer') }}</a>
+                                <a href="{{ route('register.volunteer', $navLocaleQ) }}" class="btn-primary-solid !px-3 !py-2 text-sm">{{ __('Join as Volunteer') }}</a>
                             @endif
                             @if (Route::has('register.organization'))
-                                <a href="{{ route('register.organization') }}" class="ms-1 hidden text-sm font-bold text-emerald-900 underline decoration-emerald-700/40 underline-offset-2 hover:decoration-emerald-800 xl:inline">{{ __('Register Organization') }}</a>
+                                <a href="{{ route('register.organization', $navLocaleQ) }}" class="ms-1 hidden text-sm font-bold text-emerald-900 underline decoration-emerald-700/40 underline-offset-2 hover:decoration-emerald-800 xl:inline">{{ __('Register Organization') }}</a>
                             @endif
                         @endauth
                     </nav>
@@ -195,12 +195,12 @@
                         @auth
                             <a href="{{ route('dashboard') }}" class="public-nav-link public-nav-link--inactive mt-1 border-t border-slate-100 pt-2" @click="open=false">{{ __('Dashboard') }}</a>
                         @else
-                            <a href="{{ route('login', \App\Support\IntendedUrl::queryParamsForRequestUri(request())) }}" class="public-nav-link public-nav-link--inactive mt-1 border-t border-slate-100 pt-2" @click="open=false">{{ __('Sign In') }}</a>
+                            <a href="{{ route('login', array_merge(\App\Support\IntendedUrl::queryParamsForRequestUri(request()), $navLocaleQ)) }}" class="public-nav-link public-nav-link--inactive mt-1 border-t border-slate-100 pt-2" @click="open=false">{{ __('Sign In') }}</a>
                             @if (Route::has('register.volunteer'))
-                                <a href="{{ route('register.volunteer') }}" class="btn-primary-solid mx-0.5 mt-2 justify-center !py-2.5 text-sm" @click="open=false">{{ __('Join as Volunteer') }}</a>
+                                <a href="{{ route('register.volunteer', $navLocaleQ) }}" class="btn-primary-solid mx-0.5 mt-2 justify-center !py-2.5 text-sm" @click="open=false">{{ __('Join as Volunteer') }}</a>
                             @endif
                             @if (Route::has('register.organization'))
-                                <a href="{{ route('register.organization') }}" class="public-nav-link public-nav-link--inactive mt-1" @click="open=false">{{ __('Register Organization') }}</a>
+                                <a href="{{ route('register.organization', $navLocaleQ) }}" class="public-nav-link public-nav-link--inactive mt-1" @click="open=false">{{ __('Register Organization') }}</a>
                             @endif
                         @endauth
                         <div class="mt-3 flex gap-3 border-t border-slate-100 pt-3 text-xs font-semibold text-slate-600">

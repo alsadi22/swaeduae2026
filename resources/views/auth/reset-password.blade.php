@@ -1,5 +1,6 @@
+@php($authLocaleQ = \App\Support\PublicLocale::query())
 <x-guest-layout>
-    <form method="POST" action="{{ route('password.store') }}">
+    <form method="POST" action="{{ route('password.store', $authLocaleQ) }}">
         @csrf
 
         <!-- Password Reset Token -->

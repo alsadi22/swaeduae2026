@@ -1,3 +1,4 @@
+@php($guestLocaleQ = \App\Support\PublicLocale::query())
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
     <head>
@@ -17,7 +18,7 @@
         <div class="relative flex min-h-screen flex-col items-center overflow-hidden pt-8 sm:justify-center sm:pt-0">
             <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-20%,rgba(16,185,129,0.14),transparent_50%),radial-gradient(ellipse_80%_50%_at_100%_50%,rgba(180,134,11,0.06),transparent_45%)]" aria-hidden="true"></div>
             <div class="relative z-[1] w-full px-4">
-                <a href="{{ route('home') }}" class="flex flex-col items-center gap-3 text-center transition hover:opacity-90">
+                <a href="{{ route('home', $guestLocaleQ) }}" class="flex flex-col items-center gap-3 text-center transition hover:opacity-90">
                     <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-900 text-white shadow-card ring-1 ring-emerald-950/10" aria-hidden="true">
                         <svg class="h-8 w-8 opacity-95" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.09 6.26H21l-5.45 4.2 2.09 6.54L12 16.77 6.36 19l2.09-6.54L3 8.26h6.91L12 2z"/></svg>
                     </span>

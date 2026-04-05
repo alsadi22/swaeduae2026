@@ -1,3 +1,4 @@
+@php($authLocaleQ = \App\Support\PublicLocale::query())
 <x-guest-layout>
     @if (! empty($authPortal) && $authPortal === 'admin')
         <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
@@ -9,7 +10,7 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login', $authLocaleQ) }}">
         @csrf
 
         <!-- Email Address -->
@@ -41,7 +42,7 @@
 
         <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
             @if (Route::has('password.request'))
-                <a class="rounded-md text-sm text-slate-600 underline hover:text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2" href="{{ route('password.request') }}">
+                <a class="rounded-md text-sm text-slate-600 underline hover:text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2" href="{{ route('password.request', $authLocaleQ) }}">
                     {{ __('Forgot your password?') }}
                 </a>
             @endif
@@ -55,11 +56,11 @@
     @if (empty($authPortal))
         <div class="mt-8 border-t border-slate-200 pt-6 text-center text-sm text-slate-600">
             <p class="font-medium text-slate-800">{{ __('Join as Volunteer') }}</p>
-            <a href="{{ route('register.volunteer', \App\Support\IntendedUrl::queryParamsForRelativeUri((string) request()->query('return', ''))) }}" class="mt-2 inline-block font-semibold text-emerald-800 hover:underline">{{ __('Create volunteer account') }}</a>
+            <a href="{{ route('register.volunteer', array_merge(\App\Support\IntendedUrl::queryParamsForRelativeUri((string) request()->query('return', '')), $authLocaleQ)) }}" class="mt-2 inline-block font-semibold text-emerald-800 hover:underline">{{ __('Create volunteer account') }}</a>
             <p class="mt-4 font-medium text-slate-800">{{ __('Register Organization') }}</p>
-            <a href="{{ route('register.organization') }}" class="mt-2 inline-block font-semibold text-emerald-800 hover:underline">{{ __('Start organization registration') }}</a>
+            <a href="{{ route('register.organization', $authLocaleQ) }}" class="mt-2 inline-block font-semibold text-emerald-800 hover:underline">{{ __('Start organization registration') }}</a>
             <p class="mt-4">
-                <a href="{{ route('admin.login') }}" class="text-xs font-medium text-slate-500 hover:text-emerald-800 hover:underline">{{ __('Admin sign-in') }}</a>
+                <a href="{{ route('admin.login', $authLocaleQ) }}" class="text-xs font-medium text-slate-500 hover:text-emerald-800 hover:underline">{{ __('Admin sign-in') }}</a>
             </p>
         </div>
     @endif

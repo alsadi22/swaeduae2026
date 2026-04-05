@@ -1,10 +1,11 @@
+@php($authLocaleQ = \App\Support\PublicLocale::query())
 <x-guest-layout>
     <div class="mb-6 text-center">
         <h1 class="font-display text-xl font-bold text-emerald-950">{{ __('Volunteer registration') }}</h1>
         <p class="mt-2 text-sm text-slate-600">{{ __('Join as Volunteer') }}</p>
     </div>
 
-    <form method="POST" action="{{ route('register.volunteer.store') }}">
+    <form method="POST" action="{{ route('register.volunteer.store', $authLocaleQ) }}">
         @csrf
 
         <div class="grid gap-4 sm:grid-cols-2">
@@ -58,21 +59,21 @@
                 <input type="checkbox" name="terms" value="1" class="mt-1 rounded border-gray-300 text-emerald-600 shadow-sm focus:ring-emerald-500" @checked(old('terms')) required />
                 <span class="text-sm text-slate-700">
                     {{ __('I agree to the') }}
-                    <a href="{{ route('legal.terms') }}" target="_blank" rel="noopener" class="font-semibold text-emerald-800 underline">{{ __('Terms') }}</a>
+                    <a href="{{ route('legal.terms', $authLocaleQ) }}" target="_blank" rel="noopener" class="font-semibold text-emerald-800 underline">{{ __('Terms') }}</a>
                     {{ __('and') }}
-                    <a href="{{ route('legal.privacy') }}" target="_blank" rel="noopener" class="font-semibold text-emerald-800 underline">{{ __('Privacy') }}</a>.
+                    <a href="{{ route('legal.privacy', $authLocaleQ) }}" target="_blank" rel="noopener" class="font-semibold text-emerald-800 underline">{{ __('Privacy') }}</a>.
                 </span>
             </label>
             <x-input-error :messages="$errors->get('terms')" class="mt-2" />
         </div>
 
         <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <a class="text-sm text-slate-600 underline hover:text-emerald-900" href="{{ route('login', \App\Support\IntendedUrl::queryParamsForRelativeUri((string) request()->query('return', ''))) }}">{{ __('Already registered?') }}</a>
+            <a class="text-sm text-slate-600 underline hover:text-emerald-900" href="{{ route('login', array_merge(\App\Support\IntendedUrl::queryParamsForRelativeUri((string) request()->query('return', '')), $authLocaleQ)) }}">{{ __('Already registered?') }}</a>
             <x-primary-button>{{ __('Join as Volunteer') }}</x-primary-button>
         </div>
 
         <p class="mt-6 text-center text-sm text-slate-600">
-            <a href="{{ route('register.organization') }}" class="font-semibold text-emerald-800 hover:underline">{{ __('Register Organization') }}</a>
+            <a href="{{ route('register.organization', $authLocaleQ) }}" class="font-semibold text-emerald-800 hover:underline">{{ __('Register Organization') }}</a>
         </p>
     </form>
 </x-guest-layout>

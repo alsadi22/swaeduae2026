@@ -193,11 +193,11 @@
                     @endif
                 @else
                     <div class="mt-4 flex flex-wrap gap-3">
-                        <a href="{{ route('login', \App\Support\IntendedUrl::queryParamsForRequestUri(request())) }}" class="btn-primary-solid">{{ __('Log in') }}</a>
+                        <a href="{{ route('login', array_merge(\App\Support\IntendedUrl::queryParamsForRequestUri(request()), $localeQ)) }}" class="btn-primary-solid">{{ __('Log in') }}</a>
                         @if (Route::has('register.volunteer'))
-                            <a href="{{ route('register.volunteer', \App\Support\IntendedUrl::queryParamsForRequestUri(request())) }}" class="btn-secondary-muted">{{ __('Create volunteer account') }}</a>
+                            <a href="{{ route('register.volunteer', array_merge(\App\Support\IntendedUrl::queryParamsForRequestUri(request()), $localeQ)) }}" class="btn-secondary-muted">{{ __('Create volunteer account') }}</a>
                         @elseif (Route::has('register'))
-                            <a href="{{ route('register') }}" class="btn-secondary-muted">{{ __('Register') }}</a>
+                            <a href="{{ route('register', $localeQ) }}" class="btn-secondary-muted">{{ __('Register') }}</a>
                         @endif
                     </div>
                 @endauth
