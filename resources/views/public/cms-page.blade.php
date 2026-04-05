@@ -1,16 +1,20 @@
 @php
+    use App\Support\SwaedUaeStructuredData;
+
     $pageTitle = $cmsPage->title.' — '.__('SwaedUAE');
     $metaDescription = $cmsPage->meta_description ?? $cmsPage->excerpt;
     $pageAbsoluteUrl = ($previewMode ?? false) ? null : $cmsPage->absolutePublicUrl();
     $ogDescription = $metaDescription ?? __('site.meta_description');
     $ogImage = $cmsPage->resolvedOgImageUrl();
     $breadcrumbItems = null;
+    $extraJsonLd = null;
     if (empty($previewMode ?? false)) {
         $localeQ = \App\Support\PublicLocale::query();
         $breadcrumbItems = [
             ['name' => __('Home'), 'url' => route('home', $localeQ, true)],
             ['name' => $cmsPage->title, 'url' => $cmsPage->absolutePublicUrl()],
         ];
+        $extraJsonLd = SwaedUaeStructuredData::cmsArticleForJsonLd($cmsPage, $cmsPage->absolutePublicUrl());
     }
 @endphp
 <x-public-layout
@@ -21,7 +25,9 @@
     :ogTitle="$cmsPage->title"
     :ogDescription="$ogDescription"
     :ogImage="$ogImage"
+    ogType="article"
     :breadcrumbItems="$breadcrumbItems"
+    :extraJsonLd="$extraJsonLd"
 >
     @if (! empty($previewMode))
         <div class="border-b border-amber-200 bg-amber-50">

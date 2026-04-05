@@ -18,10 +18,7 @@
             <a href="{{ route('volunteer.index', $localeQ) }}" class="shrink-0 text-sm font-bold text-emerald-800 hover:underline">{{ __('Volunteer hub') }} →</a>
         </div>
 
-        <form method="get" action="{{ route('volunteer.opportunities.index') }}" class="card-surface mt-10 flex flex-col gap-4 p-4 sm:flex-row sm:flex-wrap sm:items-end">
-            @foreach ($localeQ as $lk => $lv)
-                <input type="hidden" name="{{ $lk }}" value="{{ $lv }}">
-            @endforeach
+        <form method="get" action="{{ route('volunteer.opportunities.index', $localeQ) }}" class="card-surface mt-10 flex flex-col gap-4 p-4 sm:flex-row sm:flex-wrap sm:items-end">
             <div class="min-w-0 flex-1">
                 <label for="opp_q" class="block text-xs font-bold uppercase tracking-wide text-slate-500">{{ __('Search opportunities') }}</label>
                 <input type="search" id="opp_q" name="q" value="{{ $search }}" maxlength="120" placeholder="{{ __('Search by title or host organization') }}" class="mt-1 block w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500">

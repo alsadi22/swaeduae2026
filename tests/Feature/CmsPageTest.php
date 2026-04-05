@@ -89,6 +89,25 @@ class CmsPageTest extends TestCase
             ->assertSee('<meta property="og:url" content="'.e($expected).'">', false);
     }
 
+    public function test_published_cms_page_emits_article_structured_data_and_og_type(): void
+    {
+        CmsPage::query()->create([
+            'slug' => 'article-jsonld',
+            'locale' => 'en',
+            'title' => 'Structured article title',
+            'excerpt' => 'Excerpt for schema.',
+            'body' => '## Body',
+            'status' => CmsPage::STATUS_PUBLISHED,
+            'published_at' => now()->subMinute(),
+        ]);
+
+        $this->get('/page/article-jsonld?lang=en')
+            ->assertOk()
+            ->assertSee('"@type":"Article"', false)
+            ->assertSee('"headline":"Structured article title"', false)
+            ->assertSee('property="og:type" content="article"', false);
+    }
+
     public function test_published_cms_page_emits_og_image_when_set(): void
     {
         CmsPage::query()->create([

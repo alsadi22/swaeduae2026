@@ -157,4 +157,44 @@ final class SwaedUaeStructuredData
 
         return $data;
     }
+
+    /**
+     * Schema.org Article for public CMS-backed pages (Markdown body).
+     *
+     * @return array<string, mixed>
+     */
+    public static function cmsArticleForJsonLd(CmsPage $page, string $pageUrl): array
+    {
+        $data = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Article',
+            'headline' => $page->title,
+            'url' => $pageUrl,
+            'mainEntityOfPage' => $pageUrl,
+        ];
+
+        if ($page->published_at !== null) {
+            $data['datePublished'] = $page->published_at->toIso8601String();
+        }
+
+        $data['dateModified'] = $page->updated_at->toIso8601String();
+
+        $desc = $page->meta_description ?? $page->excerpt;
+        if (is_string($desc) && $desc !== '') {
+            $data['description'] = Str::limit(strip_tags($desc), 500);
+        }
+
+        $img = $page->resolvedOgImageUrl();
+        if ($img !== null && $img !== '') {
+            $data['image'] = [$img];
+        }
+
+        $data['publisher'] = [
+            '@type' => 'Organization',
+            'name' => __('SwaedUAE'),
+            'url' => url('/'),
+        ];
+
+        return $data;
+    }
 }

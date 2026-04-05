@@ -43,7 +43,9 @@ class MediaHubPageTest extends TestCase
 
         $this->get('/media?filter=internal')
             ->assertOk()
-            ->assertSeeText('Press release alpha');
+            ->assertSeeText('Press release alpha')
+            ->assertSeeText(__('News feed'))
+            ->assertSeeText(__('site.media_hub_feed_hint'));
     }
 
     public function test_media_hub_hides_internal_page_when_show_on_media_disabled(): void

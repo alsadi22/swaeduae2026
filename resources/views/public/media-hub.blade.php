@@ -26,11 +26,13 @@
         <h1 class="public-page-title">{{ __('Media center') }}</h1>
         <p class="mt-8 max-w-2xl text-slate-600 leading-relaxed">{{ __('site.media_hub_intro') }}</p>
         <p class="mt-4 max-w-2xl text-sm text-slate-500">{{ __('site.media_hub_list_hint') }}</p>
+        <p class="mt-4 max-w-2xl text-sm text-slate-600">
+            <a href="{{ route('feed', $localeQ) }}" class="font-bold text-emerald-800 hover:text-emerald-950 hover:underline">{{ __('News feed') }}</a>
+            <span class="text-slate-400"> · </span>
+            <span class="text-slate-500">{{ __('site.media_hub_feed_hint') }}</span>
+        </p>
 
-        <form method="get" action="{{ route('media.index') }}" class="mt-8 flex max-w-xl flex-col gap-3 sm:flex-row sm:items-end" role="search">
-            @foreach ($localeQ as $lk => $lv)
-                <input type="hidden" name="{{ $lk }}" value="{{ $lv }}">
-            @endforeach
+        <form method="get" action="{{ route('media.index', $localeQ) }}" class="mt-8 flex max-w-xl flex-col gap-3 sm:flex-row sm:items-end" role="search">
             <input type="hidden" name="filter" value="{{ $filter }}">
             @if ($sourceId)
                 <input type="hidden" name="source_id" value="{{ $sourceId }}">
@@ -59,10 +61,7 @@
         </div>
 
         @if ($sources->isNotEmpty())
-            <form method="get" action="{{ route('media.index') }}" class="mt-6 flex flex-wrap items-end gap-3">
-                @foreach ($localeQ as $lk => $lv)
-                    <input type="hidden" name="{{ $lk }}" value="{{ $lv }}">
-                @endforeach
+            <form method="get" action="{{ route('media.index', $localeQ) }}" class="mt-6 flex flex-wrap items-end gap-3">
                 <input type="hidden" name="filter" value="{{ $filter }}">
                 @if ($search !== '')
                     <input type="hidden" name="q" value="{{ $search }}">

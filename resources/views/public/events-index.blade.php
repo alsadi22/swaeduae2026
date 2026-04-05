@@ -1,8 +1,9 @@
 @php
     /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, \App\Models\Event> $events */
+    $eventsLocaleQ = \App\Support\PublicLocale::query();
     $breadcrumbItems = [
-        ['name' => __('Home'), 'url' => route('home', \App\Support\PublicLocale::query(), true)],
-        ['name' => __('Events'), 'url' => route('events.index', \App\Support\PublicLocale::query(), true)],
+        ['name' => __('Home'), 'url' => route('home', $eventsLocaleQ, true)],
+        ['name' => __('Events'), 'url' => route('events.index', $eventsLocaleQ, true)],
     ];
 @endphp
 <x-public-layout :title="$pageTitle" :metaDescription="$metaDescription" :breadcrumbItems="$breadcrumbItems">
@@ -31,10 +32,7 @@
             <h2 class="font-display text-xl font-bold text-emerald-950 sm:text-2xl">{{ __('Upcoming events') }}</h2>
             <p class="mt-2 max-w-2xl text-sm text-slate-600">{{ __('site.events_calendar_hint') }}</p>
 
-            <form method="get" action="{{ route('events.index') }}" class="card-surface mt-8 flex flex-col gap-4 p-4 sm:flex-row sm:flex-wrap sm:items-end">
-                @foreach (\App\Support\PublicLocale::query() as $lk => $lv)
-                    <input type="hidden" name="{{ $lk }}" value="{{ $lv }}">
-                @endforeach
+            <form method="get" action="{{ route('events.index', $eventsLocaleQ) }}" class="card-surface mt-8 flex flex-col gap-4 p-4 sm:flex-row sm:flex-wrap sm:items-end">
                 <div class="min-w-0 flex-1">
                     <label for="public_events_q" class="block text-xs font-bold uppercase tracking-wide text-slate-500">{{ __('Search events') }}</label>
                     <input type="search" id="public_events_q" name="q" value="{{ $search }}" maxlength="120" placeholder="{{ __('Search by title or host organization') }}" class="mt-1 block w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
@@ -42,7 +40,7 @@
                 <div class="flex flex-wrap gap-2">
                     <button type="submit" class="btn-primary-solid">{{ __('Apply') }}</button>
                     @if (filled($search))
-                        <a href="{{ route('events.index', \App\Support\PublicLocale::query()) }}" class="btn-secondary-muted">{{ __('Clear') }}</a>
+                        <a href="{{ route('events.index', $eventsLocaleQ) }}" class="btn-secondary-muted">{{ __('Clear') }}</a>
                     @endif
                 </div>
             </form>
@@ -50,10 +48,10 @@
             @if ($events->total() === 0)
                 @if (filled($search))
                     <p class="mt-8 text-sm text-slate-600">{{ __('No events match your search.') }}</p>
-                    <a href="{{ route('events.index', \App\Support\PublicLocale::query()) }}" class="btn-secondary-muted mt-4 inline-flex">{{ __('Clear') }}</a>
+                    <a href="{{ route('events.index', $eventsLocaleQ) }}" class="btn-secondary-muted mt-4 inline-flex">{{ __('Clear') }}</a>
                 @else
                     <p class="mt-8 text-sm text-slate-600">{{ __('No upcoming events listed yet.') }}</p>
-                    <a href="{{ route('volunteer.opportunities.index', \App\Support\PublicLocale::query()) }}" class="mt-4 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Browse opportunities') }} →</a>
+                    <a href="{{ route('volunteer.opportunities.index', $eventsLocaleQ) }}" class="mt-4 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Browse opportunities') }} →</a>
                 @endif
             @else
                 <ul class="mt-10 space-y-4">
@@ -67,7 +65,7 @@
                                         <span class="text-sm font-bold text-emerald-800">{{ __('Open registration') }}</span>
                                     @endif
                                     <h3 class="font-display mt-2 text-lg font-bold text-slate-900">
-                                        <a href="{{ route('events.show', array_merge(['event' => $ev], \App\Support\PublicLocale::query())) }}" class="hover:text-emerald-800 hover:underline">{{ $ev->titleForLocale() }}</a>
+                                        <a href="{{ route('events.show', array_merge(['event' => $ev], $eventsLocaleQ)) }}" class="hover:text-emerald-800 hover:underline">{{ $ev->titleForLocale() }}</a>
                                     </h3>
                                     @if ($ev->organization)
                                         <p class="mt-1 text-sm text-slate-500">{{ $ev->organization->nameForLocale() }}</p>
@@ -78,7 +76,7 @@
                                         {{ $ev->event_ends_at->locale(app()->getLocale())->isoFormat('LLL') }}
                                     </p>
                                 </div>
-                                <a href="{{ route('events.show', array_merge(['event' => $ev], \App\Support\PublicLocale::query())) }}" class="btn-primary-solid shrink-0">{{ __('Details') }}</a>
+                                <a href="{{ route('events.show', array_merge(['event' => $ev], $eventsLocaleQ)) }}" class="btn-primary-solid shrink-0">{{ __('Details') }}</a>
                             </div>
                         </li>
                     @endforeach
@@ -86,7 +84,7 @@
                 <div class="mt-10">
                     {{ $events->links('vendor.pagination.tailwind-public') }}
                 </div>
-                <a href="{{ route('volunteer.opportunities.index', \App\Support\PublicLocale::query()) }}" class="mt-8 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Volunteer opportunities') }} →</a>
+                <a href="{{ route('volunteer.opportunities.index', $eventsLocaleQ) }}" class="mt-8 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Volunteer opportunities') }} →</a>
             @endif
         </section>
     </div>

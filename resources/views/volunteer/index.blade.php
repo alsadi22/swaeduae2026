@@ -17,10 +17,11 @@
             <div class="mt-8 flex flex-wrap gap-3">
                 <a href="{{ route('volunteer.opportunities.index', $localeQ) }}" class="btn-primary-solid">{{ __('Browse opportunities') }}</a>
                 @guest
+                    @php($registerQ = array_merge(\App\Support\IntendedUrl::queryParamsForRequestUri(request()), $localeQ))
                     @if (Route::has('register.volunteer'))
-                        <a href="{{ route('register.volunteer', \App\Support\IntendedUrl::queryParamsForRequestUri(request())) }}" class="btn-secondary-muted">{{ __('Create account') }}</a>
+                        <a href="{{ route('register.volunteer', $registerQ) }}" class="btn-secondary-muted">{{ __('Create account') }}</a>
                     @elseif (Route::has('register'))
-                        <a href="{{ route('register', \App\Support\IntendedUrl::queryParamsForRequestUri(request())) }}" class="btn-secondary-muted">{{ __('Create account') }}</a>
+                        <a href="{{ route('register', $registerQ) }}" class="btn-secondary-muted">{{ __('Create account') }}</a>
                     @endif
                 @endguest
             </div>
