@@ -7,6 +7,7 @@ use App\Models\EventApplication;
 use App\Models\Organization;
 use App\Models\User;
 use App\Models\VolunteerProfile;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -136,7 +137,7 @@ class VolunteerOpportunitiesTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('volunteer.opportunities.join', $event));
 
-        $response->assertRedirect(route('volunteer.opportunities.show', $event));
+        $response->assertRedirect(route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryForUser($user))));
         $this->assertTrue($event->fresh()->userIsOnRoster($user));
     }
 

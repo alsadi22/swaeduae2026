@@ -7,6 +7,7 @@ use App\Models\EventApplication;
 use App\Models\Organization;
 use App\Models\User;
 use App\Models\VolunteerProfile;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use OwenIt\Auditing\Models\Audit;
@@ -80,7 +81,7 @@ class VolunteerEventApplicationTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('volunteer.opportunities.apply', $event), ['message' => 'I would like to help.'])
-            ->assertRedirect(route('volunteer.opportunities.show', $event));
+            ->assertRedirect(route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryForUser($user))));
 
         $this->assertDatabaseHas('event_applications', [
             'event_id' => $event->id,
@@ -122,7 +123,7 @@ class VolunteerEventApplicationTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('volunteer.opportunities.withdraw-application', $event))
-            ->assertRedirect(route('volunteer.opportunities.show', $event));
+            ->assertRedirect(route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryForUser($user))));
 
         $this->assertDatabaseHas('event_applications', [
             'event_id' => $event->id,

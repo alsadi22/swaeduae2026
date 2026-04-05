@@ -16,7 +16,7 @@
     <p style="margin-top: 0.5rem; padding: 0.75rem 1rem; background: #fafaf9; border-left: 3px solid #78716c; white-space: pre-wrap;">{{ $dispute->description }}</p>
 
     <p style="margin-top: 1.5rem;">
-        <a href="{{ route('admin.disputes.show', $dispute, true) }}" style="color: #047857; font-weight: 600;">{{ __('Review dispute in admin') }}</a>
+        <a href="{{ route('admin.disputes.show', array_merge(['dispute' => $dispute], \App\Support\PublicLocale::query()), true) }}" style="color: #047857; font-weight: 600;">{{ __('Review dispute in admin') }}</a>
     </p>
 
     <p style="margin-top: 1.5rem; font-size: 0.875rem; color: #78716c;">{{ config('app.name') }}</p>

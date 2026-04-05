@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Volunteer\ApplyToOpportunityRequest;
 use App\Models\Event;
 use App\Models\EventApplication;
+use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
@@ -118,7 +119,7 @@ class VolunteerHubController extends Controller
         $event->volunteers()->syncWithoutDetaching([$user->id]);
 
         return redirect()
-            ->route('volunteer.opportunities.show', $event)
+            ->route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryForUser($user)))
             ->with(
                 'status',
                 $already
@@ -134,7 +135,7 @@ class VolunteerHubController extends Controller
         $event->volunteers()->detach($request->user()->id);
 
         return redirect()
-            ->route('volunteer.opportunities.show', $event)
+            ->route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryForUser($request->user())))
             ->with('status', __('You are no longer on the roster for this opportunity.'));
     }
 
@@ -155,7 +156,7 @@ class VolunteerHubController extends Controller
         );
 
         return redirect()
-            ->route('volunteer.opportunities.show', $event)
+            ->route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryForUser($request->user())))
             ->with('status', __('Application submitted.'));
     }
 
@@ -169,7 +170,7 @@ class VolunteerHubController extends Controller
         }
 
         return redirect()
-            ->route('volunteer.opportunities.show', $event)
+            ->route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryForUser($request->user())))
             ->with('status', __('Application withdrawn.'));
     }
 }

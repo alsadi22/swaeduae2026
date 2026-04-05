@@ -7,6 +7,6 @@
 {{ __('Description') }}:
 {{ $dispute->description }}
 
-{{ __('Review dispute in admin') }}: {{ route('admin.disputes.show', $dispute, true) }}
+{{ __('Review dispute in admin') }}: {{ route('admin.disputes.show', array_merge(['dispute' => $dispute], \App\Support\PublicLocale::query()), true) }}
 
 — {{ config('app.name') }}

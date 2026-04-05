@@ -1,11 +1,14 @@
 <x-app-layout>
+    @php
+        $orgLocaleQ = \App\Support\PublicLocale::query();
+    @endphp
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Organization portal events title') }}
             </h2>
             @can('configure-organization-events')
-                <a href="{{ route('organization.events.create') }}" class="inline-flex items-center rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold text-white hover:bg-gray-700">
+                <a href="{{ route('organization.events.create', $orgLocaleQ) }}" class="inline-flex items-center rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold text-white hover:bg-gray-700">
                     {{ __('New event') }}
                 </a>
             @endcan
@@ -22,7 +25,7 @@
 
             <p class="mb-6 text-sm text-gray-600">{{ __('Organization portal events hint') }}</p>
 
-            <form method="get" action="{{ route('organization.events.index') }}" class="mb-6 flex flex-wrap items-end gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+            <form method="get" action="{{ route('organization.events.index', $orgLocaleQ) }}" class="mb-6 flex flex-wrap items-end gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                 <div>
                     <x-input-label for="org_events_search" :value="__('Search events')" />
                     <x-text-input id="org_events_search" name="search" type="search" class="mt-1 block w-64 max-w-full" :value="$search" autocomplete="off" />
@@ -44,7 +47,7 @@
                 </div>
                 <x-secondary-button type="submit">{{ __('Apply filters') }}</x-secondary-button>
                 @if (filled($search) || $timing !== 'all' || $sort !== 'starts_desc')
-                    <a href="{{ route('organization.events.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">{{ __('Clear filters') }}</a>
+                    <a href="{{ route('organization.events.index', $orgLocaleQ) }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">{{ __('Clear filters') }}</a>
                 @endif
             </form>
 
@@ -69,13 +72,13 @@
                                     <td class="py-3 pe-4 text-gray-600">{{ $e->volunteers_count }}</td>
                                     <td class="py-3 text-end space-x-2">
                                         @can('viewInOrganizationPortal', $e)
-                                            <a href="{{ route('organization.events.roster', $e) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('Roster') }}</a>
+                                            <a href="{{ route('organization.events.roster', array_merge(['event' => $e], $orgLocaleQ)) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('Roster') }}</a>
                                         @endcan
                                         @can('configureInOrganizationPortal', $e)
-                                            <a href="{{ route('organization.events.edit', $e) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
+                                            <a href="{{ route('organization.events.edit', array_merge(['event' => $e], $orgLocaleQ)) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
                                         @endcan
                                         @can('deleteInOrganizationPortal', $e)
-                                            <form action="{{ route('organization.events.destroy', $e) }}" method="post" class="inline" onsubmit="return confirm(@json(__('Delete this event?')));">
+                                            <form action="{{ route('organization.events.destroy', array_merge(['event' => $e], $orgLocaleQ)) }}" method="post" class="inline" onsubmit="return confirm(@json(__('Delete this event?')));">
                                                 @csrf
                                                 @method('delete')
                                                 <button type="submit" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</button>

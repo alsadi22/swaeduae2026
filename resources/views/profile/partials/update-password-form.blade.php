@@ -1,3 +1,6 @@
+@php
+    $profileLocaleQ = $profileLocaleQ ?? \App\Support\PublicLocale::query();
+@endphp
 <section>
     <header>
         <h2 class="font-display text-lg font-bold text-slate-900">
@@ -9,7 +12,7 @@
         </p>
     </header>
 
-    <form method="post" action="{{ route('password.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('password.update', $profileLocaleQ) }}" class="mt-6 space-y-6">
         @csrf
         @method('put')
 

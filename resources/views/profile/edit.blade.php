@@ -1,4 +1,7 @@
 <x-app-layout>
+    @php
+        $profileLocaleQ = \App\Support\PublicLocale::query();
+    @endphp
     <x-slot name="header">
         <h2 class="font-display text-xl font-bold leading-tight text-emerald-950">
             {{ __('Profile') }}

@@ -1,3 +1,6 @@
+@php
+    $profileLocaleQ = $profileLocaleQ ?? \App\Support\PublicLocale::query();
+@endphp
 <section>
     <header>
         <h2 class="font-display text-lg font-bold text-slate-900">
@@ -9,11 +12,11 @@
         </p>
     </header>
 
-    <form id="send-verification" method="post" action="{{ route('verification.send') }}">
+    <form id="send-verification" method="post" action="{{ route('verification.send', $profileLocaleQ) }}">
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update', $profileLocaleQ) }}" class="mt-6 space-y-6">
         @csrf
         @method('patch')
 

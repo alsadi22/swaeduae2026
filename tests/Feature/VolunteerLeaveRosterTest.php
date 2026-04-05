@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Event;
 use App\Models\Organization;
 use App\Models\User;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -30,7 +31,7 @@ class VolunteerLeaveRosterTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('volunteer.opportunities.leave', $event));
 
-        $response->assertRedirect(route('volunteer.opportunities.show', $event));
+        $response->assertRedirect(route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryForUser($user))));
         $this->assertFalse($event->fresh()->userIsOnRoster($user));
     }
 

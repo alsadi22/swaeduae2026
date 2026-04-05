@@ -1,3 +1,6 @@
+@php
+    $profileLocaleQ = $profileLocaleQ ?? \App\Support\PublicLocale::query();
+@endphp
 <section class="space-y-6">
     <header>
         <h2 class="font-display text-lg font-bold text-slate-900">
@@ -15,7 +18,7 @@
     >{{ __('Delete Account') }}</x-danger-button>
 
     <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
-        <form method="post" action="{{ route('profile.destroy') }}" class="p-6">
+        <form method="post" action="{{ route('profile.destroy', $profileLocaleQ) }}" class="p-6">
             @csrf
             @method('delete')
 

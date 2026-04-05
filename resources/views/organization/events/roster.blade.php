@@ -1,10 +1,13 @@
 <x-app-layout>
+    @php
+        $orgLocaleQ = \App\Support\PublicLocale::query();
+    @endphp
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Organization portal event roster title') }}
             </h2>
-            <a href="{{ route('organization.events.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">
+            <a href="{{ route('organization.events.index', $orgLocaleQ) }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">
                 {{ __('Back to events') }}
             </a>
         </div>
@@ -31,18 +34,18 @@
             </div>
 
             <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
-                <form method="get" action="{{ route('organization.events.roster', $event) }}" class="flex flex-wrap items-end gap-3">
+                <form method="get" action="{{ route('organization.events.roster', array_merge(['event' => $event], $orgLocaleQ)) }}" class="flex flex-wrap items-end gap-3">
                     <div>
                         <x-input-label for="roster_search" :value="__('Search roster')" />
                         <x-text-input id="roster_search" name="search" type="search" class="mt-1 block w-64 max-w-full" :value="$search" autocomplete="off" />
                     </div>
                     <x-secondary-button type="submit">{{ __('Search') }}</x-secondary-button>
                     @if (filled($search))
-                        <a href="{{ route('organization.events.roster', $event) }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">{{ __('Clear') }}</a>
+                        <a href="{{ route('organization.events.roster', array_merge(['event' => $event], $orgLocaleQ)) }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">{{ __('Clear') }}</a>
                     @endif
                 </form>
                 <div class="flex flex-col items-end gap-1">
-                    <a href="{{ route('organization.events.roster.export', array_filter(['event' => $event, 'search' => filled($search) ? $search : null])) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">
+                    <a href="{{ route('organization.events.roster.export', \App\Support\PublicLocale::mergeQuery(array_filter(['event' => $event, 'search' => filled($search) ? $search : null]))) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">
                         {{ __('Export roster CSV') }}
                     </a>
                     @if (filled($search))
@@ -90,7 +93,7 @@
                                     </td>
                                     <td class="py-3 text-end">
                                         @can('removeVolunteerFromRosterInOrganizationPortal', [$event, $v])
-                                            <form action="{{ route('organization.events.roster.volunteers.destroy', [$event, $v]) }}" method="post" class="inline" onsubmit="return confirm(@json(__('Remove volunteer from roster confirm')));">
+                                            <form action="{{ route('organization.events.roster.volunteers.destroy', array_merge(['event' => $event, 'volunteer' => $v], $orgLocaleQ)) }}" method="post" class="inline" onsubmit="return confirm(@json(__('Remove volunteer from roster confirm')));">
                                                 @csrf
                                                 @method('delete')
                                                 @if (filled($search))
@@ -116,7 +119,7 @@
 
             @can('configureInOrganizationPortal', $event)
                 <p class="mt-6 text-center text-sm">
-                    <a href="{{ route('organization.events.edit', $event) }}" class="font-medium text-indigo-600 hover:text-indigo-900">{{ __('Edit event') }}</a>
+                    <a href="{{ route('organization.events.edit', array_merge(['event' => $event], $orgLocaleQ)) }}" class="font-medium text-indigo-600 hover:text-indigo-900">{{ __('Edit event') }}</a>
                 </p>
             @endcan
         </div>

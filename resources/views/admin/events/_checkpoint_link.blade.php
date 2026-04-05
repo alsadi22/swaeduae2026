@@ -10,7 +10,7 @@
             <button type="button" class="mt-2 text-xs font-semibold text-indigo-700 hover:text-indigo-900" onclick="navigator.clipboard.writeText(document.getElementById('event-uuid-value').textContent.trim())">{{ __('Copy UUID') }}</button>
         </div>
 
-        <form method="post" action="{{ route($checkpointSignedUrlRoute ?? 'admin.events.checkpoint-signed-url', $event) }}" class="flex flex-wrap items-end gap-3 border-t border-gray-200 pt-4">
+        <form method="post" action="{{ route($checkpointSignedUrlRoute ?? 'admin.events.checkpoint-signed-url', array_merge(['event' => $event], $checkpointRouteQuery ?? [])) }}" class="flex flex-wrap items-end gap-3 border-t border-gray-200 pt-4">
             @csrf
             <div>
                 <x-input-label for="checkpoint_link_days" :value="__('Signed link validity (days)')" />
