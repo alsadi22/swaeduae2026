@@ -4,6 +4,14 @@
     $pageAbsoluteUrl = ($previewMode ?? false) ? null : $cmsPage->absolutePublicUrl();
     $ogDescription = $metaDescription ?? __('site.meta_description');
     $ogImage = $cmsPage->resolvedOgImageUrl();
+    $breadcrumbItems = null;
+    if (empty($previewMode ?? false)) {
+        $localeQ = \App\Support\PublicLocale::query();
+        $breadcrumbItems = [
+            ['name' => __('Home'), 'url' => route('home', $localeQ, true)],
+            ['name' => $cmsPage->title, 'url' => $cmsPage->absolutePublicUrl()],
+        ];
+    }
 @endphp
 <x-public-layout
     :title="$pageTitle"
@@ -13,6 +21,7 @@
     :ogTitle="$cmsPage->title"
     :ogDescription="$ogDescription"
     :ogImage="$ogImage"
+    :breadcrumbItems="$breadcrumbItems"
 >
     @if (! empty($previewMode))
         <div class="border-b border-amber-200 bg-amber-50">

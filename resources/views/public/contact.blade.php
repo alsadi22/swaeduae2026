@@ -1,7 +1,12 @@
 @php
     $pageTitle = __('Contact').' — '.__('SwaedUAE');
+    $localeQ = \App\Support\PublicLocale::query();
+    $breadcrumbItems = [
+        ['name' => __('Home'), 'url' => route('home', $localeQ, true)],
+        ['name' => __('Contact'), 'url' => route('contact.show', $localeQ, true)],
+    ];
 @endphp
-<x-public-layout :title="$pageTitle" :metaDescription="__('site.meta_description')">
+<x-public-layout :title="$pageTitle" :metaDescription="__('site.meta_description')" :breadcrumbItems="$breadcrumbItems">
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
         <h1 class="public-page-title">{{ __('Contact') }}</h1>
 
@@ -14,7 +19,7 @@
                 </p>
                 <p class="mt-6 text-sm text-slate-600">{{ __('Contact also see support') }}</p>
                 <p class="mt-2 text-sm text-slate-500">
-                    <a href="{{ route('support.show') }}" class="font-semibold text-emerald-800 hover:underline">{{ __('Help and support') }}</a>
+                    <a href="{{ route('support.show', $localeQ) }}" class="font-semibold text-emerald-800 hover:underline">{{ __('Help and support') }}</a>
                     <span class="text-slate-500"> · </span>
                     <a href="mailto:{{ config('swaeduae.mail.support') }}" class="font-semibold text-emerald-800 hover:underline">{{ config('swaeduae.mail.support') }}</a>
                 </p>

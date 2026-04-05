@@ -5,18 +5,28 @@
         220
     );
     $ogImage = \App\Models\CmsPage::resolveShareImageUrl(config('swaeduae.default_og_image_url'));
+    $localeQ = \App\Support\PublicLocale::query();
+    $breadcrumbItems = [
+        ['name' => __('Home'), 'url' => route('home', $localeQ, true)],
+        ['name' => __('Volunteer'), 'url' => route('volunteer.index', $localeQ, true)],
+        ['name' => __('Volunteer opportunities'), 'url' => route('volunteer.opportunities.index', $localeQ, true)],
+        ['name' => \Illuminate\Support\Str::limit($event->titleForLocale(), 72), 'url' => route('volunteer.opportunities.show', array_merge(['event' => $event], $localeQ), true)],
+    ];
+    $extraJsonLd = \App\Support\SwaedUaeStructuredData::publicEventForJsonLd($event);
 @endphp
 <x-public-layout
     :title="$pageTitle"
     :metaDescription="$metaDescription"
-    :ogUrl="route('volunteer.opportunities.show', $event, true)"
+    :ogUrl="route('volunteer.opportunities.show', array_merge(['event' => $event], $localeQ), true)"
     :ogTitle="$event->titleForLocale()"
     :ogDescription="$metaDescription"
     ogType="article"
     :ogImage="$ogImage"
+    :breadcrumbItems="$breadcrumbItems"
+    :extraJsonLd="$extraJsonLd"
 >
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
-        <a href="{{ route('volunteer.opportunities.index') }}" class="text-sm font-bold text-emerald-800 hover:underline">← {{ __('Volunteer opportunities') }}</a>
+        <a href="{{ route('volunteer.opportunities.index', $localeQ) }}" class="text-sm font-bold text-emerald-800 hover:underline">← {{ __('Volunteer opportunities') }}</a>
 
         <article class="card-surface mt-8 max-w-3xl p-8">
             @if (session('status'))

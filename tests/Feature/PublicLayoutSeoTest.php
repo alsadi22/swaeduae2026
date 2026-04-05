@@ -6,6 +6,7 @@ use App\Models\CmsPage;
 use App\Models\Event;
 use App\Models\Organization;
 use App\Models\User;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -101,13 +102,14 @@ class PublicLayoutSeoTest extends TestCase
             'checkin_window_ends_at' => now()->addDays(2),
         ]);
 
-        $url = route('volunteer.opportunities.show', $event, true);
+        $url = route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::query()), true);
         $response = $this->get(route('volunteer.opportunities.show', $event));
 
         $response->assertOk();
         $response->assertSee('rel="canonical"', false);
         $response->assertSee('property="og:url"', false);
         $this->assertStringContainsString($url, $response->getContent());
+        $response->assertSee('"@type":"Event"', false);
         $response->assertSee('property="og:type"', false);
         $response->assertSee('content="article"', false);
     }
@@ -132,5 +134,6 @@ class PublicLayoutSeoTest extends TestCase
         $response->assertSee('rel="canonical"', false);
         $response->assertSee('property="og:image"', false);
         $response->assertSee('https://cdn.example/event-og.png', false);
+        $response->assertSee('"@type":"Event"', false);
     }
 }

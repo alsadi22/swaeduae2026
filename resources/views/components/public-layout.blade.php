@@ -9,6 +9,8 @@
     'ogImage' => null,
     /** @var list<array{name: string, url: string}>|null */
     'breadcrumbItems' => null,
+    /** @var array<string, mixed>|null */
+    'extraJsonLd' => null,
 ])
 
 @php
@@ -27,6 +29,10 @@
     $breadcrumbJsonLd = null;
     if (is_array($breadcrumbItems) && $breadcrumbItems !== [] && ! $isAdminCmsPreview) {
         $breadcrumbJsonLd = \App\Support\SwaedUaeStructuredData::breadcrumbGraph($breadcrumbItems);
+    }
+    $resolvedExtraJsonLd = null;
+    if (! $isAdminCmsPreview && is_array($extraJsonLd) && $extraJsonLd !== []) {
+        $resolvedExtraJsonLd = $extraJsonLd;
     }
 @endphp
 
@@ -92,6 +98,11 @@
         @if ($breadcrumbJsonLd !== null)
             <script type="application/ld+json">
                 {!! json_encode($breadcrumbJsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
+            </script>
+        @endif
+        @if ($resolvedExtraJsonLd !== null)
+            <script type="application/ld+json">
+                {!! json_encode($resolvedExtraJsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
             </script>
         @endif
     </head>
@@ -230,26 +241,27 @@
                         <p class="font-display text-lg font-bold text-emerald-950">{{ __('SwaedUAE') }}</p>
                         <p class="mt-3 max-w-sm text-sm leading-relaxed text-slate-600">{{ __('site.footer_tagline') }}</p>
                     </div>
+                    @php($footerLocaleQ = \App\Support\PublicLocale::query())
                     <div class="lg:col-span-2">
                         <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{{ __('Quick links') }}</p>
                         <ul class="mt-4 space-y-2.5 text-sm text-slate-600">
-                            <li><a href="{{ route('programs.index') }}" class="footer-link">{{ __('Programs') }}</a></li>
-                            <li><a href="{{ route('youth-councils') }}" class="footer-link">{{ __('Youth Councils') }}</a></li>
-                            <li><a href="{{ route('events.index') }}" class="footer-link">{{ __('Events') }}</a></li>
-                            <li><a href="{{ route('media.index') }}" class="footer-link">{{ __('Media') }}</a></li>
-                            <li><a href="{{ route('gallery') }}" class="footer-link">{{ __('Gallery') }}</a></li>
-                            <li><a href="{{ route('volunteer.index') }}" class="footer-link">{{ __('Volunteer') }}</a></li>
+                            <li><a href="{{ route('programs.index', $footerLocaleQ) }}" class="footer-link">{{ __('Programs') }}</a></li>
+                            <li><a href="{{ route('youth-councils', $footerLocaleQ) }}" class="footer-link">{{ __('Youth Councils') }}</a></li>
+                            <li><a href="{{ route('events.index', $footerLocaleQ) }}" class="footer-link">{{ __('Events') }}</a></li>
+                            <li><a href="{{ route('media.index', $footerLocaleQ) }}" class="footer-link">{{ __('Media') }}</a></li>
+                            <li><a href="{{ route('gallery', $footerLocaleQ) }}" class="footer-link">{{ __('Gallery') }}</a></li>
+                            <li><a href="{{ route('volunteer.index', $footerLocaleQ) }}" class="footer-link">{{ __('Volunteer') }}</a></li>
                         </ul>
                     </div>
                     <div class="lg:col-span-3">
                         <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{{ __('Organization') }}</p>
                         <ul class="mt-4 space-y-2.5 text-sm text-slate-600">
-                            <li><a href="{{ route('about') }}" class="footer-link">{{ __('About') }}</a></li>
-                            <li><a href="{{ route('leadership') }}" class="footer-link">{{ __('Leadership') }}</a></li>
-                            <li><a href="{{ route('partners') }}" class="footer-link">{{ __('Partners') }}</a></li>
-                            <li><a href="{{ route('faq') }}" class="footer-link">{{ __('FAQ') }}</a></li>
-                            <li><a href="{{ route('support.show') }}" class="footer-link">{{ __('Help and support') }}</a></li>
-                            <li><a href="{{ route('contact.show') }}" class="footer-link">{{ __('Contact') }}</a></li>
+                            <li><a href="{{ route('about', $footerLocaleQ) }}" class="footer-link">{{ __('About') }}</a></li>
+                            <li><a href="{{ route('leadership', $footerLocaleQ) }}" class="footer-link">{{ __('Leadership') }}</a></li>
+                            <li><a href="{{ route('partners', $footerLocaleQ) }}" class="footer-link">{{ __('Partners') }}</a></li>
+                            <li><a href="{{ route('faq', $footerLocaleQ) }}" class="footer-link">{{ __('FAQ') }}</a></li>
+                            <li><a href="{{ route('support.show', $footerLocaleQ) }}" class="footer-link">{{ __('Help and support') }}</a></li>
+                            <li><a href="{{ route('contact.show', $footerLocaleQ) }}" class="footer-link">{{ __('Contact') }}</a></li>
                         </ul>
                     </div>
                     <div class="lg:col-span-3">
@@ -257,9 +269,9 @@
                         <ul class="mt-4 space-y-2.5 text-sm text-slate-600">
                             <li><a href="mailto:{{ config('swaeduae.mail.support') }}" class="footer-link font-medium text-emerald-800 hover:text-emerald-900">{{ config('swaeduae.mail.support') }}</a></li>
                             <li><span class="text-slate-500">{{ config('swaeduae.domain') }}</span></li>
-                            <li><a href="{{ route('legal.terms') }}" class="footer-link">{{ __('Terms') }}</a></li>
-                            <li><a href="{{ route('legal.privacy') }}" class="footer-link">{{ __('Privacy') }}</a></li>
-                            <li><a href="{{ route('legal.cookies') }}" class="footer-link">{{ __('Cookies') }}</a></li>
+                            <li><a href="{{ route('legal.terms', $footerLocaleQ) }}" class="footer-link">{{ __('Terms') }}</a></li>
+                            <li><a href="{{ route('legal.privacy', $footerLocaleQ) }}" class="footer-link">{{ __('Privacy') }}</a></li>
+                            <li><a href="{{ route('legal.cookies', $footerLocaleQ) }}" class="footer-link">{{ __('Cookies') }}</a></li>
                             <li><a href="{{ route('sitemap') }}" class="footer-link">{{ __('Sitemap') }}</a></li>
                         </ul>
                     </div>

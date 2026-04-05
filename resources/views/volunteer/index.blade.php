@@ -1,8 +1,13 @@
 @php
     $pageTitle = __('Volunteer platform').' — '.config('app.name');
     $metaDescription = __('site.volunteer_highlight');
+    $localeQ = \App\Support\PublicLocale::query();
+    $breadcrumbItems = [
+        ['name' => __('Home'), 'url' => route('home', $localeQ, true)],
+        ['name' => __('Volunteer platform'), 'url' => route('volunteer.index', $localeQ, true)],
+    ];
 @endphp
-<x-public-layout :title="$pageTitle" :metaDescription="$metaDescription">
+<x-public-layout :title="$pageTitle" :metaDescription="$metaDescription" :breadcrumbItems="$breadcrumbItems">
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
         <div class="card-surface p-8 sm:p-10">
             <h1 class="public-page-title">{{ __('Volunteer platform') }}</h1>
@@ -10,7 +15,7 @@
                 {{ __('Volunteer attendance hint') }}
             </p>
             <div class="mt-8 flex flex-wrap gap-3">
-                <a href="{{ route('volunteer.opportunities.index') }}" class="btn-primary-solid">{{ __('Browse opportunities') }}</a>
+                <a href="{{ route('volunteer.opportunities.index', $localeQ) }}" class="btn-primary-solid">{{ __('Browse opportunities') }}</a>
                 @guest
                     @if (Route::has('register.volunteer'))
                         <a href="{{ route('register.volunteer', \App\Support\IntendedUrl::queryParamsForRequestUri(request())) }}" class="btn-secondary-muted">{{ __('Create account') }}</a>
@@ -20,7 +25,7 @@
                 @endguest
             </div>
             <p class="mt-10">
-                <a href="{{ route('home') }}" class="footer-link text-sm font-semibold">{{ __('Back to home') }}</a>
+                <a href="{{ route('home', $localeQ) }}" class="footer-link text-sm font-semibold">{{ __('Back to home') }}</a>
             </p>
         </div>
     </div>

@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\CmsPage;
+use App\Models\Event;
 
 final class SwaedUaeStructuredData
 {
@@ -72,5 +73,46 @@ final class SwaedUaeStructuredData
             '@type' => 'BreadcrumbList',
             'itemListElement' => $elements,
         ];
+    }
+
+    /**
+     * Schema.org Event for public calendar and volunteer opportunity detail pages.
+     *
+     * @return array<string, mixed>
+     */
+    public static function publicEventForJsonLd(Event $event): array
+    {
+        $event->loadMissing('organization');
+
+        $localeQ = PublicLocale::query();
+
+        $data = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Event',
+            'name' => $event->titleForLocale(),
+            'startDate' => $event->event_starts_at->toIso8601String(),
+            'endDate' => $event->event_ends_at->toIso8601String(),
+            'url' => route('events.show', array_merge(['event' => $event], $localeQ), true),
+        ];
+
+        if ($event->organization !== null) {
+            $data['organizer'] = [
+                '@type' => 'Organization',
+                'name' => $event->organization->nameForLocale(),
+            ];
+        }
+
+        if ($event->latitude !== null && $event->longitude !== null) {
+            $data['location'] = [
+                '@type' => 'Place',
+                'geo' => [
+                    '@type' => 'GeoCoordinates',
+                    'latitude' => $event->latitude,
+                    'longitude' => $event->longitude,
+                ],
+            ];
+        }
+
+        return $data;
     }
 }

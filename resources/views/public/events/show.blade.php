@@ -6,6 +6,7 @@
         ['name' => __('Events'), 'url' => route('events.index', \App\Support\PublicLocale::query(), true)],
         ['name' => \Illuminate\Support\Str::limit($event->titleForLocale(), 72), 'url' => route('events.show', array_merge(['event' => $event], \App\Support\PublicLocale::query()), true)],
     ];
+    $extraJsonLd = \App\Support\SwaedUaeStructuredData::publicEventForJsonLd($event);
 @endphp
 <x-public-layout
     :title="$pageTitle"
@@ -16,6 +17,7 @@
     ogType="article"
     :ogImage="$ogImage"
     :breadcrumbItems="$breadcrumbItems"
+    :extraJsonLd="$extraJsonLd"
 >
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
         <a href="{{ route('events.index', \App\Support\PublicLocale::query()) }}" class="text-sm font-bold text-emerald-800 hover:underline">← {{ __('Events') }}</a>
