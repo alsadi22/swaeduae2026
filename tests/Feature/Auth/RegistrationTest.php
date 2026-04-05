@@ -40,7 +40,7 @@ class RegistrationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('verification.notice', absolute: false));
+        $response->assertRedirect(route('verification.notice', ['lang' => 'en'], absolute: false));
 
         $user = User::query()->where('email', 'test@example.com')->first();
         $this->assertNotNull($user);
@@ -49,6 +49,25 @@ class RegistrationTest extends TestCase
         $this->assertSame('Test', $user->first_name);
         $this->assertSame('Volunteer', $user->last_name);
         $this->assertSame('Test Volunteer', $user->name);
+    }
+
+    public function test_volunteer_registration_redirect_includes_chosen_ar_locale(): void
+    {
+        $this->seed(RoleSeeder::class);
+
+        $response = $this->post('/register/volunteer', [
+            'first_name' => 'Test',
+            'last_name' => 'Arabic',
+            'email' => 'ar-vol@example.com',
+            'phone' => '+971500000001',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'locale_preferred' => 'ar',
+            'terms' => '1',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('verification.notice', ['lang' => 'ar'], absolute: false));
     }
 
     public function test_volunteer_registration_is_throttled_per_ip(): void
@@ -66,7 +85,7 @@ class RegistrationTest extends TestCase
                 'password_confirmation' => 'password',
                 'locale_preferred' => 'en',
                 'terms' => '1',
-            ])->assertRedirect(route('verification.notice', absolute: false));
+            ])->assertRedirect(route('verification.notice', ['lang' => 'en'], absolute: false));
             Auth::logout();
             $this->flushSession();
         }

@@ -189,7 +189,7 @@
                         @endif
                     @else
                         <p class="mt-4 text-sm text-slate-600">{{ __('Volunteer role required to join opportunities. Contact support if you need help.') }}</p>
-                        <a href="{{ route('dashboard') }}" class="mt-3 inline-flex text-sm font-semibold text-emerald-800 hover:underline">{{ __('Dashboard') }}</a>
+                        <a href="{{ route('dashboard', $localeQ) }}" class="mt-3 inline-flex text-sm font-semibold text-emerald-800 hover:underline">{{ __('Dashboard') }}</a>
                     @endif
                 @else
                     <div class="mt-4 flex flex-wrap gap-3">

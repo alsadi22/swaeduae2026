@@ -7,6 +7,10 @@
     @php
         $volunteer = $dispute->attendance?->user;
         $event = $dispute->attendance?->event;
+        $mailLocaleQ = [];
+        if (is_string($volunteer?->locale_preferred) && in_array($volunteer->locale_preferred, ['en', 'ar'], true)) {
+            $mailLocaleQ['lang'] = $volunteer->locale_preferred;
+        }
     @endphp
     <p>{{ __('Hello :name,', ['name' => $volunteer?->name ?? __('Volunteer')]) }}</p>
 
@@ -22,10 +26,10 @@
 
     @if ($event)
         <p style="margin-top: 1.5rem;">
-            <a href="{{ route('volunteer.opportunities.show', $event) }}" style="color: #047857; font-weight: 600;">{{ __('View opportunity') }}</a>
+            <a href="{{ route('volunteer.opportunities.show', array_merge(['event' => $event], $mailLocaleQ), true) }}" style="color: #047857; font-weight: 600;">{{ __('View opportunity') }}</a>
         </p>
         <p style="margin-top: 1rem;">
-            <a href="{{ route('dashboard.attendance.index') }}" style="color: #047857; font-weight: 600;">{{ __('My attendance') }}</a>
+            <a href="{{ route('dashboard.attendance.index', $mailLocaleQ, true) }}" style="color: #047857; font-weight: 600;">{{ __('My attendance') }}</a>
         </p>
     @endif
 

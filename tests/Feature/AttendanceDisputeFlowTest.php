@@ -208,6 +208,52 @@ class AttendanceDisputeFlowTest extends TestCase
         });
     }
 
+    public function test_dispute_resolved_email_links_include_volunteer_preferred_locale(): void
+    {
+        Mail::fake();
+
+        $admin = $this->adminUser();
+        $event = Event::factory()->create();
+        $volunteer = User::factory()->create([
+            'email' => 'vol-ar-dispute@example.test',
+            'locale_preferred' => 'ar',
+        ]);
+        $volunteer->assignRole('volunteer');
+        $event->volunteers()->attach($volunteer->id);
+
+        $attendance = Attendance::query()->create([
+            'event_id' => $event->id,
+            'user_id' => $volunteer->id,
+            'state' => Attendance::STATE_CHECKED_OUT,
+            'checked_in_at' => now()->subHour(),
+            'checked_out_at' => now(),
+        ]);
+
+        $dispute = Dispute::query()->create([
+            'attendance_id' => $attendance->id,
+            'opened_by_user_id' => $volunteer->id,
+            'status' => Dispute::STATUS_OPEN,
+            'description' => str_repeat('c', 25),
+        ]);
+
+        $this->actingAs($admin)
+            ->post(route('admin.disputes.resolve', $dispute), [
+                'resolution' => Dispute::STATUS_RESOLVED,
+                'resolution_note' => 'Done.',
+            ])
+            ->assertRedirect(route('admin.disputes.show', $dispute));
+
+        Mail::assertQueued(DisputeResolvedVolunteerMail::class, function (DisputeResolvedVolunteerMail $mail) use ($volunteer): bool {
+            if (! $mail->hasTo($volunteer->email)) {
+                return false;
+            }
+
+            $html = $mail->render();
+
+            return str_contains($html, 'lang=ar');
+        });
+    }
+
     public function test_volunteer_cannot_access_admin_disputes(): void
     {
         $this->seed(RoleSeeder::class);

@@ -158,7 +158,7 @@
                         <a href="{{ route('support.show', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('support.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('Help and support') }}</a>
                         <a href="{{ route('contact.show', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('contact.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('Contact') }}</a>
                         @auth
-                            <a href="{{ route('dashboard') }}" class="ms-2 inline-flex items-center rounded-xl border border-slate-200/80 bg-slate-50/90 px-3 py-2 text-sm font-bold text-slate-800 shadow-sm transition duration-200 hover:border-slate-300 hover:bg-white">{{ __('Dashboard') }}</a>
+                            <a href="{{ route('dashboard', $navLocaleQ) }}" class="ms-2 inline-flex items-center rounded-xl border border-slate-200/80 bg-slate-50/90 px-3 py-2 text-sm font-bold text-slate-800 shadow-sm transition duration-200 hover:border-slate-300 hover:bg-white">{{ __('Dashboard') }}</a>
                         @else
                             <a href="{{ route('login', array_merge(\App\Support\IntendedUrl::queryParamsForRequestUri(request()), $navLocaleQ)) }}" class="ms-2 public-nav-link public-nav-link--inactive">{{ __('Sign In') }}</a>
                             @if (Route::has('register.volunteer'))
@@ -193,7 +193,7 @@
                         <a href="{{ route('support.show', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('support.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('Help and support') }}</a>
                         <a href="{{ route('contact.show', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('contact.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('Contact') }}</a>
                         @auth
-                            <a href="{{ route('dashboard') }}" class="public-nav-link public-nav-link--inactive mt-1 border-t border-slate-100 pt-2" @click="open=false">{{ __('Dashboard') }}</a>
+                            <a href="{{ route('dashboard', $navLocaleQ) }}" class="public-nav-link public-nav-link--inactive mt-1 border-t border-slate-100 pt-2" @click="open=false">{{ __('Dashboard') }}</a>
                         @else
                             <a href="{{ route('login', array_merge(\App\Support\IntendedUrl::queryParamsForRequestUri(request()), $navLocaleQ)) }}" class="public-nav-link public-nav-link--inactive mt-1 border-t border-slate-100 pt-2" @click="open=false">{{ __('Sign In') }}</a>
                             @if (Route::has('register.volunteer'))
