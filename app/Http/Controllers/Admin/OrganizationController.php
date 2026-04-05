@@ -9,6 +9,7 @@ use App\Http\Requests\Admin\OrganizationUpdateRequest;
 use App\Mail\OrganizationVerificationMail;
 use App\Models\Organization;
 use App\Models\User;
+use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -51,7 +52,7 @@ class OrganizationController extends Controller
             });
         }
 
-        $organizations = $query->paginate(20)->withQueryString();
+        $organizations = $query->paginate(20)->withQueryString()->appends(PublicLocale::query());
 
         $pendingCount = Organization::query()->pendingVerification()->count();
 

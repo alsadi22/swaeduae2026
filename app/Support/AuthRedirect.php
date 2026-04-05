@@ -17,16 +17,12 @@ class AuthRedirect
             default => route('dashboard', absolute: false),
         };
 
-        $queries = [];
+        $queries = PublicLocale::query();
         if (is_string($user->locale_preferred) && in_array($user->locale_preferred, ['en', 'ar'], true)) {
             $queries['lang'] = $user->locale_preferred;
         }
         if ($withVerifiedQuery) {
             $queries['verified'] = '1';
-        }
-
-        if ($queries === []) {
-            return $path;
         }
 
         $sep = str_contains($path, '?') ? '&' : '?';

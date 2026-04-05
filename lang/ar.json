@@ -413,6 +413,7 @@
     "Mail subject dispute opened staff": ":app — اعتراض جديد على حضور متطوع",
     "Mail body dispute opened staff intro": "قدّم متطوع اعتراضًا على الحضور الموثّق. ملخص:",
     "Review dispute in admin": "مراجعة الاعتراض في لوحة الإدارة",
+    "Review pending organizations in admin": "مراجعة المؤسسات المعلّقة في لوحة الإدارة",
     "Dispute ID": "رقم الاعتراض",
     "View opportunity": "عرض الفرصة",
     "Reviewer note": "ملاحظة المراجع",

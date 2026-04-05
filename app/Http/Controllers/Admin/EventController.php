@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\EventUpdateRequest;
 use App\Models\Event;
 use App\Models\Organization;
 use App\Support\AttendanceCheckpointUrl;
+use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -39,7 +40,7 @@ class EventController extends Controller
             });
         }
 
-        $events = $query->orderByDesc('event_starts_at')->paginate(15)->withQueryString();
+        $events = $query->orderByDesc('event_starts_at')->paginate(15)->withQueryString()->appends(PublicLocale::query());
 
         return view('admin.events.index', [
             'events' => $events,

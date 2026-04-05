@@ -10,5 +10,9 @@
     <p><strong>{{ __('Email') }}:</strong> {{ $registeringUser->email }}</p>
     <p><strong>{{ __('Phone') }}:</strong> {{ $registeringUser->phone ?? '—' }}</p>
     <p><strong>{{ __('Locale') }}:</strong> {{ $registeringUser->locale_preferred ?? '—' }}</p>
+
+    <p style="margin-top: 1.5rem;">
+        <a href="{{ route('admin.organizations.index', \App\Support\PublicLocale::query(), true) }}" style="color: #047857; font-weight: 600;">{{ __('Review pending organizations in admin') }}</a>
+    </p>
 </body>
 </html>

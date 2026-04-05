@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\CheckinAttempt;
 use App\Models\Event;
+use App\Support\PublicLocale;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -40,7 +41,7 @@ class FlaggedAttendanceController extends Controller
             });
         }
 
-        $rows = $query->paginate(25)->withQueryString();
+        $rows = $query->paginate(25)->withQueryString()->appends(PublicLocale::query());
 
         $filterEvents = Event::query()
             ->whereIn(

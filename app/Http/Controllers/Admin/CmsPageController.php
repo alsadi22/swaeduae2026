@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CmsPageStoreRequest;
 use App\Http\Requests\Admin\CmsPageUpdateRequest;
 use App\Models\CmsPage;
+use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -31,7 +32,7 @@ class CmsPageController extends Controller
             });
         }
 
-        $pages = $query->paginate(20)->withQueryString();
+        $pages = $query->paginate(20)->withQueryString()->appends(PublicLocale::query());
 
         return view('admin.cms-pages.index', [
             'pages' => $pages,

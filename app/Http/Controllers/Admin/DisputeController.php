@@ -7,6 +7,7 @@ use App\Mail\DisputeResolvedVolunteerMail;
 use App\Models\Dispute;
 use App\Models\Event;
 use App\Services\Attendance\AttendanceJournal;
+use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -59,7 +60,7 @@ class DisputeController extends Controller
             $query->orderByDesc('updated_at');
         }
 
-        $disputes = $query->paginate(25)->withQueryString();
+        $disputes = $query->paginate(25)->withQueryString()->appends(PublicLocale::query());
 
         $filterEvents = Event::query()
             ->whereIn(

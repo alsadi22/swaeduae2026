@@ -413,6 +413,7 @@
     "Mail subject dispute opened staff": ":app — New volunteer attendance dispute",
     "Mail body dispute opened staff intro": "A volunteer submitted a dispute about verified attendance. Summary:",
     "Review dispute in admin": "Review dispute in admin",
+    "Review pending organizations in admin": "Review pending organizations in admin",
     "Dispute ID": "Dispute ID",
     "View opportunity": "View opportunity",
     "Reviewer note": "Reviewer note",

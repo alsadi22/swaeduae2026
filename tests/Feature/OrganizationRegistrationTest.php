@@ -54,9 +54,16 @@ class OrganizationRegistrationTest extends TestCase
         Notification::assertSentTo($user, VerifyEmail::class);
 
         Mail::assertQueued(OrganizationRegistrationStaffMail::class, function (OrganizationRegistrationStaffMail $mail) use ($org, $user): bool {
-            return $mail->hasTo('admin@testing.test')
-                && $mail->organization->is($org)
-                && $mail->registeringUser->is($user);
+            if (! $mail->hasTo('admin@testing.test')
+                || ! $mail->organization->is($org)
+                || ! $mail->registeringUser->is($user)) {
+                return false;
+            }
+
+            $html = $mail->render();
+            $adminOrgsUrl = route('admin.organizations.index', PublicLocale::query(), true);
+
+            return str_contains($html, $adminOrgsUrl);
         });
     }
 

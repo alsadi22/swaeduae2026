@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\RejectEventApplicationRequest;
 use App\Mail\EventApplicationReviewedMail;
 use App\Models\Event;
 use App\Models\EventApplication;
+use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -74,7 +75,7 @@ class EventApplicationController extends Controller
             $query->orderByDesc('created_at');
         }
 
-        $applications = $query->paginate(25)->withQueryString();
+        $applications = $query->paginate(25)->withQueryString()->appends(PublicLocale::query());
 
         $filterEvents = Event::query()
             ->whereIn('id', EventApplication::query()->select('event_id')->distinct())

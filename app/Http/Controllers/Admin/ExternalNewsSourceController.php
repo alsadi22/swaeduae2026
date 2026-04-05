@@ -6,11 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Jobs\FetchExternalNewsSourceJob;
 use App\Models\ExternalNewsFetchLog;
 use App\Models\ExternalNewsSource;
+use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
-use Illuminate\Support\Str;
 
 class ExternalNewsSourceController extends Controller
 {
@@ -105,7 +106,9 @@ class ExternalNewsSourceController extends Controller
         $logs = ExternalNewsFetchLog::query()
             ->where('source_id', $external_news_source->id)
             ->orderByDesc('started_at')
-            ->paginate(30);
+            ->paginate(30)
+            ->withQueryString()
+            ->appends(PublicLocale::query());
 
         return view('admin.external-news.sources.logs', [
             'source' => $external_news_source,

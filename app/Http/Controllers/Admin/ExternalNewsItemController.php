@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ExternalNewsItem;
 use App\Models\ExternalNewsSource;
+use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -37,7 +38,7 @@ class ExternalNewsItemController extends Controller
             $query->where('source_id', (int) $validated['source_id']);
         }
 
-        $items = $query->paginate(25)->withQueryString();
+        $items = $query->paginate(25)->withQueryString()->appends(PublicLocale::query());
         $sources = ExternalNewsSource::query()->orderBy('name')->get();
 
         return view('admin.external-news.items.index', [

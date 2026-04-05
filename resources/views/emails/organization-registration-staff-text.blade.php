@@ -5,3 +5,5 @@
 {{ __('Email') }}: {{ $registeringUser->email }}
 {{ __('Phone') }}: {{ $registeringUser->phone ?? '—' }}
 {{ __('Locale') }}: {{ $registeringUser->locale_preferred ?? '—' }}
+
+{{ __('Review pending organizations in admin') }}: {{ route('admin.organizations.index', \App\Support\PublicLocale::query(), true) }}

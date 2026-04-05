@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\CheckinAttempt;
 use App\Models\Event;
+use App\Support\PublicLocale;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -45,7 +46,7 @@ class CheckinAttemptController extends Controller
             });
         }
 
-        $attempts = $query->paginate(40)->withQueryString();
+        $attempts = $query->paginate(40)->withQueryString()->appends(PublicLocale::query());
 
         $filterEvents = Event::query()
             ->whereIn('id', CheckinAttempt::query()->select('event_id')->distinct())
