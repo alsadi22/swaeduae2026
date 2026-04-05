@@ -1,0 +1,129 @@
+name: Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - '*.x'
+  pull_request:
+  schedule:
+    - cron: '0 0 * * *'
+
+concurrency:
+  group: tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    name: Frontend (Vite build)
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install JS dependencies
+        run: npm ci --no-progress
+
+      - name: npm audit
+        run: npm audit
+
+      - name: Production build
+        run: npm run build
+
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: swaeduae
+          POSTGRES_PASSWORD: swaeduae
+          POSTGRES_DB: swaeduae
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U swaeduae -d swaeduae"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [8.3, 8.4]
+
+    name: PHP ${{ matrix.php }}
+
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: swaeduae
+      DB_USERNAME: swaeduae
+      DB_PASSWORD: swaeduae
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, pgsql, pdo_pgsql
+          coverage: none
+
+      - name: Composer cache metadata
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer downloads
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Create testing database
+        run: |
+          PGPASSWORD=swaeduae psql -h 127.0.0.1 -U swaeduae -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'swaeduae_testing'" | grep -q 1 \
+            || PGPASSWORD=swaeduae psql -h 127.0.0.1 -U swaeduae -d postgres -c "CREATE DATABASE swaeduae_testing;"
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: Composer audit
+        run: composer audit
+
+      - name: Run Laravel Pint
+        run: vendor/bin/pint --test
+
+      - name: Copy environment file
+        run: cp .env.example .env
+
+      - name: Generate app key
+        run: php artisan key:generate
+
+      - name: Execute tests
+        run: php artisan test

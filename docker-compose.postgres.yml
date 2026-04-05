@@ -1,0 +1,23 @@
+# Optional local PostgreSQL — matches .env.example user/db names.
+# From app/: docker compose -f docker-compose.postgres.yml up -d
+# Then: DB_PASSWORD below (default swaeduae) in your .env
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: swaeduae
+      POSTGRES_PASSWORD: swaeduae
+      POSTGRES_DB: swaeduae
+    ports:
+      - "5432:5432"
+    volumes:
+      - swaeduae_pgdata:/var/lib/postgresql/data
+      - ./docker/postgres/docker-entrypoint-initdb.d/02-create-testing-db.sql:/docker-entrypoint-initdb.d/02-create-testing-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U swaeduae -d swaeduae"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  swaeduae_pgdata:

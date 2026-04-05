@@ -1,0 +1,159 @@
+<?php
+
+namespace Tests\Feature\Admin;
+
+use App\Models\Attendance;
+use App\Models\Dispute;
+use App\Models\Event;
+use App\Models\User;
+use Database\Seeders\RoleSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class AdminDisputeIndexTest extends TestCase
+{
+    use RefreshDatabase;
+
+    private function adminUser(): User
+    {
+        $this->seed(RoleSeeder::class);
+        $user = User::factory()->create();
+        $user->assignRole('admin');
+
+        return $user;
+    }
+
+    public function test_admin_can_filter_disputes_by_volunteer_search(): void
+    {
+        $admin = $this->adminUser();
+        $event = Event::factory()->create(['title_en' => 'Shared Event']);
+
+        $alice = User::factory()->create(['name' => 'Alice UniqueDispute', 'email' => 'alice@example.test']);
+        $bob = User::factory()->create(['name' => 'Bob Other', 'email' => 'bob@example.test']);
+        $alice->assignRole('volunteer');
+        $bob->assignRole('volunteer');
+
+        $attAlice = Attendance::query()->create([
+            'event_id' => $event->id,
+            'user_id' => $alice->id,
+            'state' => Attendance::STATE_CHECKED_OUT,
+            'checked_in_at' => now()->subHour(),
+            'checked_out_at' => now(),
+        ]);
+        $attBob = Attendance::query()->create([
+            'event_id' => $event->id,
+            'user_id' => $bob->id,
+            'state' => Attendance::STATE_CHECKED_OUT,
+            'checked_in_at' => now()->subHour(),
+            'checked_out_at' => now(),
+        ]);
+
+        Dispute::query()->create([
+            'attendance_id' => $attAlice->id,
+            'opened_by_user_id' => $alice->id,
+            'status' => Dispute::STATUS_OPEN,
+            'description' => str_repeat('a', 25).' alice dispute',
+        ]);
+        Dispute::query()->create([
+            'attendance_id' => $attBob->id,
+            'opened_by_user_id' => $bob->id,
+            'status' => Dispute::STATUS_OPEN,
+            'description' => str_repeat('b', 25).' bob dispute',
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.disputes.index', [
+            'search' => 'UniqueDispute',
+        ]));
+
+        $response->assertOk();
+        $response->assertSee('Alice UniqueDispute', false);
+        $response->assertDontSee('Bob Other', false);
+    }
+
+    public function test_admin_can_filter_disputes_by_event_id(): void
+    {
+        $admin = $this->adminUser();
+        $eventA = Event::factory()->create(['title_en' => 'Event Alpha Dispute']);
+        $eventB = Event::factory()->create(['title_en' => 'Event Beta Dispute']);
+
+        $user = User::factory()->create();
+        $user->assignRole('volunteer');
+
+        $attA = Attendance::query()->create([
+            'event_id' => $eventA->id,
+            'user_id' => $user->id,
+            'state' => Attendance::STATE_CHECKED_OUT,
+            'checked_in_at' => now()->subHour(),
+            'checked_out_at' => now(),
+        ]);
+        $attB = Attendance::query()->create([
+            'event_id' => $eventB->id,
+            'user_id' => $user->id,
+            'state' => Attendance::STATE_CHECKED_OUT,
+            'checked_in_at' => now()->subHour(),
+            'checked_out_at' => now(),
+        ]);
+
+        Dispute::query()->create([
+            'attendance_id' => $attA->id,
+            'opened_by_user_id' => $user->id,
+            'status' => Dispute::STATUS_OPEN,
+            'description' => str_repeat('x', 25).' a',
+        ]);
+        Dispute::query()->create([
+            'attendance_id' => $attB->id,
+            'opened_by_user_id' => $user->id,
+            'status' => Dispute::STATUS_OPEN,
+            'description' => str_repeat('y', 25).' b',
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.disputes.index', [
+            'event_id' => $eventA->id,
+        ]));
+
+        $response->assertOk();
+        $response->assertSee('Event Alpha Dispute', false);
+        // "Event Beta Dispute" still appears in the event filter `<select>`; table should list only Alpha.
+        $this->assertSame(1, substr_count($response->getContent(), 'Event Beta Dispute'));
+    }
+
+    public function test_invalid_dispute_event_id_shows_validation_error(): void
+    {
+        $admin = $this->adminUser();
+
+        $this->actingAs($admin)
+            ->from(route('admin.disputes.index'))
+            ->get(route('admin.disputes.index', ['event_id' => 999999]))
+            ->assertRedirect(route('admin.disputes.index'))
+            ->assertSessionHasErrors('event_id');
+    }
+
+    public function test_admin_nav_shows_open_disputes_badge_count(): void
+    {
+        $admin = $this->adminUser();
+        $event = Event::factory()->create();
+
+        $user = User::factory()->create();
+        $user->assignRole('volunteer');
+
+        $attendance = Attendance::query()->create([
+            'event_id' => $event->id,
+            'user_id' => $user->id,
+            'state' => Attendance::STATE_CHECKED_OUT,
+            'checked_in_at' => now()->subHour(),
+            'checked_out_at' => now(),
+        ]);
+
+        Dispute::query()->create([
+            'attendance_id' => $attendance->id,
+            'opened_by_user_id' => $user->id,
+            'status' => Dispute::STATUS_OPEN,
+            'description' => str_repeat('o', 25).' open for badge',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.disputes.index'))
+            ->assertOk()
+            ->assertSee('data-testid="open-disputes-nav-badge"', false);
+    }
+}

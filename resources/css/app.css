@@ -1,0 +1,175 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+    display: none !important;
+}
+
+@layer base {
+    :root {
+        color-scheme: light;
+        --theme-focus: theme('colors.emerald.600');
+        --theme-focus-ring: theme('colors.emerald.500');
+        --theme-radius-sm: 0.5rem;
+        --theme-radius-md: 0.75rem;
+        --theme-radius-lg: 1rem;
+        --theme-radius-xl: 1.25rem;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+    }
+
+    body {
+        @apply antialiased;
+    }
+
+    html[dir='ltr'] body.theme-page,
+    html[dir='ltr'] body {
+        font-family: theme('fontFamily.sans');
+    }
+
+    html[dir='rtl'] body.theme-page,
+    html[dir='rtl'] body {
+        font-family: 'Noto Kufi Arabic', ui-sans-serif, system-ui, sans-serif;
+    }
+
+    html[dir='rtl'] .font-display {
+        font-family: 'Alexandria', 'Noto Kufi Arabic', ui-sans-serif, sans-serif;
+    }
+
+    ::selection {
+        @apply bg-emerald-200/90 text-emerald-950;
+    }
+
+    [dir='rtl'] ::selection {
+        @apply bg-emerald-200/90 text-emerald-950;
+    }
+
+    /* Form controls from @tailwindcss/forms — reinforce focus visibility */
+    [type='text']:focus,
+    [type='email']:focus,
+    [type='password']:focus,
+    [type='search']:focus,
+    [type='url']:focus,
+    textarea:focus,
+    select:focus {
+        @apply ring-2 ring-emerald-500/35 border-emerald-400/50;
+    }
+}
+
+@layer components {
+    /** Full public + authenticated app shell background */
+    .theme-page {
+        @apply min-h-screen bg-surface-page text-slate-900;
+    }
+
+    /** Primary marketing / hero CTA (on dark bands) */
+    .btn-hero-solid {
+        @apply inline-flex items-center justify-center rounded-xl bg-white px-5 py-3.5 text-sm font-bold text-emerald-950 shadow-md transition duration-200 ease-out-soft hover:bg-emerald-50 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/90 focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-950 active:scale-[0.99];
+    }
+
+    .btn-hero-ghost {
+        @apply inline-flex items-center justify-center rounded-xl border border-white/40 bg-white/10 px-5 py-3.5 text-sm font-bold text-white backdrop-blur-sm transition duration-200 ease-out-soft hover:bg-white/20 hover:border-white/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-950 active:scale-[0.99];
+    }
+
+    .btn-hero-outline {
+        @apply inline-flex items-center justify-center rounded-xl border border-white/35 px-5 py-3.5 text-sm font-bold text-white transition duration-200 ease-out-soft hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-950 active:scale-[0.99];
+    }
+
+    /** Public header nav — pill style */
+    .public-nav-link {
+        @apply rounded-lg px-3 py-2 text-sm font-semibold transition-colors duration-200 ease-out-soft;
+    }
+
+    .public-nav-link--active {
+        @apply bg-emerald-50 text-emerald-900 shadow-sm ring-1 ring-emerald-100/90;
+    }
+
+    .public-nav-link--inactive {
+        @apply text-slate-600 hover:bg-slate-50 hover:text-emerald-900;
+    }
+
+    /** Cards */
+    .card-surface {
+        @apply rounded-2xl border border-slate-200/90 bg-surface-card shadow-card;
+    }
+
+    .card-surface--muted {
+        @apply rounded-2xl border border-slate-200/80 bg-surface-raised shadow-sm;
+    }
+
+    .card-dashed-placeholder {
+        @apply rounded-2xl border border-dashed border-slate-300/80 bg-surface-raised py-12 text-center text-sm text-slate-600;
+    }
+
+    .card-interactive {
+        @apply rounded-xl border border-slate-200/90 bg-surface-raised/90 p-4 shadow-sm transition duration-200 ease-out-soft hover:border-emerald-200/80 hover:bg-white hover:shadow-card-hover;
+    }
+
+    .card-icon-tile {
+        @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-100 to-teal-50 text-emerald-800 ring-1 ring-emerald-200/50;
+    }
+
+    /**
+     * Section headings — gold rule (logical start for RTL)
+     */
+    .public-section-title {
+        @apply font-display text-2xl font-semibold tracking-tight text-emerald-950;
+    }
+
+    .public-section-title::after {
+        content: '';
+        @apply mt-3 block h-1 w-14 rounded-full bg-institution-gold;
+    }
+
+    .public-section-title--center::after {
+        @apply mx-auto;
+    }
+
+    /** H1 on inner public pages */
+    .public-page-title {
+        @apply font-display text-3xl font-bold tracking-tight text-emerald-950 sm:text-4xl;
+    }
+
+    .public-page-title::after {
+        content: '';
+        @apply mt-4 block h-1 w-16 rounded-full bg-institution-gold;
+    }
+
+    /** Light-page primary actions (volunteer strip, forms) */
+    .btn-primary-solid {
+        @apply inline-flex items-center justify-center rounded-xl bg-emerald-700 px-5 py-2.5 text-sm font-bold text-white shadow-md transition duration-200 ease-out-soft hover:bg-emerald-800 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 active:scale-[0.99];
+    }
+
+    .btn-secondary-muted {
+        @apply inline-flex items-center justify-center rounded-xl border border-emerald-900/15 bg-white px-5 py-2.5 text-sm font-bold text-emerald-900 shadow-sm transition duration-200 ease-out-soft hover:border-emerald-800/25 hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 focus-visible:ring-offset-2 active:scale-[0.99];
+    }
+
+    /** App shell (dashboard) — header strip */
+    .app-shell-header {
+        @apply border-b border-slate-200/90 bg-white/95 shadow-nav backdrop-blur-md;
+    }
+
+    /** Skip link target focus ring on main */
+    #main-content:focus {
+        @apply outline-none;
+    }
+
+    .footer-link {
+        @apply rounded-sm text-slate-600 outline-none transition hover:text-emerald-800 hover:underline focus-visible:ring-2 focus-visible:ring-emerald-500/40;
+    }
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+}
