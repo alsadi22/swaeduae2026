@@ -45,3 +45,19 @@ When nginx’s **`root`** is **`/var/www/.../public`** but you develop in **`/ho
 ```
 
 Optional: `SWAED_SOURCE` and `SWAED_WWW_ROOT` override paths. Then reload PHP-FPM if your host caches opcode (`sudo systemctl reload php8.3-fpm`).
+
+## Zoho SMTP (production `.env` on the server only)
+
+1. Create / use the **`noreply@swaeduae.ae`** mailbox in Zoho and an **app-specific password** (or SMTP password Zoho shows).
+2. On the server, edit **`/var/www/.../.env`**: set **`MAIL_PASSWORD=`** to that secret, then **`MAIL_MAILER=smtp`** (keep **`MAIL_HOST=smtp.zoho.com`**, **`MAIL_PORT=587`**, **`MAIL_USERNAME=noreply@swaeduae.ae`**).
+3. Run **`php artisan config:cache`** in the app root.
+
+Until then, **`MAIL_MAILER=log`** keeps mail in **`storage/logs`** (no outbound delivery).
+
+## Queue worker (`QUEUE_CONNECTION=redis`)
+
+- **Recommended (system, survives reboot, runs as `www-data`):**  
+  `sudo cp scripts/systemd/laravel-queue-swaeduae.service /etc/systemd/system/` → `daemon-reload` → `enable --now` (see comments in that file).
+- **User service (no sudo):** a unit under **`~/.config/systemd/user/`** works while you stay logged in; for 24/7 without login run **`sudo loginctl enable-linger $USER`**.
+
+After each deploy, **`deploy-on-server.sh`** runs **`php artisan queue:restart`** so workers pick up new code.

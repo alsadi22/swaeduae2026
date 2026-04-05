@@ -38,7 +38,7 @@ php artisan config:cache --no-interaction
 php artisan route:cache --no-interaction
 php artisan view:cache --no-interaction
 
-echo "==> Optional: restart queue workers (uncomment if you use queues)"
-# php artisan queue:restart --no-interaction
+echo "==> Signal queue workers to restart after code deploy (graceful)"
+php artisan queue:restart --no-interaction 2>/dev/null || true
 
 echo "deploy-on-server: done. Reload PHP-FPM or your app runtime if your host requires it."
