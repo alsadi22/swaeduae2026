@@ -58,4 +58,14 @@ class HomeCmsContentTest extends TestCase
         $response->assertOk();
         $response->assertSee('Annual report', false);
     }
+
+    public function test_home_footer_includes_humans_and_security_links(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('data-testid="footer-humans-txt"', false)
+            ->assertSee('data-testid="footer-security-txt"', false)
+            ->assertSee(route('site.humans', [], true), false)
+            ->assertSee(route('site.security', [], true), false);
+    }
 }

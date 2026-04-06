@@ -15,6 +15,8 @@ All product specs, architecture, design notes, and the full developer guide live
 
 Quick links from there:
 
+- [docs/STAKEHOLDER-READINESS.md](docs/STAKEHOLDER-READINESS.md) — short readiness snapshot (in-repo)
+- [docs/POST-DEPLOY-SMOKE.md](docs/POST-DEPLOY-SMOKE.md) — post-deploy checks + Node 22 build note
 - [Developer-README.md](../Documents/Developer-README.md) — setup, tests, stack, where UI tokens live (run commands from this `app/` folder)
 - [PRD-swaeduae-bilingual-volunteer-attendance.md](../Documents/PRD-swaeduae-bilingual-volunteer-attendance.md)
 - [TechnicalArchitecture-swaeduae-laravel-monolith.md](../Documents/TechnicalArchitecture-swaeduae-laravel-monolith.md)

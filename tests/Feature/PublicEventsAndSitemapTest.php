@@ -26,6 +26,7 @@ class PublicEventsAndSitemapTest extends TestCase
             ->assertOk()
             ->assertViewIs('public.events-index')
             ->assertSee('Unique Public Event Title XYZ', false)
+            ->assertSee('data-testid="events-list-volunteer-link"', false)
             ->assertSee('data-testid="events-footer-opportunities"', false)
             ->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
 
@@ -34,10 +35,22 @@ class PublicEventsAndSitemapTest extends TestCase
             ->assertViewIs('public.events.show')
             ->assertSee('Unique Public Event Title XYZ', false)
             ->assertSee('data-testid="public-event-view-opportunity"', false)
+            ->assertSee('data-testid="public-event-copy-link"', false)
+            ->assertSee('data-testid="public-event-download-ics"', false)
             ->assertSee(
                 route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::query()), false),
                 false
             );
+
+        $ics = $this->get(route('events.ics', $event));
+        $ics->assertOk();
+        $ics->assertHeader('Content-Type', 'text/calendar; charset=utf-8');
+        $body = (string) $ics->getContent();
+        $this->assertStringContainsString('BEGIN:VCALENDAR', $body);
+        $this->assertStringContainsString('BEGIN:VEVENT', $body);
+        $this->assertStringContainsString('DTSTART:', $body);
+        $this->assertStringContainsString('DTEND:', $body);
+        $this->assertStringContainsString('SUMMARY:Unique Public Event Title XYZ', $body);
 
         $this->get(route('events.show', ['event' => $event, 'lang' => 'ar']))
             ->assertOk()
@@ -156,6 +169,64 @@ class PublicEventsAndSitemapTest extends TestCase
             ->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
     }
 
+    public function test_events_index_sorts_by_title_when_requested(): void
+    {
+        $org = Organization::query()->create(['name_en' => 'Sort Org Public', 'name_ar' => null]);
+        Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'Zebra public calendar sort',
+            'title_ar' => null,
+            'event_starts_at' => now()->addDay(),
+            'event_ends_at' => now()->addDays(2),
+        ]);
+        Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'Apple public calendar sort',
+            'title_ar' => null,
+            'event_starts_at' => now()->addDays(3),
+            'event_ends_at' => now()->addDays(4),
+        ]);
+
+        $html = $this->get(route('events.index', ['sort' => 'title_asc']))
+            ->assertOk()
+            ->getContent();
+        $this->assertNotFalse($html);
+        $posApple = strpos($html, 'Apple public calendar sort');
+        $posZebra = strpos($html, 'Zebra public calendar sort');
+        $this->assertNotFalse($posApple);
+        $this->assertNotFalse($posZebra);
+        $this->assertLessThan($posZebra, $posApple);
+    }
+
+    public function test_events_index_sort_starts_desc_puts_later_event_first(): void
+    {
+        $org = Organization::query()->create(['name_en' => 'Sort Org Desc', 'name_ar' => null]);
+        Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'Earlier slot unique title',
+            'title_ar' => null,
+            'event_starts_at' => now()->addDay(),
+            'event_ends_at' => now()->addDays(2),
+        ]);
+        Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'Later slot unique title',
+            'title_ar' => null,
+            'event_starts_at' => now()->addWeek(),
+            'event_ends_at' => now()->addWeeks(2),
+        ]);
+
+        $html = $this->get(route('events.index', ['sort' => 'starts_desc']))
+            ->assertOk()
+            ->getContent();
+        $this->assertNotFalse($html);
+        $posLater = strpos($html, 'Later slot unique title');
+        $posEarlier = strpos($html, 'Earlier slot unique title');
+        $this->assertNotFalse($posLater);
+        $this->assertNotFalse($posEarlier);
+        $this->assertLessThan($posEarlier, $posLater);
+    }
+
     public function test_events_index_merges_published_cms_intro_with_calendar(): void
     {
         $user = User::factory()->create();
@@ -196,12 +267,16 @@ class PublicEventsAndSitemapTest extends TestCase
         $body = $response->getContent();
         $this->assertStringContainsString(route('home', [], true), $body);
         $this->assertStringContainsString(route('feed', [], true), $body);
+        $this->assertStringContainsString(route('site.humans', [], true), $body);
+        $this->assertStringContainsString(route('site.security', [], true), $body);
+        $this->assertStringContainsString(route('site.favicon', [], true), $body);
         $this->assertStringContainsString(route('site.webmanifest', [], true), $body);
         $this->assertStringContainsString(route('leadership', [], true), $body);
         $this->assertStringContainsString(route('events.index', [], true), $body);
         $this->assertStringContainsString(route('gallery', [], true), $body);
         $this->assertStringContainsString(route('events.show', $event, true), $body);
         $this->assertStringContainsString(route('volunteer.opportunities.show', $event, true), $body);
+        $this->assertStringContainsString(route('volunteer.opportunities.feed', [], true), $body);
 
         $event->refresh();
         $this->assertStringContainsString(

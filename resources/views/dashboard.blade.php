@@ -65,8 +65,10 @@
                         <h3 class="font-display text-lg font-bold text-slate-900">{{ __('Certificates') }}</h3>
                         <p class="mt-1 text-sm text-slate-600">{{ __('Certificates dashboard placeholder') }}</p>
                     </div>
-                    <div class="p-6">
+                    <div class="p-6 space-y-4">
                         <p class="text-sm text-slate-600">{{ __('Certificates coming soon message') }}</p>
+                        <p class="text-sm text-slate-600">{{ __('Certificates dashboard support hint') }}</p>
+                        <a href="{{ route('support.show', $dashLocaleQ) }}" class="inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline" data-testid="dashboard-certificates-support">{{ __('Help and support') }} →</a>
                     </div>
                 </div>
 
@@ -78,6 +80,34 @@
                     <div class="p-6 space-y-3">
                         <a href="{{ route('volunteer.profile.edit', $dashLocaleQ) }}" class="inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Manage email preferences') }} →</a>
                         <p class="text-xs text-slate-500">{{ __('Stay informed in-app note') }}</p>
+                    </div>
+                </div>
+
+                <div class="overflow-hidden border border-slate-200 bg-white shadow-sm sm:rounded-lg">
+                    <div class="border-b border-slate-100 px-6 py-4">
+                        <h3 class="font-display text-lg font-bold text-slate-900">{{ __('Saved opportunities') }}</h3>
+                        <p class="mt-1 text-sm text-slate-600">{{ __('Saved opportunities dashboard hint') }}</p>
+                    </div>
+                    <div class="p-6">
+                        @if ($savedOpportunityEvents->isEmpty())
+                            <p class="text-sm text-slate-600">{{ __('No saved opportunities') }}</p>
+                            <a href="{{ route('volunteer.opportunities.index', $dashLocaleQ) }}" class="mt-3 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline" data-testid="dashboard-saved-opportunities-browse">{{ __('Browse opportunities') }} →</a>
+                        @else
+                            <ul class="divide-y divide-slate-100" data-testid="dashboard-saved-opportunities-list">
+                                @foreach ($savedOpportunityEvents as $saved)
+                                    <li class="py-4 first:pt-0">
+                                        <a href="{{ route('volunteer.opportunities.show', array_merge(['event' => $saved], $dashLocaleQ)) }}" class="font-semibold text-slate-900 hover:text-emerald-800 hover:underline">{{ $saved->titleForLocale() }}</a>
+                                        @if ($saved->organization)
+                                            <p class="text-xs text-slate-500">{{ $saved->organization->nameForLocale() }}</p>
+                                        @endif
+                                        <p class="mt-1 text-sm text-slate-600">
+                                            {{ $saved->event_starts_at->locale(app()->getLocale())->isoFormat('LLL') }}
+                                        </p>
+                                    </li>
+                                @endforeach
+                            </ul>
+                            <a href="{{ route('volunteer.opportunities.index', $dashLocaleQ) }}" class="mt-4 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Browse more opportunities') }} →</a>
+                        @endif
                     </div>
                 </div>
 

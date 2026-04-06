@@ -207,4 +207,16 @@ class EventPolicy
 
         return $event->event_starts_at->isFuture();
     }
+
+    /**
+     * Volunteers may bookmark upcoming opportunities from the public detail page.
+     */
+    public function saveOpportunity(User $user, Event $event): bool
+    {
+        if (! $user->hasRole('volunteer')) {
+            return false;
+        }
+
+        return $event->event_ends_at >= now();
+    }
 }

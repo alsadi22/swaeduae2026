@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Volunteer\ApplyToOpportunityRequest;
 use App\Models\Event;
 use App\Models\EventApplication;
+use App\Support\IntendedUrl;
 use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class VolunteerHubController extends Controller
@@ -19,24 +21,53 @@ class VolunteerHubController extends Controller
         return view('volunteer.index');
     }
 
-    public function opportunities(Request $request): View
+    public function opportunities(Request $request): View|RedirectResponse
     {
         $validated = $request->validate([
-            'sort' => ['nullable', 'string', 'in:starts_soon,starts_late'],
+            'sort' => ['nullable', 'string', 'in:starts_soon,starts_late,title_asc'],
             'entry' => ['nullable', 'string', 'in:all,open,application'],
             'q' => ['nullable', 'string', 'max:120'],
             'page' => ['nullable', 'integer', 'min:1'],
+            'saved' => ['nullable', 'string', Rule::in(['1'])],
         ]);
 
         $sort = $validated['sort'] ?? 'starts_soon';
+        $appLocale = app()->getLocale();
         $entry = $validated['entry'] ?? 'all';
         $searchInput = isset($validated['q']) ? trim((string) $validated['q']) : '';
         $search = $searchInput === '' ? '' : mb_substr($searchInput, 0, 120);
+        $filterSaved = isset($validated['saved']);
+
+        if ($filterSaved && $request->user() === null) {
+            return redirect()->guest(route('login', array_merge(
+                IntendedUrl::queryParamsForRequestUri($request),
+                PublicLocale::queryFromRequestOrUser(null)
+            )));
+        }
+
+        $volunteer = $request->user();
+        $isVolunteer = $volunteer !== null && $volunteer->hasRole('volunteer');
+
+        if ($filterSaved && $volunteer !== null && ! $isVolunteer) {
+            return redirect()->route('volunteer.opportunities.index', array_merge(
+                $request->except('saved'),
+                PublicLocale::queryFromRequestOrUser($volunteer)
+            ));
+        }
 
         $query = Event::query()
             ->with('organization')
             ->withCount('volunteers')
             ->where('event_ends_at', '>=', now());
+
+        if ($filterSaved && $isVolunteer) {
+            $savedIds = $volunteer->savedEvents()->pluck('events.id')->all();
+            if ($savedIds === []) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $query->whereIn('events.id', $savedIds);
+            }
+        }
 
         if ($entry === 'open') {
             $query->where('application_required', false);
@@ -58,13 +89,40 @@ class VolunteerHubController extends Controller
 
         if ($sort === 'starts_late') {
             $query->orderByDesc('event_starts_at');
+        } elseif ($sort === 'title_asc') {
+            if ($appLocale === 'ar') {
+                $query->orderByRaw('lower(title_ar::text)')->orderByRaw('lower(title_en::text)');
+            } else {
+                $query->orderByRaw('lower(title_en::text)')->orderByRaw('lower(title_ar::text)');
+            }
         } else {
             $query->orderBy('event_starts_at');
         }
 
         $events = $query->paginate(15)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
 
-        return view('volunteer.opportunities.index', compact('events', 'search', 'sort', 'entry'));
+        $savedEventIds = [];
+        $rosteredEventIds = [];
+        if ($isVolunteer) {
+            $savedEventIds = $volunteer->savedEvents()->pluck('events.id')->map(fn ($id): int => (int) $id)->all();
+            $rosteredEventIds = $volunteer->rosteredEvents()->pluck('events.id')->map(fn ($id): int => (int) $id)->all();
+        }
+
+        $extraAtomAlternates = [[
+            'href' => route('volunteer.opportunities.feed', PublicLocale::queryFromRequestOrUser($request->user()), true),
+            'title' => config('app.name', 'SwaedUAE').' — '.__('Volunteer opportunities'),
+        ]];
+
+        return view('volunteer.opportunities.index', compact(
+            'events',
+            'search',
+            'sort',
+            'entry',
+            'filterSaved',
+            'savedEventIds',
+            'rosteredEventIds',
+            'extraAtomAlternates',
+        ));
     }
 
     public function showOpportunity(Request $request, Event $event): View
@@ -75,6 +133,7 @@ class VolunteerHubController extends Controller
         $application = null;
         $volunteerProfileCompleteForCommitments = true;
         $pendingApplicationsOnOtherEventsCount = 0;
+        $opportunitySavedByViewer = false;
         if ($request->user()?->hasRole('volunteer')) {
             $user = $request->user();
             $application = $event->applicationForUser($user);
@@ -84,6 +143,7 @@ class VolunteerHubController extends Controller
                 ->where('status', EventApplication::STATUS_PENDING)
                 ->where('event_id', '!=', $event->id)
                 ->count();
+            $opportunitySavedByViewer = $user->savedEvents()->where('events.id', $event->id)->exists();
         }
 
         return view('volunteer.opportunities.show', compact(
@@ -91,6 +151,7 @@ class VolunteerHubController extends Controller
             'application',
             'volunteerProfileCompleteForCommitments',
             'pendingApplicationsOnOtherEventsCount',
+            'opportunitySavedByViewer',
         ));
     }
 
@@ -172,5 +233,30 @@ class VolunteerHubController extends Controller
         return redirect()
             ->route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryFromRequestOrUser($request->user())))
             ->with('status', __('Application withdrawn.'));
+    }
+
+    public function saveOpportunity(Request $request, Event $event): RedirectResponse
+    {
+        $this->authorize('saveOpportunity', $event);
+
+        $request->user()->savedEvents()->syncWithoutDetaching([$event->id]);
+
+        return redirect()
+            ->route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryFromRequestOrUser($request->user())))
+            ->with('status', __('Saved for later.'));
+    }
+
+    public function unsaveOpportunity(Request $request, Event $event): RedirectResponse
+    {
+        $user = $request->user();
+        if (! $user->hasRole('volunteer')) {
+            abort(403);
+        }
+
+        $user->savedEvents()->detach($event->id);
+
+        return redirect()
+            ->route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryFromRequestOrUser($user)))
+            ->with('status', __('Removed from saved opportunities.'));
     }
 }

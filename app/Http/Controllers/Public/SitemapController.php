@@ -24,6 +24,9 @@ class SitemapController extends Controller
         foreach ([
             route('home', [], true),
             route('feed', [], true),
+            route('site.humans', [], true),
+            route('site.favicon', [], true),
+            route('site.security', [], true),
             route('site.webmanifest', [], true),
             route('about', [], true),
             route('leadership', [], true),
@@ -36,6 +39,7 @@ class SitemapController extends Controller
             route('faq', [], true),
             route('volunteer.index', [], true),
             route('volunteer.opportunities.index', [], true),
+            route('volunteer.opportunities.feed', [], true),
             route('contact.show', [], true),
             route('support.show', [], true),
             route('legal.terms', [], true),

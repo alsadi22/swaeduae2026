@@ -30,11 +30,12 @@
                         <option value="home" @selected(($placement ?? 'all') === 'home')>{{ __('Show on home page') }}</option>
                         <option value="programs" @selected(($placement ?? 'all') === 'programs')>{{ __('Show on programs page') }}</option>
                         <option value="media" @selected(($placement ?? 'all') === 'media')>{{ __('Show in media center') }}</option>
+                        <option value="gallery" @selected(($placement ?? 'all') === 'gallery')>{{ __('Show in gallery') }}</option>
                     </select>
                 </div>
                 <div class="flex flex-wrap gap-2">
                     <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
-                    @if (filled($search) || ($placement ?? 'all') !== 'all')
+                    @if (filled($search) || (($placement ?? 'all') !== 'all'))
                         <a href="{{ route('admin.cms-pages.index', $adminLocaleQ) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
                     @endif
                 </div>
@@ -73,6 +74,9 @@
                                             @endif
                                             @if ($p->show_on_media)
                                                 <abbr title="{{ __('Show in media center') }}" class="rounded bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-900">M</abbr>
+                                            @endif
+                                            @if ($p->show_in_gallery)
+                                                <abbr title="{{ __('Show in gallery') }}" class="rounded bg-fuchsia-100 px-1.5 py-0.5 text-xs font-bold text-fuchsia-900">G</abbr>
                                             @endif
                                         </span>
                                     </td>

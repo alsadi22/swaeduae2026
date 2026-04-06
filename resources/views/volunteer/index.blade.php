@@ -16,6 +16,12 @@
             </p>
             <div class="mt-8 flex flex-wrap gap-3">
                 <a href="{{ route('volunteer.opportunities.index', $localeQ) }}" class="btn-primary-solid">{{ __('Browse opportunities') }}</a>
+                @auth
+                    @if (auth()->user()->hasRole('volunteer'))
+                        <a href="{{ route('dashboard', $localeQ) }}" class="btn-secondary-muted" data-testid="volunteer-hub-dashboard">{{ __('Dashboard') }}</a>
+                        <a href="{{ route('volunteer.opportunities.index', array_merge($localeQ, ['saved' => 1])) }}" class="btn-secondary-muted" data-testid="volunteer-hub-saved-opportunities">{{ __('Saved opportunities') }}</a>
+                    @endif
+                @endauth
                 @guest
                     @php($registerQ = array_merge(\App\Support\IntendedUrl::queryParamsForRequestUri(request()), $localeQ))
                     @if (Route::has('register.volunteer'))

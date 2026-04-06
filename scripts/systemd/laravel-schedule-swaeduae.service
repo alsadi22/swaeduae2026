@@ -1,0 +1,21 @@
+# Laravel scheduler — runs `schedule:run` once per invocation (use with the timer below).
+#
+# Install (paths may differ):
+#   sudo cp scripts/systemd/laravel-schedule-swaeduae.service /etc/systemd/system/
+#   sudo cp scripts/systemd/laravel-schedule-swaeduae.timer /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now laravel-schedule-swaeduae.timer
+#   sudo systemctl list-timers | grep laravel-schedule
+#
+# Requires: app schedule defined in bootstrap/app.php (e.g. swaeduae:fetch-external-news).
+
+[Unit]
+Description=Laravel scheduler run once (SwaedUAE)
+After=network.target
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/swaeduae/app
+ExecStart=/usr/bin/php artisan schedule:run --no-interaction

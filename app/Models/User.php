@@ -79,6 +79,17 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail
     }
 
     /**
+     * Bookmarked volunteer opportunities (see event_saves pivot).
+     *
+     * @return BelongsToMany<Event, User>
+     */
+    public function savedEvents(): BelongsToMany
+    {
+        return $this->belongsToMany(Event::class, 'event_saves')
+            ->withTimestamps();
+    }
+
+    /**
      * @return HasMany<EventApplication, User>
      */
     public function eventApplications(): HasMany

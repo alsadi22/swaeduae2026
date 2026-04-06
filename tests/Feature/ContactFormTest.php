@@ -71,8 +71,46 @@ class ContactFormTest extends TestCase
 
         Mail::assertSent(ContactFormMail::class, function (ContactFormMail $mail) {
             return $mail->payload['email'] === 'sender@example.com'
+                && ($mail->payload['contact_type'] ?? 'general') === 'general'
                 && $mail->hasTo(config('swaeduae.mail.info'));
         });
+    }
+
+    public function test_contact_youth_programmes_type_routes_to_youth_inbox(): void
+    {
+        Mail::fake();
+
+        $this->post(route('contact.store'), [
+            'name' => 'Youth Sender',
+            'email' => 'youth@example.com',
+            'phone' => '',
+            'subject' => 'Youth question',
+            'message' => str_repeat('y', 40),
+            'contact_type' => 'youth_programmes',
+        ])
+            ->assertRedirect(route('contact.show', PublicLocale::query()))
+            ->assertSessionHas('success');
+
+        Mail::assertSent(ContactFormMail::class, function (ContactFormMail $mail) {
+            return $mail->payload['contact_type'] === 'youth_programmes'
+                && $mail->hasTo(config('swaeduae.mail.youth_councils'));
+        });
+    }
+
+    public function test_contact_form_rejects_invalid_inquiry_type(): void
+    {
+        Mail::fake();
+
+        $this->post(route('contact.store'), [
+            'name' => 'Bad Type',
+            'email' => 'bad@example.com',
+            'phone' => '',
+            'subject' => 'Hi',
+            'message' => str_repeat('z', 40),
+            'contact_type' => 'not-a-real-type',
+        ])->assertSessionHasErrors('contact_type');
+
+        Mail::assertNothingSent();
     }
 
     public function test_contact_honeypot_filled_sends_no_mail_but_shows_success(): void

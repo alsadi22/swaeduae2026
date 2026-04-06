@@ -22,7 +22,15 @@ class PublicSiteTest extends TestCase
         $this->get('/site.webmanifest')
             ->assertOk()
             ->assertHeader('content-type', 'application/manifest+json; charset=UTF-8')
-            ->assertJsonFragment(['name' => 'SwaedUAE', 'display' => 'browser']);
+            ->assertJsonFragment(['name' => 'SwaedUAE', 'display' => 'browser'])
+            ->assertJsonPath('icons.0.type', 'image/svg+xml');
+    }
+
+    public function test_favicon_svg_is_served(): void
+    {
+        $this->get('/favicon.svg')
+            ->assertOk()
+            ->assertHeader('Content-Type', 'image/svg+xml; charset=UTF-8');
     }
 
     public function test_home_includes_organization_json_ld(): void
@@ -46,6 +54,21 @@ class PublicSiteTest extends TestCase
             ->assertSee('data-testid="volunteer-hub-programs"', false)
             ->assertSee('data-testid="volunteer-hub-media"', false)
             ->assertSee('data-testid="volunteer-hub-events"', false);
+    }
+
+    public function test_volunteer_hub_shows_dashboard_and_saved_links_for_volunteer(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $user = User::factory()->create();
+        $user->assignRole('volunteer');
+
+        $this->actingAs($user)
+            ->get(route('volunteer.index', PublicLocale::queryForUser($user)))
+            ->assertOk()
+            ->assertSee('data-testid="volunteer-hub-dashboard"', false)
+            ->assertSee('data-testid="volunteer-hub-saved-opportunities"', false)
+            ->assertSee('/volunteer/opportunities', false)
+            ->assertSee('saved=1', false);
     }
 
     public function test_volunteer_opportunities_list_is_ok(): void

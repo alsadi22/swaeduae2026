@@ -69,9 +69,17 @@
                     <label for="public_programs_q" class="block text-xs font-bold uppercase tracking-wide text-slate-500">{{ __('Search programs') }}</label>
                     <input type="search" id="public_programs_q" name="q" value="{{ $search }}" maxlength="120" placeholder="{{ __('Search by title or body') }}" class="mt-1 block w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
                 </div>
+                <div class="w-full sm:w-52">
+                    <label for="public_programs_sort" class="block text-xs font-bold uppercase tracking-wide text-slate-500">{{ __('Programs sort order') }}</label>
+                    <select id="public_programs_sort" name="sort" class="mt-1 block w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
+                        <option value="published_desc" @selected(($sort ?? 'published_desc') === 'published_desc')>{{ __('Programs sort published_desc') }}</option>
+                        <option value="published_asc" @selected(($sort ?? '') === 'published_asc')>{{ __('Programs sort published_asc') }}</option>
+                        <option value="title_asc" @selected(($sort ?? '') === 'title_asc')>{{ __('Programs sort title_asc') }}</option>
+                    </select>
+                </div>
                 <div class="flex flex-wrap gap-2">
                     <button type="submit" class="btn-primary-solid">{{ __('Apply') }}</button>
-                    @if (filled($search))
+                    @if (filled($search) || (($sort ?? 'published_desc') !== 'published_desc'))
                         <a href="{{ route('programs.index', $programsLocaleQ) }}" class="btn-secondary-muted">{{ __('Clear') }}</a>
                     @endif
                 </div>

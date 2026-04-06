@@ -54,9 +54,17 @@
                     <label for="public_events_q" class="block text-xs font-bold uppercase tracking-wide text-slate-500">{{ __('Search events') }}</label>
                     <input type="search" id="public_events_q" name="q" value="{{ $search }}" maxlength="120" placeholder="{{ __('Search by title or host organization') }}" class="mt-1 block w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
                 </div>
+                <div class="w-full sm:w-52">
+                    <label for="public_events_sort" class="block text-xs font-bold uppercase tracking-wide text-slate-500">{{ __('Public events sort order') }}</label>
+                    <select id="public_events_sort" name="sort" class="mt-1 block w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
+                        <option value="starts_asc" @selected(($sort ?? 'starts_asc') === 'starts_asc')>{{ __('Earliest start first') }}</option>
+                        <option value="starts_desc" @selected(($sort ?? '') === 'starts_desc')>{{ __('Latest start first') }}</option>
+                        <option value="title_asc" @selected(($sort ?? '') === 'title_asc')>{{ __('Public events sort title_asc') }}</option>
+                    </select>
+                </div>
                 <div class="flex flex-wrap gap-2">
                     <button type="submit" class="btn-primary-solid">{{ __('Apply') }}</button>
-                    @if (filled($search))
+                    @if (filled($search) || (($sort ?? 'starts_asc') !== 'starts_asc'))
                         <a href="{{ route('events.index', $eventsLocaleQ) }}" class="btn-secondary-muted">{{ __('Clear') }}</a>
                     @endif
                 </div>
@@ -93,7 +101,10 @@
                                         {{ $ev->event_ends_at->locale(app()->getLocale())->isoFormat('LLL') }}
                                     </p>
                                 </div>
-                                <a href="{{ route('events.show', array_merge(['event' => $ev], $eventsLocaleQ)) }}" class="btn-primary-solid shrink-0">{{ __('Details') }}</a>
+                                <div class="flex shrink-0 flex-wrap items-center gap-2">
+                                    <a href="{{ route('events.show', array_merge(['event' => $ev], $eventsLocaleQ)) }}" class="btn-primary-solid">{{ __('Details') }}</a>
+                                    <a href="{{ route('volunteer.opportunities.show', array_merge(['event' => $ev], $eventsLocaleQ)) }}" class="btn-secondary-muted" data-testid="events-list-volunteer-link">{{ __('Volunteer for this event') }}</a>
+                                </div>
                             </div>
                         </li>
                     @endforeach

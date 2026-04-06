@@ -119,6 +119,45 @@ final class SwaedUaeStructuredData
     }
 
     /**
+     * Schema.org FAQPage from bilingual site copy (lang files: site.faq_items).
+     *
+     * @param  list<array<string, mixed>>  $items
+     * @return array<string, mixed>|null
+     */
+    public static function faqPageFromItems(array $items): ?array
+    {
+        $mainEntity = [];
+        foreach ($items as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $question = isset($row['question']) ? trim((string) $row['question']) : '';
+            $answer = isset($row['answer']) ? trim((string) $row['answer']) : '';
+            if ($question === '' || $answer === '') {
+                continue;
+            }
+            $mainEntity[] = [
+                '@type' => 'Question',
+                'name' => $question,
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => $answer,
+                ],
+            ];
+        }
+
+        if ($mainEntity === []) {
+            return null;
+        }
+
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => $mainEntity,
+        ];
+    }
+
+    /**
      * Schema.org NewsArticle for external (syndicated) news detail pages.
      *
      * @return array<string, mixed>

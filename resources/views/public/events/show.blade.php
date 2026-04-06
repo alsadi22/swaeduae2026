@@ -28,11 +28,26 @@
                 <p class="mb-6 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800">{{ __('Past event') }}</p>
             @endif
 
-            <div class="flex flex-wrap items-center gap-2 border-b border-slate-100 pb-6">
-                <h1 class="font-display text-2xl font-bold text-emerald-950 sm:text-3xl">{{ $event->titleForLocale() }}</h1>
-                @if ($event->application_required)
-                    <span class="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-900">{{ __('Requires application') }}</span>
-                @endif
+            <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-6">
+                <div class="min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h1 class="font-display text-2xl font-bold text-emerald-950 sm:text-3xl">{{ $event->titleForLocale() }}</h1>
+                        @if ($event->application_required)
+                            <span class="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-900">{{ __('Requires application') }}</span>
+                        @endif
+                    </div>
+                </div>
+                <div class="flex flex-shrink-0 flex-wrap items-center gap-2" x-data="{ copied: false }">
+                    <button
+                        type="button"
+                        data-testid="public-event-copy-link"
+                        class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:border-emerald-200 hover:text-emerald-900"
+                        @click="navigator.clipboard.writeText({{ \Illuminate\Support\Js::from(url()->current()) }}).then(() => { copied = true; setTimeout(() => copied = false, 2000); }).catch(() => {})"
+                    >
+                        <span x-show="!copied">{{ __('Copy page link') }}</span>
+                        <span x-show="copied" x-cloak>{{ __('Link copied') }}</span>
+                    </button>
+                </div>
             </div>
 
             @if ($event->organization)
@@ -70,6 +85,7 @@
 
             <div class="mt-8 flex flex-wrap gap-3 border-t border-slate-100 pt-8">
                 <a href="{{ route('volunteer.opportunities.show', array_merge(['event' => $event], $eventShowLocaleQ)) }}" class="btn-primary-solid" data-testid="public-event-view-opportunity">{{ __('View opportunity') }}</a>
+                <a href="{{ route('events.ics', array_merge(['event' => $event], $eventShowLocaleQ)) }}" class="btn-secondary-muted" data-testid="public-event-download-ics">{{ __('Add to calendar (ICS)') }}</a>
                 @guest
                     <a href="{{ route('register.volunteer', array_merge(\App\Support\IntendedUrl::queryParamsForRequestUri(request()), $eventShowLocaleQ)) }}" class="inline-flex rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50">{{ __('Create account') }}</a>
                 @endguest

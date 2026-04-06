@@ -6,6 +6,7 @@ use App\Models\CheckinAttempt;
 use App\Models\Dispute;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+
 /**
  * Phase D6 (PRD): portable JSON export of the authenticated account (no passwords or GPS).
  */

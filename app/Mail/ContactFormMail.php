@@ -15,7 +15,7 @@ class ContactFormMail extends Mailable
     use Queueable, SerializesModels;
 
     /**
-     * @param  array{name: string, email: string, phone?: string|null, subject: string, message: string}  $payload
+     * @param  array{name: string, email: string, phone?: string|null, subject: string, message: string, contact_type?: string, contact_type_label?: string}  $payload
      */
     public function __construct(
         public array $payload
@@ -23,11 +23,15 @@ class ContactFormMail extends Mailable
 
     public function envelope(): Envelope
     {
+        $typeBit = isset($this->payload['contact_type_label'])
+            ? '['.$this->payload['contact_type_label'].'] '
+            : '';
+
         return new Envelope(
             replyTo: [
                 new Address($this->payload['email'], $this->payload['name']),
             ],
-            subject: __('Contact form').': '.$this->payload['subject'].' — '.config('app.name'),
+            subject: __('Contact form').': '.$typeBit.$this->payload['subject'].' — '.config('app.name'),
         );
     }
 

@@ -65,6 +65,7 @@ return [
 
     'partners_strip' => 'Partner and sponsor logos will be showcased here.',
 
+    'gallery_grid_hint' => 'These cards are published CMS pages marked “Show in gallery”. Add or manage them in Admin → CMS pages.',
     'gallery_placeholder' => 'Photo gallery preview — coming with the media module.',
 
     'gallery_page_intro' => 'Event photos, cultural highlights, and community moments will be published here. Editors can override this page with a CMS slug “gallery” for a full narrative.',
@@ -94,6 +95,33 @@ return [
     'partners_intro' => 'We thank our partners and supporters who make community impact possible.',
 
     'faq_intro' => 'Frequently asked questions will be organized by category. Contact us for anything not covered here.',
+
+    'faq_meta_description' => 'Answers about volunteering, attendance check-in, accounts, and getting involved with SwaedUAE.',
+
+    'faq_items' => [
+        [
+            'question' => 'How do I check in to an event?',
+            'answer' => 'Use the signed link or QR from your coordinator while logged in, allow location when prompted, and tap Check in on the attendance page before the window closes.',
+        ],
+        [
+            'question' => 'How do I register as a volunteer?',
+            'answer' => 'Open Join as Volunteer, complete the form, verify your email, then finish your volunteer profile (bio and emergency contact) before applying or joining a roster.',
+        ],
+        [
+            'question' => 'What if an event requires an application?',
+            'answer' => 'Submit your application from the opportunity page. Organizers or platform staff will review it; you will get an email when the decision is made.',
+        ],
+        [
+            'question' => 'How can I download my personal data?',
+            'answer' => 'After you verify your email, open Profile → Data & privacy and use Download my data (JSON export). For broader requests, contact support.',
+        ],
+        [
+            'question' => 'Who do I contact for help?',
+            'answer' => 'Use the Help & support form for account, attendance, or volunteering questions. Use Contact for general and partnership inquiries.',
+        ],
+    ],
+
+    'legal_data_rights_support_hint' => 'accounts, attendance, volunteering issues',
 
     'terms_intro' => 'Terms of use placeholder — replace with counsel-approved legal text before production launch.',
 

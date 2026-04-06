@@ -176,6 +176,48 @@ class ProgramsPageTest extends TestCase
             ->assertDontSee('About dup', false);
     }
 
+    public function test_programs_index_sorts_by_title_when_requested(): void
+    {
+        CmsPage::query()->create([
+            'slug' => 'prog-sort-zebra',
+            'locale' => 'en',
+            'title' => 'Zebra program sort',
+            'meta_description' => null,
+            'og_image' => null,
+            'excerpt' => null,
+            'body' => '## Z',
+            'status' => CmsPage::STATUS_PUBLISHED,
+            'published_at' => now()->subHour(),
+            'author_id' => null,
+            'show_on_home' => false,
+            'show_on_programs' => true,
+        ]);
+        CmsPage::query()->create([
+            'slug' => 'prog-sort-apple',
+            'locale' => 'en',
+            'title' => 'Apple program sort',
+            'meta_description' => null,
+            'og_image' => null,
+            'excerpt' => null,
+            'body' => '## A',
+            'status' => CmsPage::STATUS_PUBLISHED,
+            'published_at' => now()->subDay(),
+            'author_id' => null,
+            'show_on_home' => false,
+            'show_on_programs' => true,
+        ]);
+
+        $html = $this->get(route('programs.index', ['sort' => 'title_asc']))
+            ->assertOk()
+            ->getContent();
+        $this->assertNotFalse($html);
+        $posApple = strpos($html, 'Apple program sort');
+        $posZebra = strpos($html, 'Zebra program sort');
+        $this->assertNotFalse($posApple);
+        $this->assertNotFalse($posZebra);
+        $this->assertLessThan($posZebra, $posApple);
+    }
+
     public function test_admin_can_set_show_on_programs_on_cms_page(): void
     {
         $admin = $this->adminUser();
@@ -200,5 +242,33 @@ class ProgramsPageTest extends TestCase
         $row = CmsPage::query()->where('slug', 'pilot-initiative')->where('locale', 'en')->first();
         $this->assertNotNull($row);
         $this->assertTrue($row->show_on_programs);
+    }
+
+    public function test_admin_can_set_show_in_gallery_on_cms_page(): void
+    {
+        $admin = $this->adminUser();
+
+        $this->actingAs($admin)
+            ->post(route('admin.cms-pages.store'), [
+                'slug' => 'gallery-feature-unique',
+                'locale' => 'en',
+                'title' => 'Gallery feature page',
+                'meta_description' => null,
+                'og_image' => null,
+                'excerpt' => 'Excerpt.',
+                'body' => '## Hello',
+                'status' => CmsPage::STATUS_DRAFT,
+                'published_at' => null,
+                'show_on_home' => '0',
+                'show_on_programs' => '0',
+                'show_on_media' => '0',
+                'show_in_gallery' => '1',
+                'allow_partial_locale_publish' => '1',
+            ])
+            ->assertRedirect(route('admin.cms-pages.index', PublicLocale::query()));
+
+        $row = CmsPage::query()->where('slug', 'gallery-feature-unique')->where('locale', 'en')->first();
+        $this->assertNotNull($row);
+        $this->assertTrue($row->show_in_gallery);
     }
 }

@@ -3,11 +3,11 @@
 use App\Http\Controllers\Admin\AttendanceMinutesAdjustmentController;
 use App\Http\Controllers\Admin\CheckinAttemptController;
 use App\Http\Controllers\Admin\CmsPageController;
-use App\Http\Controllers\Admin\ExternalNewsItemController;
-use App\Http\Controllers\Admin\ExternalNewsSourceController;
 use App\Http\Controllers\Admin\DisputeController;
 use App\Http\Controllers\Admin\EventApplicationController;
 use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\Admin\ExternalNewsItemController;
+use App\Http\Controllers\Admin\ExternalNewsSourceController;
 use App\Http\Controllers\Admin\FlaggedAttendanceController;
 use App\Http\Controllers\Admin\OrganizationController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;

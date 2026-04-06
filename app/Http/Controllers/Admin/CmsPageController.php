@@ -19,7 +19,7 @@ class CmsPageController extends Controller
 
         $validated = $request->validate([
             'search' => ['nullable', 'string', 'max:100'],
-            'placement' => ['nullable', 'string', 'in:all,home,programs,media'],
+            'placement' => ['nullable', 'string', 'in:all,home,programs,media,gallery'],
         ]);
         $searchInput = isset($validated['search']) ? trim((string) $validated['search']) : '';
         $searchTerm = $searchInput === '' ? null : $searchInput;
@@ -41,6 +41,8 @@ class CmsPageController extends Controller
             $query->where('show_on_programs', true);
         } elseif ($placement === 'media') {
             $query->where('show_on_media', true);
+        } elseif ($placement === 'gallery') {
+            $query->where('show_in_gallery', true);
         }
 
         $pages = $query->paginate(20)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));

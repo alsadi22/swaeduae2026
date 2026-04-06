@@ -61,3 +61,10 @@ Until then, **`MAIL_MAILER=log`** keeps mail in **`storage/logs`** (no outbound 
 - **User service (no sudo):** a unit under **`~/.config/systemd/user/`** works while you stay logged in; for 24/7 without login run **`sudo loginctl enable-linger $USER`**.
 
 After each deploy, **`deploy-on-server.sh`** runs **`php artisan queue:restart`** so workers pick up new code.
+
+## Laravel scheduler (hourly RSS fetch, etc.)
+
+The app registers tasks in **`bootstrap/app.php`** (`withSchedule`). To run them in production you need **one** of:
+
+- **systemd timer (recommended):** copy **`scripts/systemd/laravel-schedule-swaeduae.service`** and **`.timer`** to **`/etc/systemd/system/`**, then `daemon-reload`, `enable --now laravel-schedule-swaeduae.timer`. Adjust **`WorkingDirectory`** if your deploy path is not **`/var/www/swaeduae/app`**.
+- **Cron:** `* * * * * cd /var/www/swaeduae/app && php artisan schedule:run >> /dev/null 2>&1`

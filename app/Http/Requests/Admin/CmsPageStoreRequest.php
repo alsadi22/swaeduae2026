@@ -55,6 +55,7 @@ class CmsPageStoreRequest extends FormRequest
             'show_on_home' => ['boolean'],
             'show_on_programs' => ['boolean'],
             'show_on_media' => ['boolean'],
+            'show_in_gallery' => ['boolean'],
             'allow_partial_locale_publish' => ['sometimes', 'boolean'],
         ];
     }

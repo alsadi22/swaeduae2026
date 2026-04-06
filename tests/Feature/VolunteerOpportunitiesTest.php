@@ -63,7 +63,9 @@ class VolunteerOpportunitiesTest extends TestCase
 
         $this->get(route('volunteer.opportunities.index'))
             ->assertOk()
-            ->assertSee('Unique Park Cleanup', false);
+            ->assertSee('Unique Park Cleanup', false)
+            ->assertSee('data-testid="opportunities-atom-feed-link"', false)
+            ->assertSee(route('volunteer.opportunities.feed', [], true), false);
 
         $this->get(route('volunteer.opportunities.show', $event))
             ->assertOk()
@@ -410,6 +412,31 @@ class VolunteerOpportunitiesTest extends TestCase
             ->assertSeeTextInOrder(['Later Sort Marker', 'Sooner Sort Marker']);
     }
 
+    public function test_opportunities_sort_title_asc_orders_alphabetically(): void
+    {
+        $org = Organization::query()->create(['name_en' => 'Title Sort Org', 'name_ar' => null]);
+        Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'Zebra Title Sort Marker',
+            'event_starts_at' => now()->addDay(),
+            'event_ends_at' => now()->addDays(2),
+            'checkin_window_starts_at' => now(),
+            'checkin_window_ends_at' => now()->addDays(2),
+        ]);
+        Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'Apple Title Sort Marker',
+            'event_starts_at' => now()->addWeek(),
+            'event_ends_at' => now()->addWeek()->addDay(),
+            'checkin_window_starts_at' => now(),
+            'checkin_window_ends_at' => now()->addWeek()->addDay(),
+        ]);
+
+        $this->get(route('volunteer.opportunities.index', ['sort' => 'title_asc']))
+            ->assertOk()
+            ->assertSeeTextInOrder(['Apple Title Sort Marker', 'Zebra Title Sort Marker']);
+    }
+
     public function test_opportunities_index_is_paginated(): void
     {
         $org = Organization::query()->create(['name_en' => 'Paginate Org', 'name_ar' => null]);
@@ -450,6 +477,185 @@ class VolunteerOpportunitiesTest extends TestCase
             ->assertOk()
             ->assertSee(__('No opportunities match your search.'), false)
             ->assertDontSee(__('No open opportunities right now'), false);
+    }
+
+    public function test_guest_visiting_opportunities_with_saved_filter_redirects_to_login(): void
+    {
+        $response = $this->get(route('volunteer.opportunities.index', ['saved' => 1]));
+        $response->assertRedirect();
+        $target = $response->headers->get('Location');
+        $this->assertStringContainsString('/login', (string) $target);
+        $this->assertStringContainsString('lang=en', (string) $target);
+        $this->assertStringContainsString('return=', (string) $target);
+    }
+
+    public function test_non_volunteer_with_saved_filter_redirects_to_index_without_saved(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $user = User::factory()->create();
+        $user->assignRole('admin');
+
+        $this->actingAs($user)
+            ->get(route('volunteer.opportunities.index', ['saved' => 1, 'lang' => 'en']))
+            ->assertRedirect(route('volunteer.opportunities.index', ['lang' => 'en'], false));
+    }
+
+    public function test_volunteer_saved_filter_shows_only_bookmarked_events(): void
+    {
+        $user = $this->volunteerUser();
+        $org = Organization::query()->create(['name_en' => 'Saved Filter Org', 'name_ar' => null]);
+        $savedEvent = Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'Saved Filter Alpha Unique',
+            'event_starts_at' => now()->addDay(),
+            'event_ends_at' => now()->addDays(2),
+            'checkin_window_starts_at' => now(),
+            'checkin_window_ends_at' => now()->addDays(2),
+        ]);
+        $otherEvent = Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'Saved Filter Beta Unique',
+            'event_starts_at' => now()->addDays(3),
+            'event_ends_at' => now()->addDays(4),
+            'checkin_window_starts_at' => now(),
+            'checkin_window_ends_at' => now()->addDays(4),
+        ]);
+        $user->savedEvents()->attach($savedEvent->id);
+
+        $this->actingAs($user)
+            ->get(route('volunteer.opportunities.index', array_merge(['saved' => 1], PublicLocale::queryForUser($user))))
+            ->assertOk()
+            ->assertSee('Saved Filter Alpha Unique', false)
+            ->assertDontSee('Saved Filter Beta Unique', false);
+    }
+
+    public function test_opportunities_index_rejects_invalid_saved_param(): void
+    {
+        $this->get(route('volunteer.opportunities.index', ['saved' => 'yes']))
+            ->assertSessionHasErrors('saved');
+    }
+
+    public function test_volunteer_sees_saved_and_roster_badges_on_opportunity_cards(): void
+    {
+        $user = $this->volunteerUser();
+        $org = Organization::query()->create(['name_en' => 'Card Badge Org', 'name_ar' => null]);
+        $savedOnly = Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'Card Saved Only Unique',
+            'event_starts_at' => now()->addDay(),
+            'event_ends_at' => now()->addDays(2),
+            'checkin_window_starts_at' => now(),
+            'checkin_window_ends_at' => now()->addDays(2),
+        ]);
+        $rosteredOnly = Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'Card Roster Only Unique',
+            'event_starts_at' => now()->addDays(2),
+            'event_ends_at' => now()->addDays(3),
+            'checkin_window_starts_at' => now(),
+            'checkin_window_ends_at' => now()->addDays(3),
+        ]);
+        $user->savedEvents()->attach($savedOnly->id);
+        $rosteredOnly->volunteers()->attach($user->id);
+
+        $this->actingAs($user)
+            ->get(route('volunteer.opportunities.index'))
+            ->assertOk()
+            ->assertSee('Card Saved Only Unique', false)
+            ->assertSee('data-testid="opportunity-card-saved-badge"', false)
+            ->assertSee('Card Roster Only Unique', false)
+            ->assertSee('data-testid="opportunity-card-roster-badge"', false);
+    }
+
+    public function test_opportunity_show_includes_public_calendar_link(): void
+    {
+        $org = Organization::query()->create(['name_en' => 'Cal Org', 'name_ar' => null]);
+        $event = Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'Calendar Link Event',
+            'event_starts_at' => now()->addDay(),
+            'event_ends_at' => now()->addDays(2),
+            'checkin_window_starts_at' => now(),
+            'checkin_window_ends_at' => now()->addDays(2),
+        ]);
+
+        $this->get(route('volunteer.opportunities.show', $event))
+            ->assertOk()
+            ->assertSee('data-testid="opportunity-public-calendar-link"', false)
+            ->assertSee(route('events.show', $event, true), false);
+    }
+
+    public function test_guest_cannot_post_save_opportunity(): void
+    {
+        $org = Organization::query()->create(['name_en' => 'Org', 'name_ar' => null]);
+        $event = Event::factory()->create([
+            'organization_id' => $org->id,
+            'event_starts_at' => now()->addDay(),
+            'event_ends_at' => now()->addDays(2),
+            'checkin_window_starts_at' => now(),
+            'checkin_window_ends_at' => now()->addDays(2),
+        ]);
+
+        $this->post(route('volunteer.opportunities.save', $event))
+            ->assertRedirect(route('login', ['lang' => 'en'], absolute: false));
+    }
+
+    public function test_volunteer_can_save_and_unsave_upcoming_opportunity(): void
+    {
+        $user = $this->volunteerUser();
+        $org = Organization::query()->create(['name_en' => 'Save Org', 'name_ar' => null]);
+        $event = Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'Saveable Opportunity',
+            'event_starts_at' => now()->addDay(),
+            'event_ends_at' => now()->addDays(2),
+            'checkin_window_starts_at' => now(),
+            'checkin_window_ends_at' => now()->addDays(2),
+        ]);
+
+        $this->actingAs($user)->post(route('volunteer.opportunities.save', $event))
+            ->assertRedirect(route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryForUser($user))))
+            ->assertSessionHas('status');
+
+        $this->assertTrue($user->fresh()->savedEvents()->where('events.id', $event->id)->exists());
+
+        $this->actingAs($user)->delete(route('volunteer.opportunities.unsave', $event))
+            ->assertRedirect(route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryForUser($user))))
+            ->assertSessionHas('status');
+
+        $this->assertFalse($user->fresh()->savedEvents()->where('events.id', $event->id)->exists());
+    }
+
+    public function test_volunteer_cannot_save_past_opportunity(): void
+    {
+        $user = $this->volunteerUser();
+        $org = Organization::query()->create(['name_en' => 'Past Save Org', 'name_ar' => null]);
+        $event = Event::factory()->create([
+            'organization_id' => $org->id,
+            'event_starts_at' => now()->subDays(3),
+            'event_ends_at' => now()->subHour(),
+            'checkin_window_starts_at' => now()->subDays(3),
+            'checkin_window_ends_at' => now()->subHour(),
+        ]);
+
+        $this->actingAs($user)->post(route('volunteer.opportunities.save', $event))->assertForbidden();
+    }
+
+    public function test_opportunity_show_includes_copy_link_control(): void
+    {
+        $org = Organization::query()->create(['name_en' => 'Copy Org', 'name_ar' => null]);
+        $event = Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'Copy Link Event',
+            'event_starts_at' => now()->addDay(),
+            'event_ends_at' => now()->addDays(2),
+            'checkin_window_starts_at' => now(),
+            'checkin_window_ends_at' => now()->addDays(2),
+        ]);
+
+        $this->get(route('volunteer.opportunities.show', $event))
+            ->assertOk()
+            ->assertSee('data-testid="opportunity-copy-link"', false);
     }
 
     public function test_opportunities_entry_filter_open_vs_application(): void

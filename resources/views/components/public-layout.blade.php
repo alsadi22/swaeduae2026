@@ -11,6 +11,8 @@
     'breadcrumbItems' => null,
     /** @var array<string, mixed>|null */
     'extraJsonLd' => null,
+    /** @var list<array{href: string, title: string}>|null */
+    'extraAtomAlternates' => null,
 ])
 
 @php
@@ -42,6 +44,8 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="{{ route('site.favicon', [], true) }}" type="image/svg+xml" sizes="any">
+        <link rel="apple-touch-icon" href="{{ url('/favicon.svg') }}">
         {{-- Fingerprint for deploy checks: View Source and search "swaeduae-build". Missing or 0 means wrong docroot or no Vite build. --}}
         @php($swaeduaeBuild = is_readable(public_path('build/manifest.json')) ? (int) filemtime(public_path('build/manifest.json')) : 0)
         <meta name="swaeduae-build" content="{{ $swaeduaeBuild }}">
@@ -63,6 +67,9 @@
             <link rel="alternate" hreflang="ar" href="{{ request()->fullUrlWithQuery(['lang' => 'ar']) }}">
             <link rel="alternate" hreflang="x-default" href="{{ request()->fullUrlWithQuery(['lang' => config('app.locale', 'en')]) }}">
             <link rel="alternate" type="application/atom+xml" title="{{ __('News feed') }}" href="{{ route('feed', $publicLayoutLinkLocaleQ, true) }}">
+            @foreach ($extraAtomAlternates ?? [] as $atomAlt)
+                <link rel="alternate" type="application/atom+xml" title="{{ $atomAlt['title'] }}" href="{{ $atomAlt['href'] }}">
+            @endforeach
         @endif
 
         @if ($resolvedOgUrl)
@@ -278,7 +285,10 @@
                             <li><a href="{{ route('legal.privacy', $footerLocaleQ) }}" class="footer-link">{{ __('Privacy') }}</a></li>
                             <li><a href="{{ route('legal.cookies', $footerLocaleQ) }}" class="footer-link">{{ __('Cookies') }}</a></li>
                             <li><a href="{{ route('feed', $footerLocaleQ) }}" class="footer-link">{{ __('News feed') }}</a></li>
+                            <li><a href="{{ route('volunteer.opportunities.feed', $footerLocaleQ) }}" class="footer-link" data-testid="footer-volunteer-opportunities-feed">{{ __('Volunteer opportunities Atom feed') }}</a></li>
                             <li><a href="{{ route('sitemap', $footerLocaleQ) }}" class="footer-link">{{ __('Sitemap') }}</a></li>
+                            <li><a href="{{ route('site.humans', $footerLocaleQ) }}" class="footer-link" data-testid="footer-humans-txt">{{ __('humans.txt') }}</a></li>
+                            <li><a href="{{ route('site.security', $footerLocaleQ) }}" class="footer-link" data-testid="footer-security-txt">{{ __('Security disclosure') }}</a></li>
                         </ul>
                     </div>
                 </div>

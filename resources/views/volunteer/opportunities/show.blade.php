@@ -41,11 +41,44 @@
                 @endif
             @endauth
 
-            <div class="flex flex-wrap items-center gap-2 border-b border-slate-100 pb-6">
-                <h1 class="font-display text-2xl font-bold text-emerald-950 sm:text-3xl">{{ $event->titleForLocale() }}</h1>
-                @if ($event->application_required)
-                    <span class="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-900">{{ __('Requires application') }}</span>
-                @endif
+            <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-6">
+                <div class="min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h1 class="font-display text-2xl font-bold text-emerald-950 sm:text-3xl">{{ $event->titleForLocale() }}</h1>
+                        @if ($event->application_required)
+                            <span class="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-900">{{ __('Requires application') }}</span>
+                        @endif
+                    </div>
+                </div>
+                <div class="flex flex-shrink-0 flex-wrap items-center gap-2" x-data="{ copied: false }">
+                    <button
+                        type="button"
+                        data-testid="opportunity-copy-link"
+                        class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:border-emerald-200 hover:text-emerald-900"
+                        @click="navigator.clipboard.writeText({{ \Illuminate\Support\Js::from(url()->current()) }}).then(() => { copied = true; setTimeout(() => copied = false, 2000); }).catch(() => {})"
+                    >
+                        <span x-show="!copied">{{ __('Copy page link') }}</span>
+                        <span x-show="copied" x-cloak>{{ __('Link copied') }}</span>
+                    </button>
+                    @auth
+                        @if (auth()->user()->hasRole('volunteer'))
+                            @can('saveOpportunity', $event)
+                                @if ($opportunitySavedByViewer ?? false)
+                                    <form action="{{ route('volunteer.opportunities.unsave', array_merge(['event' => $event], $localeQ)) }}" method="post" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" data-testid="opportunity-unsave" class="inline-flex items-center rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-800 hover:border-amber-200 hover:text-amber-950">{{ __('Remove from saved') }}</button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('volunteer.opportunities.save', array_merge(['event' => $event], $localeQ)) }}" method="post" class="inline">
+                                        @csrf
+                                        <button type="submit" data-testid="opportunity-save" class="inline-flex items-center rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-900 hover:bg-emerald-100">{{ __('Save for later') }}</button>
+                                    </form>
+                                @endif
+                            @endcan
+                        @endif
+                    @endauth
+                </div>
             </div>
             @if ($event->organization)
                 <p class="mt-2 text-sm text-slate-500">
@@ -53,6 +86,10 @@
                     {{ $event->organization->nameForLocale() }}
                 </p>
             @endif
+
+            <p class="mt-3 text-sm">
+                <a href="{{ route('events.show', array_merge(['event' => $event], $localeQ)) }}" class="font-semibold text-emerald-800 hover:underline" data-testid="opportunity-public-calendar-link">{{ __('View on public calendar') }}</a>
+            </p>
 
             <dl class="mt-8 space-y-4 text-sm">
                 <div>

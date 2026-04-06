@@ -13,6 +13,7 @@
             @include('public.legal.placeholder-notice')
             <h1 class="public-page-title">{{ __('Privacy policy') }}</h1>
             <p class="mt-8 text-slate-600 leading-relaxed">{{ __('site.privacy_intro') }}</p>
+            @include('public.legal.data-rights-strip')
             <p class="mt-12 border-t border-slate-200 pt-10 text-center">
                 <a href="{{ route('volunteer.opportunities.index', $localeQ) }}" class="text-sm font-bold text-emerald-800 hover:underline" data-testid="legal-privacy-footer-opportunities">{{ __('Browse opportunities') }} →</a>
             </p>

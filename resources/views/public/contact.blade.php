@@ -61,6 +61,17 @@
                             @error('phone')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
                         </div>
                         <div>
+                            <label for="contact_type" class="block text-sm font-semibold text-slate-700">{{ __('Contact inquiry type') }}</label>
+                            <select name="contact_type" id="contact_type" class="mt-1 block w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:max-w-md">
+                                <option value="general" @selected(old('contact_type', 'general') === 'general')>{{ __('Contact type general') }}</option>
+                                <option value="partnership" @selected(old('contact_type') === 'partnership')>{{ __('Contact type partnership') }}</option>
+                                <option value="media" @selected(old('contact_type') === 'media')>{{ __('Contact type media') }}</option>
+                                <option value="youth_programmes" @selected(old('contact_type') === 'youth_programmes')>{{ __('Contact type youth programmes') }}</option>
+                            </select>
+                            <p class="mt-1 text-xs text-slate-500">{{ __('Contact inquiry type hint') }}</p>
+                            @error('contact_type')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                        </div>
+                        <div>
                             <label for="subject" class="block text-sm font-semibold text-slate-700">{{ __('Subject') }}</label>
                             <input type="text" name="subject" id="subject" value="{{ old('subject') }}" required maxlength="200"
                                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500">

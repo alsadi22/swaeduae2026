@@ -4,6 +4,7 @@ use App\Http\Controllers\Public\AcceptOrganizationInvitationController;
 use App\Http\Controllers\Public\CmsPageController;
 use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\ExternalNewsPublicController;
+use App\Http\Controllers\Public\GalleryPublicController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\InstitutionalPageController;
 use App\Http\Controllers\Public\MediaAtomFeedController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Public\ProgramsIndexController;
 use App\Http\Controllers\Public\PublicEventController;
 use App\Http\Controllers\Public\SitemapController;
 use App\Http\Controllers\Public\SupportController;
+use App\Http\Controllers\Public\VolunteerOpportunitiesAtomFeedController;
 use App\Http\Controllers\Public\YouthCouncilsController;
 use App\Http\Controllers\Volunteer\VolunteerHubController;
 use Illuminate\Http\Response;
@@ -53,6 +55,38 @@ Route::get('/robots.txt', function () {
         ->header('Cache-Control', 'public, max-age=3600');
 })->name('robots');
 
+Route::get('/humans.txt', static function (): Response {
+    $appUrl = rtrim((string) config('app.url'), '/');
+    $lines = [
+        '# SwaedUAE — humans.txt',
+        'Site: '.$appUrl,
+        'Volunteer hub: '.$appUrl.'/volunteer',
+        'Contact: '.route('contact.show', [], true),
+        'Help & support: '.route('support.show', [], true),
+        'News feed: '.route('feed', [], true),
+        '',
+        'Built with Laravel. Security disclosure: '.$appUrl.'/.well-known/security.txt',
+    ];
+
+    return response(implode("\n", $lines)."\n", 200)
+        ->header('Content-Type', 'text/plain; charset=UTF-8')
+        ->header('Cache-Control', 'public, max-age=86400');
+})->name('site.humans');
+
+Route::get('/.well-known/security.txt', static function (): Response {
+    $support = config('swaeduae.mail.support');
+    $expires = now()->addYear()->endOfDay()->utc()->format('Y-m-d\TH:i:s\0\Z');
+    $lines = [
+        'Contact: mailto:'.$support,
+        'Preferred-Languages: en, ar',
+        'Expires: '.$expires,
+    ];
+
+    return response(implode("\n", $lines)."\n", 200)
+        ->header('Content-Type', 'text/plain; charset=UTF-8')
+        ->header('Cache-Control', 'public, max-age=86400');
+})->name('site.security');
+
 Route::get('/', HomeController::class)->name('home');
 
 Route::get('/about', [InstitutionalPageController::class, 'show'])
@@ -66,11 +100,26 @@ Route::get('/leadership', [InstitutionalPageController::class, 'show'])
 Route::get('/programs', ProgramsIndexController::class)->name('programs.index');
 Route::get('/youth-councils', YouthCouncilsController::class)->name('youth-councils');
 Route::get('/events', [PublicEventController::class, 'index'])->name('events.index');
+Route::get('/events/{event}/calendar.ics', [PublicEventController::class, 'ics'])->name('events.ics');
 Route::get('/events/{event}', [PublicEventController::class, 'show'])->name('events.show');
 
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/feed.xml', MediaAtomFeedController::class)->name('feed');
+Route::get('/favicon.svg', static function (): Response {
+    $svg = <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="SwaedUAE">
+  <rect width="32" height="32" rx="6" fill="#047857"/>
+  <path fill="#ecfdf5" d="M8 22c4-6 6-10 6-14a3 3 0 0 1 6 0c0 4 2 8 6 14H8z"/>
+</svg>
+SVG;
+
+    return response($svg, 200)
+        ->header('Content-Type', 'image/svg+xml; charset=UTF-8')
+        ->header('Cache-Control', 'public, max-age=86400');
+})->name('site.favicon');
+
 Route::get('/site.webmanifest', static function (): Response {
+    $iconUrl = url('/favicon.svg');
     $manifest = [
         'name' => 'SwaedUAE',
         'short_name' => 'SwaedUAE',
@@ -81,6 +130,14 @@ Route::get('/site.webmanifest', static function (): Response {
         'background_color' => '#ffffff',
         'theme_color' => '#047857',
         'lang' => 'en',
+        'icons' => [
+            [
+                'src' => $iconUrl,
+                'sizes' => 'any',
+                'type' => 'image/svg+xml',
+                'purpose' => 'any',
+            ],
+        ],
     ];
 
     return response(
@@ -92,10 +149,7 @@ Route::get('/site.webmanifest', static function (): Response {
 Route::get('/media', MediaHubController::class)->name('media.index');
 Route::get('/media/external/{external_news_item}', [ExternalNewsPublicController::class, 'show'])
     ->name('media.external.show');
-Route::get('/gallery', [InstitutionalPageController::class, 'show'])
-    ->defaults('cms_slug', 'gallery')
-    ->defaults('fallback_view', 'public.gallery')
-    ->name('gallery');
+Route::get('/gallery', GalleryPublicController::class)->name('gallery');
 Route::get('/partners', [InstitutionalPageController::class, 'show'])
     ->defaults('cms_slug', 'partners')
     ->defaults('fallback_view', 'public.partners')
@@ -132,6 +186,8 @@ Route::post('/support', [SupportController::class, 'store'])
     ->name('support.store');
 
 Route::get('/volunteer', [VolunteerHubController::class, 'index'])->name('volunteer.index');
+Route::get('/feeds/volunteer-opportunities.atom', VolunteerOpportunitiesAtomFeedController::class)
+    ->name('volunteer.opportunities.feed');
 Route::get('/volunteer/opportunities', [VolunteerHubController::class, 'opportunities'])->name('volunteer.opportunities.index');
 Route::get('/volunteer/opportunities/{event}/check-in', [VolunteerHubController::class, 'redirectToAttendanceCheckpoint'])
     ->middleware(['auth', 'verified', 'throttle:30,1'])
@@ -149,3 +205,9 @@ Route::post('/volunteer/opportunities/{event}/apply', [VolunteerHubController::c
 Route::post('/volunteer/opportunities/{event}/withdraw-application', [VolunteerHubController::class, 'withdrawApplication'])
     ->middleware(['auth', 'verified', 'throttle:20,1'])
     ->name('volunteer.opportunities.withdraw-application');
+Route::post('/volunteer/opportunities/{event}/save', [VolunteerHubController::class, 'saveOpportunity'])
+    ->middleware(['auth', 'verified', 'throttle:20,1'])
+    ->name('volunteer.opportunities.save');
+Route::delete('/volunteer/opportunities/{event}/save', [VolunteerHubController::class, 'unsaveOpportunity'])
+    ->middleware(['auth', 'verified', 'throttle:20,1'])
+    ->name('volunteer.opportunities.unsave');

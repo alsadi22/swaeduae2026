@@ -39,6 +39,19 @@ class DashboardVolunteerTest extends TestCase
         $response->assertSee('Dashboard Listed Event', false);
     }
 
+    public function test_volunteer_dashboard_certificates_section_links_to_support(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $user = User::factory()->create();
+        $user->assignRole('volunteer');
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('data-testid="dashboard-certificates-support"', false)
+            ->assertSee(route('support.show', ['lang' => 'en'], true), false);
+    }
+
     public function test_volunteer_dashboard_shows_stay_informed_section(): void
     {
         $this->seed(RoleSeeder::class);
@@ -63,6 +76,31 @@ class DashboardVolunteerTest extends TestCase
             ->assertOk()
             ->assertSee('data-testid="dashboard-discover-programs"', false)
             ->assertSee('data-testid="dashboard-discover-media"', false);
+    }
+
+    public function test_volunteer_dashboard_lists_saved_opportunities(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $user = User::factory()->create();
+        $user->assignRole('volunteer');
+
+        $org = Organization::query()->create(['name_en' => 'Saved Dash Org', 'name_ar' => null]);
+        $event = Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'Dashboard Saved Opportunity',
+            'event_starts_at' => now()->addDay(),
+            'event_ends_at' => now()->addDays(2),
+            'checkin_window_starts_at' => now(),
+            'checkin_window_ends_at' => now()->addDays(2),
+        ]);
+        $user->savedEvents()->attach($event->id);
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee(__('Saved opportunities'), false)
+            ->assertSee('data-testid="dashboard-saved-opportunities-list"', false)
+            ->assertSee('Dashboard Saved Opportunity', false);
     }
 
     public function test_admin_without_volunteer_role_sees_no_volunteer_section_titles(): void

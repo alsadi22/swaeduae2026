@@ -3,10 +3,10 @@
 namespace App\Providers;
 
 use App\Models\Attendance;
-use App\Models\ExternalNewsItem;
 use App\Models\CheckinAttempt;
 use App\Models\Dispute;
 use App\Models\EventApplication;
+use App\Models\ExternalNewsItem;
 use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;

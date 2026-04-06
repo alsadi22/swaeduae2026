@@ -50,6 +50,7 @@ class CmsPage extends Model
         'show_on_home',
         'show_on_programs',
         'show_on_media',
+        'show_in_gallery',
     ];
 
     protected function casts(): array
@@ -59,6 +60,7 @@ class CmsPage extends Model
             'show_on_home' => 'boolean',
             'show_on_programs' => 'boolean',
             'show_on_media' => 'boolean',
+            'show_in_gallery' => 'boolean',
         ];
     }
 

@@ -8,7 +8,7 @@
         ['name' => __('Volunteer opportunities'), 'url' => route('volunteer.opportunities.index', $localeQ, true)],
     ];
 @endphp
-<x-public-layout :title="$pageTitle" :metaDescription="$metaDescription" :breadcrumbItems="$breadcrumbItems">
+<x-public-layout :title="$pageTitle" :metaDescription="$metaDescription" :breadcrumbItems="$breadcrumbItems" :extraAtomAlternates="$extraAtomAlternates">
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
         <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
@@ -28,6 +28,7 @@
                 <select id="opp_sort" name="sort" class="mt-1 block w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:w-52">
                     <option value="starts_soon" @selected($sort === 'starts_soon')>{{ __('Starting soonest') }}</option>
                     <option value="starts_late" @selected($sort === 'starts_late')>{{ __('Starting latest') }}</option>
+                    <option value="title_asc" @selected($sort === 'title_asc')>{{ __('Volunteer opportunities sort title_asc') }}</option>
                 </select>
             </div>
             <div>
@@ -38,6 +39,16 @@
                     <option value="application" @selected($entry === 'application')>{{ __('Requires application only') }}</option>
                 </select>
             </div>
+            @auth
+                @if (auth()->user()->hasRole('volunteer'))
+                    <div class="flex items-end">
+                        <label class="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700">
+                            <input type="checkbox" name="saved" value="1" class="rounded border-slate-300 text-emerald-700 focus:ring-emerald-500" @checked($filterSaved ?? false)>
+                            <span>{{ __('Saved only') }}</span>
+                        </label>
+                    </div>
+                @endif
+            @endauth
             <div class="flex flex-wrap gap-2">
                 <button type="submit" class="btn-primary-solid">{{ __('Apply') }}</button>
                 <a href="{{ route('volunteer.opportunities.index', $localeQ) }}" class="btn-secondary-muted">{{ __('Clear') }}</a>
@@ -46,10 +57,14 @@
 
         @if ($events->total() === 0)
             <div class="card-dashed-placeholder mt-12">
-                @if (filled($search) && $entry === 'all')
+                @if (($filterSaved ?? false) && ! filled($search) && $entry === 'all')
+                    <p class="font-display font-semibold text-slate-800">{{ __('No saved opportunities in the list.') }}</p>
+                    <p class="mt-2 text-sm text-slate-600">{{ __('Save opportunities from the detail page to see them here.') }}</p>
+                    <a href="{{ route('volunteer.opportunities.index', array_merge($localeQ, array_filter(['sort' => $sort !== 'starts_soon' ? $sort : null]))) }}" class="btn-secondary-muted mt-6 inline-flex">{{ __('Show all opportunities') }}</a>
+                @elseif (filled($search) && $entry === 'all')
                     <p class="font-display font-semibold text-slate-800">{{ __('No opportunities match your search.') }}</p>
                     <a href="{{ route('volunteer.opportunities.index', array_merge($localeQ, array_filter(['sort' => $sort !== 'starts_soon' ? $sort : null]))) }}" class="btn-secondary-muted mt-6 inline-flex">{{ __('Clear') }}</a>
-                @elseif (filled($search) || $entry !== 'all')
+                @elseif (filled($search) || $entry !== 'all' || ($filterSaved ?? false))
                     <p class="font-display font-semibold text-slate-800">{{ __('No opportunities match your filters.') }}</p>
                     <a href="{{ route('volunteer.opportunities.index', array_merge($localeQ, array_filter(['sort' => $sort !== 'starts_soon' ? $sort : null]))) }}" class="btn-secondary-muted mt-6 inline-flex">{{ __('Clear') }}</a>
                 @else
@@ -59,6 +74,9 @@
                 @endif
             </div>
         @else
+            <p class="mt-6 text-sm text-slate-600">
+                <a href="{{ route('volunteer.opportunities.feed', $localeQ, true) }}" class="font-semibold text-emerald-800 hover:underline" data-testid="opportunities-atom-feed-link">{{ __('Volunteer opportunities Atom feed') }}</a>
+            </p>
             <ul class="mt-10 space-y-4">
                 @foreach ($events as $ev)
                     <li class="card-surface p-6">
@@ -68,6 +86,14 @@
                                     <h2 class="font-display text-lg font-bold text-slate-900">{{ $ev->titleForLocale() }}</h2>
                                     @if ($ev->application_required)
                                         <span class="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-900">{{ __('Requires application') }}</span>
+                                    @endif
+                                    @if (auth()->check() && auth()->user()->hasRole('volunteer'))
+                                        @if (in_array((int) $ev->id, $savedEventIds ?? [], true))
+                                            <span data-testid="opportunity-card-saved-badge" class="inline-flex rounded-full bg-sky-100 px-2 py-0.5 text-xs font-semibold text-sky-900">{{ __('Saved') }}</span>
+                                        @endif
+                                        @if (in_array((int) $ev->id, $rosteredEventIds ?? [], true))
+                                            <span data-testid="opportunity-card-roster-badge" class="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-900">{{ __('On roster') }}</span>
+                                        @endif
                                     @endif
                                 </div>
                                 <p class="mt-1 text-sm text-slate-500">{{ $ev->organization?->nameForLocale() }}</p>

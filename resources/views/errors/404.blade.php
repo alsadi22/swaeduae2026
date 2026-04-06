@@ -9,6 +9,9 @@
         <p class="mt-6 max-w-xl text-slate-600 leading-relaxed">{{ __('The page you are looking for does not exist or may have been moved.') }}</p>
         <div class="mt-10 flex flex-wrap gap-3">
             <a href="{{ route('home', $localeQ) }}" class="btn-primary-solid">{{ __('Back to home') }}</a>
+            <a href="{{ route('volunteer.opportunities.index', $localeQ) }}" class="btn-secondary-muted" data-testid="error-404-opportunities">{{ __('Browse opportunities') }}</a>
+            <a href="{{ route('events.index', $localeQ) }}" class="btn-secondary-muted" data-testid="error-404-events">{{ __('Events') }}</a>
+            <a href="{{ route('support.show', $localeQ) }}" class="btn-secondary-muted" data-testid="error-404-support">{{ __('Help and support') }}</a>
             <a href="{{ route('contact.show', $localeQ) }}" class="btn-secondary-muted">{{ __('Contact') }}</a>
         </div>
     </div>

@@ -39,7 +39,17 @@ class DashboardController extends Controller
         ]);
         $applicationStatusFilter = $validated['application_status'] ?? 'all';
 
+        $savedOpportunityEvents = collect();
+
         if ($user->hasRole('volunteer')) {
+            $savedOpportunityEvents = $user
+                ->savedEvents()
+                ->with('organization')
+                ->where('event_ends_at', '>=', now())
+                ->orderBy('event_starts_at')
+                ->take(12)
+                ->get();
+
             $upcomingRosterEvents = $user
                 ->rosteredEvents()
                 ->with('organization')
@@ -112,6 +122,7 @@ class DashboardController extends Controller
             'verifiedVolunteerHoursRounded',
             'verifiedVolunteerSessionsCount',
             'volunteerProfileCompleteForCommitments',
+            'savedOpportunityEvents',
         ));
     }
 }

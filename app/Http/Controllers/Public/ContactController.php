@@ -8,6 +8,7 @@ use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class ContactController extends Controller
@@ -25,6 +26,7 @@ class ContactController extends Controller
             'phone' => 'nullable|string|max:40',
             'subject' => 'required|string|max:200',
             'message' => 'required|string|max:5000',
+            'contact_type' => ['nullable', 'string', Rule::in(['general', 'partnership', 'media', 'youth_programmes'])],
         ]);
 
         $localeQ = PublicLocale::queryFromRequestOrUser($request->user());
@@ -33,7 +35,23 @@ class ContactController extends Controller
             return redirect()->route('contact.show', $localeQ)->with('success', __('Thank you. We will get back to you soon.'));
         }
 
-        Mail::to(config('swaeduae.mail.info'))->send(new ContactFormMail($validated));
+        $type = $validated['contact_type'] ?? 'general';
+        $typeLabels = [
+            'general' => __('Contact type general'),
+            'partnership' => __('Contact type partnership'),
+            'media' => __('Contact type media'),
+            'youth_programmes' => __('Contact type youth programmes'),
+        ];
+        $payload = array_merge($validated, [
+            'contact_type' => $type,
+            'contact_type_label' => $typeLabels[$type],
+        ]);
+
+        $inbox = $type === 'youth_programmes'
+            ? config('swaeduae.mail.youth_councils')
+            : config('swaeduae.mail.info');
+
+        Mail::to($inbox)->send(new ContactFormMail($payload));
 
         return redirect()->route('contact.show', $localeQ)->with('success', __('Thank you. We will get back to you soon.'));
     }

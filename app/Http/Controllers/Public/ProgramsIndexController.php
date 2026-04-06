@@ -20,6 +20,11 @@ class ProgramsIndexController extends Controller
         $searchInput = isset($validated['q']) ? trim((string) $validated['q']) : '';
         $searchTerm = $searchInput === '' ? null : mb_substr($searchInput, 0, 120);
 
+        $rawSort = $request->query('sort');
+        $sort = is_string($rawSort) && in_array($rawSort, ['published_desc', 'published_asc', 'title_asc'], true)
+            ? $rawSort
+            : 'published_desc';
+
         $cmsPage = CmsPage::findPublished('programs');
 
         $query = CmsPage::query()
@@ -36,8 +41,13 @@ class ProgramsIndexController extends Controller
             });
         }
 
+        match ($sort) {
+            'published_asc' => $query->orderBy('published_at')->orderBy('title'),
+            'title_asc' => $query->orderBy('title'),
+            default => $query->orderByDesc('published_at')->orderBy('title'),
+        };
+
         $programPages = $query
-            ->orderByDesc('published_at')
             ->paginate(12)
             ->withQueryString()
             ->appends(PublicLocale::queryFromRequestOrUser($request->user()));
@@ -46,6 +56,7 @@ class ProgramsIndexController extends Controller
             'cmsPage' => $cmsPage,
             'programPages' => $programPages,
             'search' => $searchInput,
+            'sort' => $sort,
         ]);
     }
 }

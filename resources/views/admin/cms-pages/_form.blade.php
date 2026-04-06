@@ -126,4 +126,17 @@
         </label>
         <x-input-error :messages="$errors->get('show_on_media')" class="mt-2" />
     </div>
+
+    <div class="rounded-md border border-gray-200 bg-gray-50 p-4">
+        <input type="hidden" name="show_in_gallery" value="0" />
+        <label class="inline-flex items-start gap-3">
+            <input type="checkbox" name="show_in_gallery" value="1" class="mt-1 rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+                @checked(old('show_in_gallery', $page->show_in_gallery ?? false)) />
+            <span>
+                <span class="block text-sm font-medium text-gray-700">{{ __('Show in gallery') }}</span>
+                <span class="mt-0.5 block text-xs text-gray-500">{{ __('Show in gallery hint') }}</span>
+            </span>
+        </label>
+        <x-input-error :messages="$errors->get('show_in_gallery')" class="mt-2" />
+    </div>
 </div>
