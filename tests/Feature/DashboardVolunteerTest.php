@@ -338,4 +338,29 @@ class DashboardVolunteerTest extends TestCase
             ->assertSee('App Paginate Event 0', false)
             ->assertDontSee('App Paginate Event 10', false);
     }
+
+    public function test_dashboard_pagination_links_include_preferred_locale_when_url_has_no_lang_query(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $user = User::factory()->create(['locale_preferred' => 'ar']);
+        $user->assignRole('volunteer');
+
+        $org = Organization::query()->create(['name_en' => 'Locale Paginate Org', 'name_ar' => null]);
+        for ($i = 0; $i < 6; $i++) {
+            $event = Event::factory()->create([
+                'organization_id' => $org->id,
+                'title_en' => 'Locale Past '.$i,
+                'event_starts_at' => now()->subDays(20 - $i),
+                'event_ends_at' => now()->subDays(10 - $i),
+            ]);
+            $event->volunteers()->attach($user->id);
+        }
+
+        $html = $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->getContent();
+
+        $this->assertStringContainsString('lang=ar', $html);
+    }
 }

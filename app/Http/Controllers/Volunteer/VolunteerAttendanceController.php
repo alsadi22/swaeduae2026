@@ -41,7 +41,7 @@ class VolunteerAttendanceController extends Controller
             $query->where('state', $stateFilter);
         }
 
-        $attendances = $query->paginate(20)->withQueryString()->appends(PublicLocale::query());
+        $attendances = $query->paginate(20)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
 
         return view('volunteer.attendance.index', compact('attendances', 'stateFilter'));
     }

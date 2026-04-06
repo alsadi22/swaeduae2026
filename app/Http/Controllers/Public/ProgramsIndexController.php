@@ -40,7 +40,7 @@ class ProgramsIndexController extends Controller
             ->orderByDesc('published_at')
             ->paginate(12)
             ->withQueryString()
-            ->appends(PublicLocale::query());
+            ->appends(PublicLocale::queryFromRequestOrUser($request->user()));
 
         return view('public.programs', [
             'cmsPage' => $cmsPage,

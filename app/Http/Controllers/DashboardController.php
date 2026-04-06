@@ -47,7 +47,7 @@ class DashboardController extends Controller
                 ->orderBy('event_starts_at')
                 ->paginate(5, ['*'], 'upcoming_page')
                 ->withQueryString()
-                ->appends(PublicLocale::query());
+                ->appends(PublicLocale::queryFromRequestOrUser($user));
 
             $pastRosterEvents = $user
                 ->rosteredEvents()
@@ -56,7 +56,7 @@ class DashboardController extends Controller
                 ->orderByDesc('event_ends_at')
                 ->paginate(5, ['*'], 'past_page')
                 ->withQueryString()
-                ->appends(PublicLocale::query());
+                ->appends(PublicLocale::queryFromRequestOrUser($user));
 
             $applicationsQuery = $user
                 ->eventApplications()
@@ -70,7 +70,7 @@ class DashboardController extends Controller
             $myApplications = $applicationsQuery
                 ->paginate(10, ['*'], 'app_page')
                 ->withQueryString()
-                ->appends(PublicLocale::query());
+                ->appends(PublicLocale::queryFromRequestOrUser($user));
 
             $verifiedVolunteerMinutesTotal = VerifiedAttendanceMinutes::totalForUser($user);
 
@@ -82,7 +82,7 @@ class DashboardController extends Controller
                 ->whereNotNull('minutes_worked')
                 ->count();
         } else {
-            $query = array_merge($request->query(), PublicLocale::query());
+            $query = array_merge($request->query(), PublicLocale::queryFromRequestOrUser($user));
             $upcomingRosterEvents = new LengthAwarePaginator([], 0, 5, 1, [
                 'path' => $request->url(),
                 'pageName' => 'upcoming_page',

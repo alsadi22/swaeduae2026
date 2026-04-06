@@ -79,6 +79,16 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('home', ['lang' => 'en'], absolute: false));
     }
 
+    public function test_logout_redirect_preserves_explicit_lang_query_from_request(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('logout', ['lang' => 'ar']));
+
+        $this->assertGuest();
+        $response->assertRedirect(route('home', ['lang' => 'ar'], absolute: false));
+    }
+
     public function test_login_post_is_throttled_per_ip(): void
     {
         $user = User::factory()->create();

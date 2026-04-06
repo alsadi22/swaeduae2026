@@ -38,7 +38,7 @@ class PublicEventController extends Controller
             });
         }
 
-        $events = $query->orderBy('event_starts_at')->paginate(15)->withQueryString()->appends(PublicLocale::query());
+        $events = $query->orderBy('event_starts_at')->paginate(15)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
 
         $pageTitle = $cmsPage
             ? $cmsPage->title.' — '.__('SwaedUAE')

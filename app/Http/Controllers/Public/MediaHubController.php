@@ -71,20 +71,20 @@ class MediaHubController extends Controller
         }
 
         if ($filter === 'internal') {
-            $internalPaginator = (clone $internalQuery)->paginate(self::PER_PAGE)->withQueryString()->appends(PublicLocale::query());
+            $internalPaginator = (clone $internalQuery)->paginate(self::PER_PAGE)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
             $externalPaginator = null;
         } elseif ($filter === 'external') {
             $internalPaginator = null;
-            $externalPaginator = (clone $externalQuery)->paginate(self::PER_PAGE)->withQueryString()->appends(PublicLocale::query());
+            $externalPaginator = (clone $externalQuery)->paginate(self::PER_PAGE)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
         } else {
             $internalPaginator = (clone $internalQuery)
                 ->paginate(self::PER_PAGE, ['*'], 'internal_page')
                 ->withQueryString()
-                ->appends(PublicLocale::query());
+                ->appends(PublicLocale::queryFromRequestOrUser($request->user()));
             $externalPaginator = (clone $externalQuery)
                 ->paginate(self::PER_PAGE, ['*'], 'external_page')
                 ->withQueryString()
-                ->appends(PublicLocale::query());
+                ->appends(PublicLocale::queryFromRequestOrUser($request->user()));
         }
 
         $sources = ExternalNewsSource::query()

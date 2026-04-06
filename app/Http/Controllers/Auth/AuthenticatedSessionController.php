@@ -46,12 +46,14 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        $homeQuery = PublicLocale::queryFromRequestOrUser($request->user());
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
 
-        return redirect()->route('home', PublicLocale::query());
+        return redirect()->route('home', $homeQuery);
     }
 }
