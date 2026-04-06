@@ -129,5 +129,9 @@
             @endif
             <p class="mt-6 text-xs text-slate-600 leading-relaxed">{{ __('Youth councils contact general hint') }}</p>
         </section>
+
+        <p class="mx-auto mt-12 max-w-3xl border-t border-slate-200 pt-10 text-center">
+            <a href="{{ route('volunteer.opportunities.index', $localeQ) }}" class="text-sm font-bold text-emerald-800 hover:underline" data-testid="youth-councils-footer-opportunities">{{ __('Browse opportunities') }} →</a>
+        </p>
     </article>
 </x-public-layout>

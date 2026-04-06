@@ -86,7 +86,7 @@ class OrganizationEventApplicationController extends Controller
             $query->orderByDesc('created_at');
         }
 
-        $applications = $query->paginate(25)->withQueryString()->appends(PublicLocale::query());
+        $applications = $query->paginate(25)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
 
         $filterEvents = Event::query()
             ->where('organization_id', $organizationId)

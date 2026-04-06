@@ -17,7 +17,16 @@ class YouthCouncilsPageTest extends TestCase
             ->assertSee('Youth Councils', false)
             ->assertSee('youthcouncils@swaeduae.ae', false)
             ->assertSee(route('about'), false)
-            ->assertSee(route('programs.index'), false);
+            ->assertSee(route('programs.index'), false)
+            ->assertSee(route('volunteer.opportunities.index', ['lang' => 'en'], false), false);
+    }
+
+    public function test_youth_councils_footer_opportunities_link_preserves_arabic_locale_query(): void
+    {
+        $this->get(route('youth-councils', ['lang' => 'ar']))
+            ->assertOk()
+            ->assertSee(route('volunteer.opportunities.index', ['lang' => 'ar'], false), false)
+            ->assertSee('data-testid="youth-councils-footer-opportunities"', false);
     }
 
     public function test_youth_councils_page_uses_published_cms_when_present(): void

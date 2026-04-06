@@ -72,11 +72,14 @@ class OrganizationEventController extends Controller
             $query->where('event_ends_at', '<', now());
         }
 
-        $events = $query->paginate(15)->appends(PublicLocale::mergeQuery(array_filter([
-            'search' => $searchInput,
-            'timing' => $timing !== self::EVENT_INDEX_TIMING_ALL ? $timing : null,
-            'sort' => $sort !== self::EVENT_INDEX_SORT_STARTS_DESC ? $sort : null,
-        ])));
+        $events = $query->paginate(15)->appends(array_merge(
+            PublicLocale::queryFromRequestOrUser($request->user()),
+            array_filter([
+                'search' => $searchInput,
+                'timing' => $timing !== self::EVENT_INDEX_TIMING_ALL ? $timing : null,
+                'sort' => $sort !== self::EVENT_INDEX_SORT_STARTS_DESC ? $sort : null,
+            ])
+        ));
 
         return view('organization.events.index', [
             'events' => $events,
@@ -94,9 +97,12 @@ class OrganizationEventController extends Controller
 
         $volunteers = $this->volunteersForRosterListing($event, $searchTerm)
             ->paginate(30)
-            ->appends(PublicLocale::mergeQuery(array_filter([
-                'search' => $searchInput,
-            ])));
+            ->appends(array_merge(
+                PublicLocale::queryFromRequestOrUser($request->user()),
+                array_filter([
+                    'search' => $searchInput,
+                ])
+            ));
 
         $userIds = $volunteers->getCollection()->pluck('id')->all();
         $attendanceByUserId = $userIds === []
@@ -188,7 +194,7 @@ class OrganizationEventController extends Controller
         ]));
 
         return redirect()
-            ->route('organization.events.index', PublicLocale::query())
+            ->route('organization.events.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('Event created.'));
     }
 
@@ -207,18 +213,18 @@ class OrganizationEventController extends Controller
         $event->update($request->validated());
 
         return redirect()
-            ->route('organization.events.index', PublicLocale::query())
+            ->route('organization.events.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('Event updated.'));
     }
 
-    public function destroy(Event $event): RedirectResponse
+    public function destroy(Request $request, Event $event): RedirectResponse
     {
         $this->authorize('deleteInOrganizationPortal', $event);
 
         $event->delete();
 
         return redirect()
-            ->route('organization.events.index', PublicLocale::query())
+            ->route('organization.events.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('Event deleted.'));
     }
 
@@ -233,7 +239,7 @@ class OrganizationEventController extends Controller
         $days = (int) ($validated['days'] ?? 7);
 
         return redirect()
-            ->route('organization.events.edit', array_merge(['event' => $event], PublicLocale::query()))
+            ->route('organization.events.edit', array_merge(['event' => $event], PublicLocale::queryFromRequestOrUser($request->user())))
             ->with('checkpoint_signed_url', AttendanceCheckpointUrl::temporarySignedShowUrl($event, $days));
     }
 
@@ -243,7 +249,7 @@ class OrganizationEventController extends Controller
 
         $event->volunteers()->detach($volunteer->id);
 
-        $params = array_merge(['event' => $event], PublicLocale::query());
+        $params = array_merge(['event' => $event], PublicLocale::queryFromRequestOrUser($request->user()));
         if ($request->filled('search')) {
             $params['search'] = $request->string('search')->toString();
         }

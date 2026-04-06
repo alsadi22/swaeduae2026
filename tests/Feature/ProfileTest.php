@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Support\PublicLocale;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -34,7 +35,7 @@ class ProfileTest extends TestCase
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect(route('profile.edit', PublicLocale::queryForUser($user)));
 
         $user->refresh();
 
@@ -56,7 +57,7 @@ class ProfileTest extends TestCase
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect(route('profile.edit', PublicLocale::queryForUser($user)));
 
         $this->assertNotNull($user->refresh()->email_verified_at);
     }
@@ -73,7 +74,7 @@ class ProfileTest extends TestCase
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect(route('home', ['lang' => 'en'], absolute: false));
+            ->assertRedirect(route('home', PublicLocale::queryForUser($user), absolute: false));
 
         $this->assertGuest();
         $this->assertNull($user->fresh());
@@ -92,7 +93,7 @@ class ProfileTest extends TestCase
 
         $response
             ->assertSessionHasErrorsIn('userDeletion', 'password')
-            ->assertRedirect('/profile');
+            ->assertRedirect(route('profile.edit'));
 
         $this->assertNotNull($user->fresh());
     }
@@ -107,7 +108,7 @@ class ProfileTest extends TestCase
                     'name' => 'User '.$i,
                     'email' => $user->email,
                 ])
-                ->assertRedirect('/profile');
+                ->assertRedirect(route('profile.edit', PublicLocale::queryForUser($user)));
         }
 
         $this->actingAs($user)
@@ -116,5 +117,20 @@ class ProfileTest extends TestCase
                 'email' => $user->email,
             ])
             ->assertStatus(429);
+    }
+
+    public function test_profile_update_redirect_preserves_explicit_lang_query_from_request(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->patch(route('profile.update', ['lang' => 'ar']), [
+                'name' => 'Arabic Context User',
+                'email' => $user->email,
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('profile.edit', ['lang' => 'ar']));
+
+        $this->assertSame('Arabic Context User', $user->fresh()->name);
     }
 }

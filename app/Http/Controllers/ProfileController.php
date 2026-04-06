@@ -35,7 +35,8 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('profile.edit', PublicLocale::queryFromRequestOrUser($request->user()))
+            ->with('status', 'profile-updated');
     }
 
     /**
@@ -47,9 +48,8 @@ class ProfileController extends Controller
             'password' => ['required', 'current_password'],
         ]);
 
-        $homeQuery = PublicLocale::query();
-
         $user = $request->user();
+        $homeQuery = PublicLocale::queryFromRequestOrUser($user);
 
         Auth::logout();
 
