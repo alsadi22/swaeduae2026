@@ -17,6 +17,9 @@
                     <p class="mt-3 text-sm text-slate-600 leading-relaxed">{{ __('FAQ sample answer') }}</p>
                 </details>
             </div>
+            <p class="mt-12 border-t border-slate-200 pt-10 text-center">
+                <a href="{{ route('volunteer.opportunities.index', $localeQ) }}" class="text-sm font-bold text-emerald-800 hover:underline" data-testid="faq-footer-opportunities">{{ __('Browse opportunities') }} →</a>
+            </p>
         </div>
     </div>
 </x-public-layout>

@@ -17,6 +17,35 @@ class SupportFormTest extends TestCase
         $this->get(route('support.show'))->assertOk();
     }
 
+    public function test_support_form_action_includes_lang_when_page_requested_with_lang(): void
+    {
+        $storeUrl = route('support.store', ['lang' => 'ar'], false);
+
+        $this->get(route('support.show', ['lang' => 'ar']))
+            ->assertOk()
+            ->assertSee($storeUrl, false);
+    }
+
+    public function test_support_submission_redirect_preserves_lang_query(): void
+    {
+        Mail::fake();
+
+        $payload = [
+            'name' => 'Ar Help',
+            'email' => 'ar-help@example.com',
+            'phone' => '',
+            'topic' => 'login',
+            'subject' => 'Hi',
+            'message' => str_repeat('m', 40),
+        ];
+
+        $this->post(route('support.store', ['lang' => 'ar']), $payload)
+            ->assertRedirect(route('support.show', ['lang' => 'ar']))
+            ->assertSessionHas('success');
+
+        Mail::assertSent(SupportFormMail::class);
+    }
+
     public function test_support_form_sends_mail_to_support_inbox(): void
     {
         Mail::fake();

@@ -36,7 +36,7 @@
                         </div>
                     @endif
 
-                    <form method="post" action="{{ route('contact.store') }}" class="relative space-y-6">
+                    <form method="post" action="{{ route('contact.store', $localeQ) }}" class="relative space-y-6">
                         @csrf
                         <div class="pointer-events-none absolute -left-[9999px] top-0 h-px w-px overflow-hidden opacity-0" aria-hidden="true">
                             <label for="contact_trap" class="sr-only">{{ __('Leave this field empty') }}</label>

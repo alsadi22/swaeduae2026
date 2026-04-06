@@ -27,7 +27,7 @@ class ContactController extends Controller
             'message' => 'required|string|max:5000',
         ]);
 
-        $localeQ = PublicLocale::query();
+        $localeQ = PublicLocale::queryFromRequestOrUser($request->user());
 
         if (trim((string) $request->input('contact_trap', '')) !== '') {
             return redirect()->route('contact.show', $localeQ)->with('success', __('Thank you. We will get back to you soon.'));

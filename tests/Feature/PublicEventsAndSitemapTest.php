@@ -32,7 +32,19 @@ class PublicEventsAndSitemapTest extends TestCase
         $this->get(route('events.show', $event))
             ->assertOk()
             ->assertViewIs('public.events.show')
-            ->assertSee('Unique Public Event Title XYZ', false);
+            ->assertSee('Unique Public Event Title XYZ', false)
+            ->assertSee('data-testid="public-event-view-opportunity"', false)
+            ->assertSee(
+                route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::query()), false),
+                false
+            );
+
+        $this->get(route('events.show', ['event' => $event, 'lang' => 'ar']))
+            ->assertOk()
+            ->assertSee(
+                route('volunteer.opportunities.show', array_merge(['event' => $event, 'lang' => 'ar']), false),
+                false
+            );
     }
 
     public function test_events_index_search_filters_by_title(): void

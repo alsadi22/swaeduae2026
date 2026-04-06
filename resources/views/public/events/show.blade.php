@@ -69,9 +69,9 @@
             </div>
 
             <div class="mt-8 flex flex-wrap gap-3 border-t border-slate-100 pt-8">
-                <a href="{{ route('volunteer.opportunities.show', $event) }}" class="btn-primary-solid">{{ __('View opportunity') }}</a>
+                <a href="{{ route('volunteer.opportunities.show', array_merge(['event' => $event], $eventShowLocaleQ)) }}" class="btn-primary-solid" data-testid="public-event-view-opportunity">{{ __('View opportunity') }}</a>
                 @guest
-                    <a href="{{ route('register') }}" class="inline-flex rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50">{{ __('Create account') }}</a>
+                    <a href="{{ route('register.volunteer', array_merge(\App\Support\IntendedUrl::queryParamsForRequestUri(request()), $eventShowLocaleQ)) }}" class="inline-flex rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50">{{ __('Create account') }}</a>
                 @endguest
             </div>
         </article>

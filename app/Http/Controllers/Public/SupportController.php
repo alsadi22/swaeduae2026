@@ -28,7 +28,7 @@ class SupportController extends Controller
             'message' => 'required|string|max:5000',
         ]);
 
-        $localeQ = PublicLocale::query();
+        $localeQ = PublicLocale::queryFromRequestOrUser($request->user());
 
         if (trim((string) $request->input('support_trap', '')) !== '') {
             return redirect()->route('support.show', $localeQ)->with('success', __('Thank you. We will get back to you soon.'));

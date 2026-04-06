@@ -17,6 +17,34 @@ class ContactFormTest extends TestCase
         $this->get(route('contact.show'))->assertOk();
     }
 
+    public function test_contact_form_action_includes_lang_when_page_requested_with_lang(): void
+    {
+        $storeUrl = route('contact.store', ['lang' => 'ar'], false);
+
+        $this->get(route('contact.show', ['lang' => 'ar']))
+            ->assertOk()
+            ->assertSee($storeUrl, false);
+    }
+
+    public function test_contact_submission_redirect_preserves_lang_query(): void
+    {
+        Mail::fake();
+
+        $payload = [
+            'name' => 'Ar Sender',
+            'email' => 'ar-sender@example.com',
+            'phone' => '',
+            'subject' => 'Hello',
+            'message' => str_repeat('a', 40),
+        ];
+
+        $this->post(route('contact.store', ['lang' => 'ar']), $payload)
+            ->assertRedirect(route('contact.show', ['lang' => 'ar']))
+            ->assertSessionHas('success');
+
+        Mail::assertSent(ContactFormMail::class);
+    }
+
     public function test_contact_form_sends_mail_to_info_inbox(): void
     {
         Mail::fake();

@@ -118,4 +118,20 @@ class PublicSiteTest extends TestCase
             ->assertOk()
             ->assertSee($feedUrl, false);
     }
+
+    public function test_gallery_page_includes_opportunities_footer_link(): void
+    {
+        $this->get('/gallery')
+            ->assertOk()
+            ->assertSee('data-testid="gallery-footer-opportunities"', false)
+            ->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
+    }
+
+    public function test_faq_page_includes_opportunities_footer_link(): void
+    {
+        $this->get('/faq')
+            ->assertOk()
+            ->assertSee('data-testid="faq-footer-opportunities"', false)
+            ->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
+    }
 }
