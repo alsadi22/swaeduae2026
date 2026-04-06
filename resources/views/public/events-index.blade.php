@@ -3,7 +3,7 @@
 
     /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, \App\Models\Event> $events */
     /** @var \App\Models\CmsPage|null $cmsPage */
-    $eventsLocaleQ = \App\Support\PublicLocale::query();
+    $eventsLocaleQ = \App\Support\PublicLocale::queryForUser(auth()->user());
     $breadcrumbItems = [
         ['name' => __('Home'), 'url' => route('home', $eventsLocaleQ, true)],
         ['name' => __('Events'), 'url' => route('events.index', $eventsLocaleQ, true)],
@@ -68,7 +68,7 @@
                     <a href="{{ route('events.index', $eventsLocaleQ) }}" class="btn-secondary-muted mt-4 inline-flex">{{ __('Clear') }}</a>
                 @else
                     <p class="mt-8 text-sm text-slate-600">{{ __('No upcoming events listed yet.') }}</p>
-                    <a href="{{ route('volunteer.opportunities.index', $eventsLocaleQ) }}" class="mt-4 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Browse opportunities') }} →</a>
+                    <a href="{{ route('volunteer.opportunities.index', $eventsLocaleQ) }}" class="mt-4 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline" data-testid="events-footer-opportunities">{{ __('Browse opportunities') }} →</a>
                 @endif
             @else
                 <ul class="mt-10 space-y-4">
@@ -101,7 +101,7 @@
                 <div class="mt-10">
                     {{ $events->links('vendor.pagination.tailwind-public') }}
                 </div>
-                <a href="{{ route('volunteer.opportunities.index', $eventsLocaleQ) }}" class="mt-8 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline">{{ __('Volunteer opportunities') }} →</a>
+                <a href="{{ route('volunteer.opportunities.index', $eventsLocaleQ) }}" class="mt-8 inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline" data-testid="events-footer-opportunities">{{ __('Volunteer opportunities') }} →</a>
             @endif
         </section>
     </div>

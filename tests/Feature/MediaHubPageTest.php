@@ -46,7 +46,9 @@ class MediaHubPageTest extends TestCase
             ->assertOk()
             ->assertSeeText('Press release alpha')
             ->assertSeeText(__('News feed'))
-            ->assertSeeText(__('site.media_hub_feed_hint'));
+            ->assertSeeText(__('site.media_hub_feed_hint'))
+            ->assertSee('data-testid="media-footer-opportunities"', false)
+            ->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
     }
 
     public function test_media_hub_hides_internal_page_when_show_on_media_disabled(): void

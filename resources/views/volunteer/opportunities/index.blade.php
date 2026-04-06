@@ -1,7 +1,7 @@
 @php
     $pageTitle = __('Volunteer opportunities').' — '.config('app.name');
     $metaDescription = __('Volunteer opportunities intro');
-    $localeQ = \App\Support\PublicLocale::query();
+    $localeQ = \App\Support\PublicLocale::queryForUser(auth()->user());
     $breadcrumbItems = [
         ['name' => __('Home'), 'url' => route('home', $localeQ, true)],
         ['name' => __('Volunteer'), 'url' => route('volunteer.index', $localeQ, true)],
@@ -55,7 +55,7 @@
                 @else
                     <p class="font-display font-semibold text-slate-800">{{ __('No open opportunities right now') }}</p>
                     <p class="mt-2 text-sm text-slate-600">{{ __('Check back soon or contact us to get involved.') }}</p>
-                    <a href="{{ route('contact.show') }}" class="btn-primary-solid mt-6">{{ __('Contact') }}</a>
+                    <a href="{{ route('contact.show', $localeQ) }}" class="btn-primary-solid mt-6" data-testid="opportunities-empty-contact">{{ __('Contact') }}</a>
                 @endif
             </div>
         @else

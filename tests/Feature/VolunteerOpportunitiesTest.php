@@ -39,7 +39,9 @@ class VolunteerOpportunitiesTest extends TestCase
     {
         $this->get(route('volunteer.opportunities.index'))
             ->assertOk()
-            ->assertSee(__('No open opportunities right now'), false);
+            ->assertSee(__('No open opportunities right now'), false)
+            ->assertSee('data-testid="opportunities-empty-contact"', false)
+            ->assertSee(route('contact.show', PublicLocale::query(), true), false);
     }
 
     public function test_opportunities_lists_future_events(): void

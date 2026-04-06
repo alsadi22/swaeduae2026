@@ -6,7 +6,7 @@
     </x-slot>
 
     @php
-        $attLocaleQ = \App\Support\PublicLocale::query();
+        $attLocaleQ = \App\Support\PublicLocale::queryForUser(auth()->user());
     @endphp
     <div class="py-12">
         <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">

@@ -6,6 +6,7 @@ use App\Models\CmsPage;
 use App\Models\Event;
 use App\Models\Organization;
 use App\Models\User;
+use App\Support\PublicLocale;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -24,7 +25,9 @@ class PublicEventsAndSitemapTest extends TestCase
         $this->get('/events')
             ->assertOk()
             ->assertViewIs('public.events-index')
-            ->assertSee('Unique Public Event Title XYZ', false);
+            ->assertSee('Unique Public Event Title XYZ', false)
+            ->assertSee('data-testid="events-footer-opportunities"', false)
+            ->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
 
         $this->get(route('events.show', $event))
             ->assertOk()
@@ -130,6 +133,15 @@ class PublicEventsAndSitemapTest extends TestCase
     {
         $this->get(route('events.index', ['q' => str_repeat('x', 121)]))
             ->assertSessionHasErrors('q');
+    }
+
+    public function test_events_index_when_empty_shows_opportunities_footer_cta(): void
+    {
+        $this->get(route('events.index'))
+            ->assertOk()
+            ->assertSee(__('No upcoming events listed yet.'), false)
+            ->assertSee('data-testid="events-footer-opportunities"', false)
+            ->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
     }
 
     public function test_events_index_merges_published_cms_intro_with_calendar(): void

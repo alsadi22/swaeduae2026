@@ -3,7 +3,7 @@
     $metaDescription = __('site.media_hub_meta_description');
     $hubCanonical = request()->fullUrl();
     $ogImage = \App\Models\CmsPage::resolveShareImageUrl(config('swaeduae.default_og_image_url'));
-    $localeQ = \App\Support\PublicLocale::query();
+    $localeQ = \App\Support\PublicLocale::queryForUser(auth()->user());
     $breadcrumbItems = [
         ['name' => __('Home'), 'url' => route('home', $localeQ, true)],
         ['name' => __('Media center'), 'url' => route('media.index', $localeQ, true)],
@@ -126,5 +126,9 @@
                 </div>
             @endif
         @endif
+
+        <p class="mt-12 border-t border-slate-200 pt-10 text-center">
+            <a href="{{ route('volunteer.opportunities.index', $localeQ) }}" class="text-sm font-bold text-emerald-800 hover:underline" data-testid="media-footer-opportunities">{{ __('Browse opportunities') }} →</a>
+        </p>
     </div>
 </x-public-layout>
