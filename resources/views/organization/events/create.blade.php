@@ -1,6 +1,6 @@
 <x-app-layout>
     @php
-        $orgLocaleQ = \App\Support\PublicLocale::query();
+        $orgLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
     @endphp
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">

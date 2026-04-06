@@ -1,6 +1,6 @@
 <x-app-layout>
     @php
-        $orgLocaleQ = \App\Support\PublicLocale::query();
+        $orgLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
     @endphp
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">

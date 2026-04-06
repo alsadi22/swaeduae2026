@@ -75,6 +75,25 @@ class OrganizationEventPortalTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_organization_portal_urls_include_preferred_locale_when_set(): void
+    {
+        [$org, $manager] = $this->approvedOrgManager();
+        $manager->forceFill(['locale_preferred' => 'ar'])->save();
+
+        Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'Locale Pref Org Event',
+        ]);
+
+        $createUrl = route('organization.events.create', ['lang' => 'ar'], false);
+
+        $this->actingAs($manager)
+            ->get(route('organization.events.index'))
+            ->assertOk()
+            ->assertSee('Locale Pref Org Event', false)
+            ->assertSee($createUrl, false);
+    }
+
     public function test_org_manager_sees_only_own_organization_events(): void
     {
         [$orgA, $manager] = $this->approvedOrgManager();

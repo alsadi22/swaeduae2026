@@ -3,7 +3,7 @@
 
     /** @var \App\Models\CmsPage|null $cmsPage */
     /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, \App\Models\CmsPage> $programPages */
-    $programsLocaleQ = \App\Support\PublicLocale::query();
+    $programsLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
     $breadcrumbItems = [
         ['name' => __('Home'), 'url' => route('home', $programsLocaleQ, true)],
         ['name' => __('Programs'), 'url' => route('programs.index', $programsLocaleQ, true)],

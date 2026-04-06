@@ -38,4 +38,20 @@ final class PublicLocale
 
         return self::query();
     }
+
+    /**
+     * Prefer explicit ?lang= on the current request so links match the page the user is viewing;
+     * otherwise fall back to {@see self::queryForUser()}.
+     *
+     * @return array{lang: string}
+     */
+    public static function queryFromRequestOrUser(?User $user): array
+    {
+        $lang = request()->query('lang');
+        if (is_string($lang) && in_array($lang, ['en', 'ar'], true)) {
+            return ['lang' => $lang];
+        }
+
+        return self::queryForUser($user);
+    }
 }

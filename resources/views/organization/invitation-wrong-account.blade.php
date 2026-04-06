@@ -1,6 +1,6 @@
 <x-app-layout>
     @php
-        $invWrongLocaleQ = \App\Support\PublicLocale::query();
+        $invWrongLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
     @endphp
     <x-slot name="header">
         <h2 class="font-display text-xl font-bold leading-tight text-emerald-950">

@@ -6,7 +6,7 @@
     </x-slot>
 
     @php
-        $cpLocaleQ = \App\Support\PublicLocale::query();
+        $cpLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
     @endphp
     <div class="pb-[max(2rem,env(safe-area-inset-bottom))] pt-6 sm:pt-8">
         <div class="mx-auto max-w-lg px-4 sm:px-6 lg:px-8">
@@ -86,7 +86,7 @@
                     </div>
                     <p id="checkpoint-gps-help" class="sr-only">{{ __('Updates your coordinates for the buttons below.') }}</p>
 
-                    <form method="post" action="{{ route('attendance.checkpoint.store', $event) }}" class="space-y-4" @submit="submitting = true">
+                    <form method="post" action="{{ route('attendance.checkpoint.store', array_merge(['event' => $event], $cpLocaleQ)) }}" class="space-y-4" @submit="submitting = true">
                         @csrf
                         <input type="hidden" name="action" value="check_in">
                         <input type="hidden" name="latitude" x-bind:value="latitude ?? ''">
@@ -98,7 +98,7 @@
                         </x-primary-button>
                     </form>
 
-                    <form method="post" action="{{ route('attendance.checkpoint.store', $event) }}" class="space-y-4 border-t border-slate-100 pt-6" @submit="submitting = true">
+                    <form method="post" action="{{ route('attendance.checkpoint.store', array_merge(['event' => $event], $cpLocaleQ)) }}" class="space-y-4 border-t border-slate-100 pt-6" @submit="submitting = true">
                         @csrf
                         <input type="hidden" name="action" value="check_out">
                         <input type="hidden" name="latitude" x-bind:value="latitude ?? ''">
