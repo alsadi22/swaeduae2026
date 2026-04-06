@@ -17,6 +17,16 @@ class SupportFormTest extends TestCase
         $this->get(route('support.show'))->assertOk();
     }
 
+    public function test_support_page_includes_opportunities_footer_with_locale(): void
+    {
+        $oppAr = route('volunteer.opportunities.index', ['lang' => 'ar'], false);
+
+        $this->get(route('support.show', ['lang' => 'ar']))
+            ->assertOk()
+            ->assertSee('data-testid="support-footer-opportunities"', false)
+            ->assertSee($oppAr, false);
+    }
+
     public function test_support_form_action_includes_lang_when_page_requested_with_lang(): void
     {
         $storeUrl = route('support.store', ['lang' => 'ar'], false);

@@ -27,4 +27,8 @@
     <p class="mt-6 text-center text-sm text-slate-600">
         <a href="{{ route('login', $authLocaleQ) }}" class="font-semibold text-emerald-800 hover:underline">{{ __('Log in') }}</a>
     </p>
+
+    <p class="mt-4 text-center text-sm">
+        <a href="{{ route('volunteer.opportunities.index', $authLocaleQ) }}" class="font-semibold text-emerald-800 hover:underline" data-testid="forgot-password-footer-opportunities">{{ __('Browse opportunities') }} →</a>
+    </p>
 </x-guest-layout>

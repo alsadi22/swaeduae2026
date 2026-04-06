@@ -19,6 +19,16 @@ class PasswordResetTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_forgot_password_includes_opportunities_footer_with_locale(): void
+    {
+        $oppAr = route('volunteer.opportunities.index', ['lang' => 'ar'], false);
+
+        $this->get(route('password.request', ['lang' => 'ar']))
+            ->assertOk()
+            ->assertSee('data-testid="forgot-password-footer-opportunities"', false)
+            ->assertSee($oppAr, false);
+    }
+
     public function test_reset_password_link_can_be_requested(): void
     {
         Notification::fake();

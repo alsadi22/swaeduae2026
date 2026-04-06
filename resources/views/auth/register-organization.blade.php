@@ -92,5 +92,9 @@
         <p class="mt-6 text-center text-sm text-slate-600">
             <a href="{{ route('register.volunteer', $orgRegLocaleQ) }}" class="font-semibold text-emerald-800 hover:underline">{{ __('Join as Volunteer') }}</a>
         </p>
+
+        <p class="mt-4 text-center text-sm">
+            <a href="{{ route('volunteer.opportunities.index', $orgRegLocaleQ) }}" class="font-semibold text-emerald-800 hover:underline" data-testid="register-organization-footer-opportunities">{{ __('Browse opportunities') }} →</a>
+        </p>
     </form>
 </x-guest-layout>

@@ -24,6 +24,16 @@ class RegistrationTest extends TestCase
         $this->get('/register/volunteer')->assertOk();
     }
 
+    public function test_volunteer_registration_includes_opportunities_footer_with_locale(): void
+    {
+        $oppAr = route('volunteer.opportunities.index', ['lang' => 'ar'], false);
+
+        $this->get(route('register.volunteer', ['lang' => 'ar']))
+            ->assertOk()
+            ->assertSee('data-testid="register-volunteer-footer-opportunities"', false)
+            ->assertSee($oppAr, false);
+    }
+
     public function test_new_users_can_register_as_volunteer_and_must_verify_email(): void
     {
         $this->seed(RoleSeeder::class);
