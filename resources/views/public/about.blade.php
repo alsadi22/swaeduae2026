@@ -28,9 +28,12 @@
             </div>
         </div>
         <p class="mt-8 max-w-3xl text-sm text-slate-500">
-            <a href="{{ route('leadership') }}" class="font-semibold text-emerald-800 hover:underline">{{ __('Leadership') }}</a>
+            <a href="{{ route('leadership', $localeQ) }}" class="font-semibold text-emerald-800 hover:underline">{{ __('Leadership') }}</a>
             <span class="text-slate-400"> — </span>
             {{ __('Leadership page note') }}
+        </p>
+        <p class="mt-12 border-t border-slate-200 pt-10 text-center">
+            <a href="{{ route('volunteer.opportunities.index', $localeQ) }}" class="text-sm font-bold text-emerald-800 hover:underline" data-testid="about-footer-opportunities">{{ __('Browse opportunities') }} →</a>
         </p>
     </div>
 </x-public-layout>

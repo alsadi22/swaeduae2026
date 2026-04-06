@@ -43,5 +43,8 @@
         </ul>
 
         <p class="mt-12 max-w-3xl text-sm text-slate-500">{{ __('site.leadership_footnote') }}</p>
+        <p class="mt-12 border-t border-slate-200 pt-10 text-center">
+            <a href="{{ route('volunteer.opportunities.index', $localeQ) }}" class="text-sm font-bold text-emerald-800 hover:underline" data-testid="leadership-footer-opportunities">{{ __('Browse opportunities') }} →</a>
+        </p>
     </div>
 </x-public-layout>

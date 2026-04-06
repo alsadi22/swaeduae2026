@@ -60,5 +60,8 @@
         <p class="mt-10">
             <a href="{{ route('media.index', $localeQ) }}" class="text-sm font-bold text-emerald-800 hover:underline">← {{ __('Media center') }}</a>
         </p>
+        <p class="mt-8 text-center">
+            <a href="{{ route('volunteer.opportunities.index', $localeQ) }}" class="text-sm font-bold text-emerald-800 hover:underline" data-testid="external-news-footer-opportunities">{{ __('Browse opportunities') }} →</a>
+        </p>
     </div>
 </x-public-layout>

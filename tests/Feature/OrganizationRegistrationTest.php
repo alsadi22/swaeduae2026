@@ -67,6 +67,29 @@ class OrganizationRegistrationTest extends TestCase
         });
     }
 
+    public function test_organization_registration_redirect_uses_preferred_locale_on_verification_notice(): void
+    {
+        Notification::fake();
+        Mail::fake();
+
+        $this->seed(RoleSeeder::class);
+
+        $this->post(route('register.organization.store'), [
+            'name_en' => 'Arabic Pref Org',
+            'name_ar' => null,
+            'first_name' => 'Sam',
+            'last_name' => 'Owner',
+            'email' => 'ar-pref-owner@example.org',
+            'phone' => '+971501112233',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'locale_preferred' => 'ar',
+            'terms' => '1',
+        ])
+            ->assertRedirect(route('verification.notice', ['lang' => 'ar'], false))
+            ->assertSessionHasNoErrors();
+    }
+
     public function test_authenticated_user_is_redirected_from_organization_registration_post(): void
     {
         $this->seed(RoleSeeder::class);

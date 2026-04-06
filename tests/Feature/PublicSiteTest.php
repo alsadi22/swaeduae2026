@@ -134,4 +134,22 @@ class PublicSiteTest extends TestCase
             ->assertSee('data-testid="faq-footer-opportunities"', false)
             ->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
     }
+
+    public function test_about_page_leadership_link_preserves_lang_query(): void
+    {
+        $leadershipUrl = route('leadership', ['lang' => 'ar'], false);
+
+        $this->get('/about?lang=ar')
+            ->assertOk()
+            ->assertSee($leadershipUrl, false)
+            ->assertSee('data-testid="about-footer-opportunities"', false);
+    }
+
+    public function test_leadership_page_includes_opportunities_footer_link(): void
+    {
+        $this->get('/leadership')
+            ->assertOk()
+            ->assertSee('data-testid="leadership-footer-opportunities"', false)
+            ->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
+    }
 }

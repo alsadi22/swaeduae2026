@@ -77,6 +77,6 @@ class OrganizationRegistrationController extends Controller
 
         Auth::login($user);
 
-        return redirect()->to(route('verification.notice', PublicLocale::query(), false));
+        return redirect()->to(route('verification.notice', PublicLocale::queryFromRequestOrUser($user), false));
     }
 }

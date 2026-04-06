@@ -238,6 +238,42 @@ class MediaHubPageTest extends TestCase
             ->assertSessionHasErrors('q');
     }
 
+    public function test_external_news_show_includes_opportunities_footer_link(): void
+    {
+        $source = ExternalNewsSource::query()->create([
+            'name' => 'Footer test wire',
+            'slug' => 'footer-test-wire',
+            'type' => ExternalNewsSource::TYPE_MANUAL,
+            'endpoint_url' => 'https://example.org/feed',
+            'website_url' => 'https://example.org',
+            'label_en' => 'Wire EN',
+            'label_ar' => 'Wire AR',
+            'is_active' => true,
+            'fetch_interval_minutes' => 60,
+            'priority' => 0,
+        ]);
+
+        $item = ExternalNewsItem::query()->create([
+            'source_id' => $source->id,
+            'external_guid' => 'g-footer-opp-1',
+            'external_url' => 'https://example.org/story',
+            'original_title' => 'Footer opportunities story',
+            'original_summary' => 'Summary.',
+            'status' => ExternalNewsItem::STATUS_PUBLISHED,
+            'import_hash' => hash('sha256', 'footer-opp-item'),
+            'fetched_at' => now(),
+            'published_at' => now(),
+            'show_in_media_center' => true,
+            'show_on_home' => false,
+            'normalized_title_en' => 'Footer opportunities story',
+        ]);
+
+        $this->get(route('media.external.show', $item))
+            ->assertOk()
+            ->assertSee('data-testid="external-news-footer-opportunities"', false)
+            ->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
+    }
+
     public function test_media_hub_paginates_internal_list(): void
     {
         for ($i = 1; $i <= 15; $i++) {

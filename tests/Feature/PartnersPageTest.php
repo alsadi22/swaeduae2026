@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Support\PublicLocale;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -34,5 +35,15 @@ class PartnersPageTest extends TestCase
         $this->get('/partners')
             ->assertOk()
             ->assertSeeText('Partner Alpha Co');
+    }
+
+    public function test_partners_page_includes_opportunities_footer_link(): void
+    {
+        config(['swaeduae.home_partners' => []]);
+
+        $this->get('/partners')
+            ->assertOk()
+            ->assertSee('data-testid="partners-footer-opportunities"', false)
+            ->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
     }
 }

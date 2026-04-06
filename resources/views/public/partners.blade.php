@@ -23,5 +23,8 @@
                 {{ __('site.partners_strip') }}
             </div>
         @endif
+        <p class="mt-12 border-t border-slate-200 pt-10 text-center">
+            <a href="{{ route('volunteer.opportunities.index', $localeQ) }}" class="text-sm font-bold text-emerald-800 hover:underline" data-testid="partners-footer-opportunities">{{ __('Browse opportunities') }} →</a>
+        </p>
     </div>
 </x-public-layout>
