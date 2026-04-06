@@ -48,7 +48,7 @@ class ExternalNewsSourceController extends Controller
         ExternalNewsSource::query()->create($data);
 
         return redirect()
-            ->route('admin.external-news-sources.index', PublicLocale::query())
+            ->route('admin.external-news-sources.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('News source created.'));
     }
 
@@ -71,18 +71,18 @@ class ExternalNewsSourceController extends Controller
         $external_news_source->update($data);
 
         return redirect()
-            ->route('admin.external-news-sources.index', PublicLocale::query())
+            ->route('admin.external-news-sources.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('News source updated.'));
     }
 
-    public function destroy(ExternalNewsSource $external_news_source): RedirectResponse
+    public function destroy(Request $request, ExternalNewsSource $external_news_source): RedirectResponse
     {
         $this->authorize('delete', $external_news_source);
 
         $external_news_source->delete();
 
         return redirect()
-            ->route('admin.external-news-sources.index', PublicLocale::query())
+            ->route('admin.external-news-sources.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('News source removed.'));
     }
 
@@ -99,7 +99,7 @@ class ExternalNewsSourceController extends Controller
         return back()->with('status', __('Fetch completed. Check logs for details.'));
     }
 
-    public function logs(ExternalNewsSource $external_news_source): View
+    public function logs(Request $request, ExternalNewsSource $external_news_source): View
     {
         $this->authorize('view', $external_news_source);
 
@@ -108,7 +108,7 @@ class ExternalNewsSourceController extends Controller
             ->orderByDesc('started_at')
             ->paginate(30)
             ->withQueryString()
-            ->appends(PublicLocale::query());
+            ->appends(PublicLocale::queryFromRequestOrUser($request->user()));
 
         return view('admin.external-news.sources.logs', [
             'source' => $external_news_source,

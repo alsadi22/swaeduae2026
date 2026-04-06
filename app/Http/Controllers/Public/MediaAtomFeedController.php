@@ -6,15 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\CmsPage;
 use App\Models\ExternalNewsItem;
 use App\Support\PublicLocale;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 
 class MediaAtomFeedController extends Controller
 {
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response
     {
         $locale = app()->getLocale();
-        $localeQ = PublicLocale::query();
+        $localeQ = PublicLocale::queryFromRequestOrUser($request->user());
 
         $entries = collect();
 

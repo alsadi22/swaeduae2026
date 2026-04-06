@@ -41,7 +41,7 @@ class FlaggedAttendanceController extends Controller
             });
         }
 
-        $rows = $query->paginate(25)->withQueryString()->appends(PublicLocale::query());
+        $rows = $query->paginate(25)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
 
         $filterEvents = Event::query()
             ->whereIn(

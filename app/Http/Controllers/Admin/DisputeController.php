@@ -60,7 +60,7 @@ class DisputeController extends Controller
             $query->orderByDesc('updated_at');
         }
 
-        $disputes = $query->paginate(25)->withQueryString()->appends(PublicLocale::query());
+        $disputes = $query->paginate(25)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
 
         $filterEvents = Event::query()
             ->whereIn(
@@ -123,7 +123,7 @@ class DisputeController extends Controller
         }
 
         return redirect()
-            ->route('admin.disputes.show', array_merge(['dispute' => $dispute], PublicLocale::query()))
+            ->route('admin.disputes.show', array_merge(['dispute' => $dispute], PublicLocale::queryFromRequestOrUser($request->user())))
             ->with('status', __('Dispute updated.'));
     }
 }

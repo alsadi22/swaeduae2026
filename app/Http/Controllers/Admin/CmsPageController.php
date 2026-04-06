@@ -43,7 +43,7 @@ class CmsPageController extends Controller
             $query->where('show_on_media', true);
         }
 
-        $pages = $query->paginate(20)->withQueryString()->appends(PublicLocale::query());
+        $pages = $query->paginate(20)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
 
         return view('admin.cms-pages.index', [
             'pages' => $pages,
@@ -67,7 +67,7 @@ class CmsPageController extends Controller
         CmsPage::query()->create($data);
 
         return redirect()
-            ->route('admin.cms-pages.index', PublicLocale::query())
+            ->route('admin.cms-pages.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('CMS page created.'));
     }
 
@@ -105,18 +105,18 @@ class CmsPageController extends Controller
         $cms_page->update($request->validated());
 
         return redirect()
-            ->route('admin.cms-pages.index', PublicLocale::query())
+            ->route('admin.cms-pages.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('CMS page updated.'));
     }
 
-    public function destroy(CmsPage $cms_page): RedirectResponse
+    public function destroy(Request $request, CmsPage $cms_page): RedirectResponse
     {
         $this->authorize('delete', $cms_page);
 
         $cms_page->delete();
 
         return redirect()
-            ->route('admin.cms-pages.index', PublicLocale::query())
+            ->route('admin.cms-pages.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('CMS page deleted.'));
     }
 }

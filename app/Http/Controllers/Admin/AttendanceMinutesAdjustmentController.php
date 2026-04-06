@@ -45,7 +45,7 @@ class AttendanceMinutesAdjustmentController extends Controller
         ]);
 
         return redirect()
-            ->route('admin.flagged-attendance.index', PublicLocale::query())
+            ->route('admin.flagged-attendance.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('Attendance minutes adjustment saved.'));
     }
 }

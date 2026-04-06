@@ -46,7 +46,7 @@ class CheckinAttemptController extends Controller
             });
         }
 
-        $attempts = $query->paginate(40)->withQueryString()->appends(PublicLocale::query());
+        $attempts = $query->paginate(40)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
 
         $filterEvents = Event::query()
             ->whereIn('id', CheckinAttempt::query()->select('event_id')->distinct())

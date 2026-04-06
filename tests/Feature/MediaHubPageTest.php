@@ -373,5 +373,8 @@ class MediaHubPageTest extends TestCase
         $response->assertSee('Atom feed CMS item', false);
         $response->assertSee('Atom feed external item', false);
         $response->assertDontSee('Institutional about in feed test', false);
+
+        $arFeed = $this->get(route('feed', ['lang' => 'ar'], false))->assertOk()->getContent();
+        $this->assertStringContainsString('lang=ar', $arFeed);
     }
 }

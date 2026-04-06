@@ -30,7 +30,7 @@ class AcceptOrganizationInvitationController extends Controller
         }
 
         if (! $request->user()) {
-            return redirect()->guest(route('login', PublicLocale::query(), false));
+            return redirect()->guest(route('login', PublicLocale::queryFromRequestOrUser(null), false));
         }
 
         $user = $request->user();
@@ -70,7 +70,7 @@ class AcceptOrganizationInvitationController extends Controller
         }
 
         return redirect()
-            ->to($user !== null ? AuthRedirect::homeForUser($user) : route('home', PublicLocale::query(), false))
+            ->to($user !== null ? AuthRedirect::homeForUser($user) : route('home', PublicLocale::queryFromRequestOrUser(null), false))
             ->with('status', $message);
     }
 
@@ -79,10 +79,6 @@ class AcceptOrganizationInvitationController extends Controller
      */
     private function verificationNoticeQuery(User $user): array
     {
-        if (is_string($user->locale_preferred) && in_array($user->locale_preferred, ['en', 'ar'], true)) {
-            return ['lang' => $user->locale_preferred];
-        }
-
-        return PublicLocale::query();
+        return PublicLocale::queryFromRequestOrUser($user);
     }
 }

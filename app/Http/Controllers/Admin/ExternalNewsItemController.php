@@ -49,7 +49,7 @@ class ExternalNewsItemController extends Controller
             });
         }
 
-        $items = $query->paginate(25)->withQueryString()->appends(PublicLocale::query());
+        $items = $query->paginate(25)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
         $sources = ExternalNewsSource::query()->orderBy('name')->get();
 
         return view('admin.external-news.items.index', [
@@ -94,7 +94,7 @@ class ExternalNewsItemController extends Controller
         $external_news_item->update($data);
 
         return redirect()
-            ->route('admin.external-news-items.edit', array_merge(['external_news_item' => $external_news_item], PublicLocale::query()))
+            ->route('admin.external-news-items.edit', array_merge(['external_news_item' => $external_news_item], PublicLocale::queryFromRequestOrUser($request->user())))
             ->with('status', __('External news item saved.'));
     }
 

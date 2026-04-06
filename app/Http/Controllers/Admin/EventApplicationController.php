@@ -75,7 +75,7 @@ class EventApplicationController extends Controller
             $query->orderByDesc('created_at');
         }
 
-        $applications = $query->paginate(25)->withQueryString()->appends(PublicLocale::query());
+        $applications = $query->paginate(25)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
 
         $filterEvents = Event::query()
             ->whereIn('id', EventApplication::query()->select('event_id')->distinct())

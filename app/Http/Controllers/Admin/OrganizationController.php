@@ -52,7 +52,7 @@ class OrganizationController extends Controller
             });
         }
 
-        $organizations = $query->paginate(20)->withQueryString()->appends(PublicLocale::query());
+        $organizations = $query->paginate(20)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
 
         $pendingCount = Organization::query()->pendingVerification()->count();
 
@@ -76,7 +76,7 @@ class OrganizationController extends Controller
         Organization::query()->create($request->validated());
 
         return redirect()
-            ->route('admin.organizations.index', PublicLocale::query())
+            ->route('admin.organizations.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('Organization created.'));
     }
 
@@ -92,28 +92,28 @@ class OrganizationController extends Controller
         $organization->update($request->validated());
 
         return redirect()
-            ->route('admin.organizations.index', PublicLocale::query())
+            ->route('admin.organizations.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('Organization updated.'));
     }
 
-    public function destroy(Organization $organization): RedirectResponse
+    public function destroy(Request $request, Organization $organization): RedirectResponse
     {
         $this->authorize('delete', $organization);
 
         if ($organization->events()->exists()) {
             return redirect()
-                ->route('admin.organizations.index', PublicLocale::query())
+                ->route('admin.organizations.index', PublicLocale::queryFromRequestOrUser($request->user()))
                 ->with('error', __('Cannot delete an organization that still has events.'));
         }
 
         $organization->delete();
 
         return redirect()
-            ->route('admin.organizations.index', PublicLocale::query())
+            ->route('admin.organizations.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('Organization deleted.'));
     }
 
-    public function approve(Organization $organization): RedirectResponse
+    public function approve(Request $request, Organization $organization): RedirectResponse
     {
         $this->authorize('approve', $organization);
 
@@ -126,7 +126,7 @@ class OrganizationController extends Controller
         $this->queueVerificationMailToRegistrant($organization->fresh(), approved: true);
 
         return redirect()
-            ->route('admin.organizations.index', PublicLocale::mergeQuery(['verification' => 'pending']))
+            ->route('admin.organizations.index', array_merge(PublicLocale::queryFromRequestOrUser($request->user()), ['verification' => 'pending']))
             ->with('status', __('Organization approved.'));
     }
 
@@ -143,7 +143,7 @@ class OrganizationController extends Controller
         $this->queueVerificationMailToRegistrant($organization->fresh(), approved: false);
 
         return redirect()
-            ->route('admin.organizations.index', PublicLocale::mergeQuery(['verification' => 'pending']))
+            ->route('admin.organizations.index', array_merge(PublicLocale::queryFromRequestOrUser($request->user()), ['verification' => 'pending']))
             ->with('status', __('Organization registration rejected.'));
     }
 

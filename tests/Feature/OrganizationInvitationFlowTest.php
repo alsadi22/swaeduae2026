@@ -99,6 +99,23 @@ class OrganizationInvitationFlowTest extends TestCase
         $this->get('/organization/join/'.$plain)->assertRedirect(route('login', ['lang' => 'en'], false));
     }
 
+    public function test_guest_invitation_accept_preserves_arabic_lang_on_login_redirect(): void
+    {
+        [$organization] = $this->approvedOrgWithOwner();
+        $plain = Str::random(64);
+        OrganizationInvitation::query()->create([
+            'organization_id' => $organization->id,
+            'email' => 'joiner@example.org',
+            'role' => OrganizationInvitation::ROLE_COORDINATOR,
+            'token_hash' => OrganizationInvitation::hashToken($plain),
+            'invited_by_user_id' => null,
+            'expires_at' => now()->addWeek(),
+        ]);
+
+        $this->get(route('organization.invitation.accept', ['token' => $plain, 'lang' => 'ar'], false))
+            ->assertRedirect(route('login', ['lang' => 'ar'], false));
+    }
+
     public function test_invalid_token_shows_public_message_without_login(): void
     {
         $this->get('/organization/join/'.Str::random(64))

@@ -40,7 +40,7 @@ class EventController extends Controller
             });
         }
 
-        $events = $query->orderByDesc('event_starts_at')->paginate(15)->withQueryString()->appends(PublicLocale::query());
+        $events = $query->orderByDesc('event_starts_at')->paginate(15)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
 
         return view('admin.events.index', [
             'events' => $events,
@@ -65,7 +65,7 @@ class EventController extends Controller
         Event::query()->create($request->validated());
 
         return redirect()
-            ->route('admin.events.index', PublicLocale::query())
+            ->route('admin.events.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('Event created.'));
     }
 
@@ -83,18 +83,18 @@ class EventController extends Controller
         $event->update($request->validated());
 
         return redirect()
-            ->route('admin.events.index', PublicLocale::query())
+            ->route('admin.events.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('Event updated.'));
     }
 
-    public function destroy(Event $event): RedirectResponse
+    public function destroy(Request $request, Event $event): RedirectResponse
     {
         $this->authorize('delete', $event);
 
         $event->delete();
 
         return redirect()
-            ->route('admin.events.index', PublicLocale::query())
+            ->route('admin.events.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('Event deleted.'));
     }
 
@@ -109,7 +109,7 @@ class EventController extends Controller
         $days = (int) ($validated['days'] ?? 7);
 
         return redirect()
-            ->route('admin.events.edit', array_merge(['event' => $event], PublicLocale::query()))
+            ->route('admin.events.edit', array_merge(['event' => $event], PublicLocale::queryFromRequestOrUser($request->user())))
             ->with('checkpoint_signed_url', AttendanceCheckpointUrl::temporarySignedShowUrl($event, $days));
     }
 }
