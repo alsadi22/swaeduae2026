@@ -57,7 +57,7 @@ class VolunteerDisputeController extends Controller
         }
 
         return redirect()
-            ->route('dashboard.attendance.index', PublicLocale::queryForUser($request->user()))
+            ->route('dashboard.attendance.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('Your dispute was submitted. An administrator will review it.'));
     }
 }

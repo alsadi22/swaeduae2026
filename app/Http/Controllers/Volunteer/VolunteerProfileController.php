@@ -42,7 +42,7 @@ class VolunteerProfileController extends Controller
         );
 
         return redirect()
-            ->route('volunteer.profile.edit', PublicLocale::queryForUser($user))
+            ->route('volunteer.profile.edit', PublicLocale::queryFromRequestOrUser($user))
             ->with('status', __('Volunteer profile updated.'));
     }
 }

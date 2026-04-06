@@ -1,17 +1,18 @@
 @php
     /** @var \App\Models\Event $event */
     $ogImage = \App\Models\CmsPage::resolveShareImageUrl(config('swaeduae.default_og_image_url'));
+    $eventShowLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
     $breadcrumbItems = [
-        ['name' => __('Home'), 'url' => route('home', \App\Support\PublicLocale::query(), true)],
-        ['name' => __('Events'), 'url' => route('events.index', \App\Support\PublicLocale::query(), true)],
-        ['name' => \Illuminate\Support\Str::limit($event->titleForLocale(), 72), 'url' => route('events.show', array_merge(['event' => $event], \App\Support\PublicLocale::query()), true)],
+        ['name' => __('Home'), 'url' => route('home', $eventShowLocaleQ, true)],
+        ['name' => __('Events'), 'url' => route('events.index', $eventShowLocaleQ, true)],
+        ['name' => \Illuminate\Support\Str::limit($event->titleForLocale(), 72), 'url' => route('events.show', array_merge(['event' => $event], $eventShowLocaleQ), true)],
     ];
     $extraJsonLd = \App\Support\SwaedUaeStructuredData::publicEventForJsonLd($event);
 @endphp
 <x-public-layout
     :title="$pageTitle"
     :metaDescription="$metaDescription"
-    :ogUrl="route('events.show', array_merge(['event' => $event], \App\Support\PublicLocale::query()), true)"
+    :ogUrl="route('events.show', array_merge(['event' => $event], $eventShowLocaleQ), true)"
     :ogTitle="$event->titleForLocale()"
     :ogDescription="$metaDescription"
     ogType="article"
@@ -20,7 +21,7 @@
     :extraJsonLd="$extraJsonLd"
 >
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
-        <a href="{{ route('events.index', \App\Support\PublicLocale::query()) }}" class="text-sm font-bold text-emerald-800 hover:underline">← {{ __('Events') }}</a>
+        <a href="{{ route('events.index', $eventShowLocaleQ) }}" class="text-sm font-bold text-emerald-800 hover:underline">← {{ __('Events') }}</a>
 
         <article class="mt-8 max-w-3xl rounded-2xl border border-slate-200 bg-white p-8 shadow-sm ring-1 ring-slate-100">
             @if ($isPast)

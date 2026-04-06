@@ -34,6 +34,7 @@
     if (! $isAdminCmsPreview && is_array($extraJsonLd) && $extraJsonLd !== []) {
         $resolvedExtraJsonLd = $extraJsonLd;
     }
+    $publicLayoutLinkLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
 @endphp
 
 <!DOCTYPE html>
@@ -61,7 +62,7 @@
             <link rel="alternate" hreflang="en" href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}">
             <link rel="alternate" hreflang="ar" href="{{ request()->fullUrlWithQuery(['lang' => 'ar']) }}">
             <link rel="alternate" hreflang="x-default" href="{{ request()->fullUrlWithQuery(['lang' => config('app.locale', 'en')]) }}">
-            <link rel="alternate" type="application/atom+xml" title="{{ __('News feed') }}" href="{{ route('feed', \App\Support\PublicLocale::query(), true) }}">
+            <link rel="alternate" type="application/atom+xml" title="{{ __('News feed') }}" href="{{ route('feed', $publicLayoutLinkLocaleQ, true) }}">
         @endif
 
         @if ($resolvedOgUrl)
@@ -130,7 +131,7 @@
         </div>
 
         <header class="app-shell-header sticky top-0 z-40">
-            @php($navLocaleQ = \App\Support\PublicLocale::query())
+            @php($navLocaleQ = $publicLayoutLinkLocaleQ)
             <div class="mx-auto max-w-content px-4 sm:px-6" x-data="{ open: false }">
                 <div class="flex h-[4.25rem] items-center justify-between gap-4 lg:h-20">
                     <a href="{{ route('home', $navLocaleQ) }}" class="group flex min-w-0 items-center gap-3 rounded-xl py-1 pe-2 outline-none transition hover:opacity-95 focus-visible:ring-2 focus-visible:ring-emerald-500/40">
@@ -245,7 +246,7 @@
                         <p class="font-display text-lg font-bold text-emerald-950">{{ __('SwaedUAE') }}</p>
                         <p class="mt-3 max-w-sm text-sm leading-relaxed text-slate-600">{{ __('site.footer_tagline') }}</p>
                     </div>
-                    @php($footerLocaleQ = \App\Support\PublicLocale::query())
+                    @php($footerLocaleQ = $publicLayoutLinkLocaleQ)
                     <div class="lg:col-span-2">
                         <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{{ __('Quick links') }}</p>
                         <ul class="mt-4 space-y-2.5 text-sm text-slate-600">

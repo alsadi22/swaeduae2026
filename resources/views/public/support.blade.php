@@ -1,6 +1,6 @@
 @php
     $pageTitle = __('Help and support').' — '.__('SwaedUAE');
-    $localeQ = \App\Support\PublicLocale::query();
+    $localeQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
     $breadcrumbItems = [
         ['name' => __('Home'), 'url' => route('home', $localeQ, true)],
         ['name' => __('Help and support'), 'url' => route('support.show', $localeQ, true)],

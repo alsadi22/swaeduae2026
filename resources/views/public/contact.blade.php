@@ -1,6 +1,6 @@
 @php
     $pageTitle = __('Contact').' — '.__('SwaedUAE');
-    $localeQ = \App\Support\PublicLocale::query();
+    $localeQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
     $breadcrumbItems = [
         ['name' => __('Home'), 'url' => route('home', $localeQ, true)],
         ['name' => __('Contact'), 'url' => route('contact.show', $localeQ, true)],

@@ -119,7 +119,7 @@ class VolunteerHubController extends Controller
         $event->volunteers()->syncWithoutDetaching([$user->id]);
 
         return redirect()
-            ->route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryForUser($user)))
+            ->route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryFromRequestOrUser($user)))
             ->with(
                 'status',
                 $already
@@ -135,7 +135,7 @@ class VolunteerHubController extends Controller
         $event->volunteers()->detach($request->user()->id);
 
         return redirect()
-            ->route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryForUser($request->user())))
+            ->route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryFromRequestOrUser($request->user())))
             ->with('status', __('You are no longer on the roster for this opportunity.'));
     }
 
@@ -156,7 +156,7 @@ class VolunteerHubController extends Controller
         );
 
         return redirect()
-            ->route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryForUser($request->user())))
+            ->route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryFromRequestOrUser($request->user())))
             ->with('status', __('Application submitted.'));
     }
 
@@ -170,7 +170,7 @@ class VolunteerHubController extends Controller
         }
 
         return redirect()
-            ->route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryForUser($request->user())))
+            ->route('volunteer.opportunities.show', array_merge(['event' => $event], PublicLocale::queryFromRequestOrUser($request->user())))
             ->with('status', __('Application withdrawn.'));
     }
 }

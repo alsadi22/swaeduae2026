@@ -2,7 +2,7 @@
     $pageTitle = __('SwaedUAE').' — '.__('Home');
     $metaDescription = __('site.meta_description');
     $ogImage = \App\Models\CmsPage::resolveShareImageUrl(config('swaeduae.default_og_image_url'));
-    $homeLocaleQ = \App\Support\PublicLocale::query();
+    $homeLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
 @endphp
 <x-public-layout
     :title="$pageTitle"

@@ -3,7 +3,7 @@
 
     /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, \App\Models\Event> $events */
     /** @var \App\Models\CmsPage|null $cmsPage */
-    $eventsLocaleQ = \App\Support\PublicLocale::queryForUser(auth()->user());
+    $eventsLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
     $breadcrumbItems = [
         ['name' => __('Home'), 'url' => route('home', $eventsLocaleQ, true)],
         ['name' => __('Events'), 'url' => route('events.index', $eventsLocaleQ, true)],

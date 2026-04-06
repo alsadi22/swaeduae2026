@@ -5,7 +5,7 @@
         220
     );
     $ogImage = \App\Models\CmsPage::resolveShareImageUrl(config('swaeduae.default_og_image_url'));
-    $localeQ = \App\Support\PublicLocale::queryForUser(auth()->user());
+    $localeQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
     $breadcrumbItems = [
         ['name' => __('Home'), 'url' => route('home', $localeQ, true)],
         ['name' => __('Volunteer'), 'url' => route('volunteer.index', $localeQ, true)],

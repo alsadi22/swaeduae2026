@@ -1,5 +1,5 @@
 @php
-    $profileLocaleQ = $profileLocaleQ ?? \App\Support\PublicLocale::query();
+    $profileLocaleQ = $profileLocaleQ ?? \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
 @endphp
 <div class="max-w-xl">
     <header>

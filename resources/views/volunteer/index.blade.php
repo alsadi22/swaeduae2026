@@ -1,7 +1,7 @@
 @php
     $pageTitle = __('Volunteer platform').' — '.config('app.name');
     $metaDescription = __('site.volunteer_highlight');
-    $localeQ = \App\Support\PublicLocale::queryForUser(auth()->user());
+    $localeQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
     $breadcrumbItems = [
         ['name' => __('Home'), 'url' => route('home', $localeQ, true)],
         ['name' => __('Volunteer platform'), 'url' => route('volunteer.index', $localeQ, true)],
