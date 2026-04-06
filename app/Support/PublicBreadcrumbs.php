@@ -11,7 +11,7 @@ final class PublicBreadcrumbs
      */
     public static function homeAndCurrent(string $currentName, string $currentAbsoluteUrl): array
     {
-        $q = PublicLocale::query();
+        $q = PublicLocale::queryFromRequestOrUser(auth()->user());
 
         return [
             ['name' => __('Home'), 'url' => route('home', $q, true)],
@@ -24,7 +24,7 @@ final class PublicBreadcrumbs
      */
     public static function homeMediaAndExternalItem(string $itemTitle, string $itemAbsoluteUrl): array
     {
-        $q = PublicLocale::query();
+        $q = PublicLocale::queryFromRequestOrUser(auth()->user());
 
         return [
             ['name' => __('Home'), 'url' => route('home', $q, true)],

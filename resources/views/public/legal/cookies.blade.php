@@ -13,6 +13,9 @@
             @include('public.legal.placeholder-notice')
             <h1 class="public-page-title">{{ __('Cookie policy') }}</h1>
             <p class="mt-8 text-slate-600 leading-relaxed">{{ __('site.cookies_intro') }}</p>
+            <p class="mt-12 border-t border-slate-200 pt-10 text-center">
+                <a href="{{ route('volunteer.opportunities.index', $localeQ) }}" class="text-sm font-bold text-emerald-800 hover:underline" data-testid="legal-cookies-footer-opportunities">{{ __('Browse opportunities') }} →</a>
+            </p>
         </div>
     </div>
 </x-public-layout>

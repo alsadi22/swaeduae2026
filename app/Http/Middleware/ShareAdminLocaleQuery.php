@@ -12,7 +12,7 @@ final class ShareAdminLocaleQuery
 {
     public function handle(Request $request, Closure $next): Response
     {
-        View::share('adminLocaleQ', PublicLocale::query());
+        View::share('adminLocaleQ', PublicLocale::queryFromRequestOrUser($request->user()));
 
         return $next($request);
     }

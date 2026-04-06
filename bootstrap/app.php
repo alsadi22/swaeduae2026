@@ -38,13 +38,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 return route('admin.login', absolute: false);
             }
 
-            return route('login', PublicLocale::query(), absolute: false);
+            return route('login', PublicLocale::queryFromRequestOrUser(null), absolute: false);
         });
 
         $middleware->redirectUsersTo(function (Request $request) {
             $user = $request->user();
             if ($user === null) {
-                return route('home', PublicLocale::query(), absolute: false);
+                return route('home', PublicLocale::queryFromRequestOrUser(null), absolute: false);
             }
 
             return AuthRedirect::homeForUser($user);

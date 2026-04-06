@@ -152,4 +152,24 @@ class PublicSiteTest extends TestCase
             ->assertSee('data-testid="leadership-footer-opportunities"', false)
             ->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
     }
+
+    public function test_legal_pages_include_opportunities_footer_with_locale(): void
+    {
+        $oppAr = route('volunteer.opportunities.index', ['lang' => 'ar'], false);
+
+        $this->get('/legal/terms?lang=ar')
+            ->assertOk()
+            ->assertSee('data-testid="legal-terms-footer-opportunities"', false)
+            ->assertSee($oppAr, false);
+
+        $this->get('/legal/privacy?lang=ar')
+            ->assertOk()
+            ->assertSee('data-testid="legal-privacy-footer-opportunities"', false)
+            ->assertSee($oppAr, false);
+
+        $this->get('/legal/cookies?lang=ar')
+            ->assertOk()
+            ->assertSee('data-testid="legal-cookies-footer-opportunities"', false)
+            ->assertSee($oppAr, false);
+    }
 }

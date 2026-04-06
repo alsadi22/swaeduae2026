@@ -17,10 +17,7 @@ class AuthRedirect
             default => route('dashboard', absolute: false),
         };
 
-        $queries = PublicLocale::query();
-        if (is_string($user->locale_preferred) && in_array($user->locale_preferred, ['en', 'ar'], true)) {
-            $queries['lang'] = $user->locale_preferred;
-        }
+        $queries = PublicLocale::queryFromRequestOrUser($user);
         if ($withVerifiedQuery) {
             $queries['verified'] = '1';
         }

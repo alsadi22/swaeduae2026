@@ -402,6 +402,19 @@ class OrganizationEventPortalTest extends TestCase
             ->assertDontSee('Beta Other', false);
     }
 
+    public function test_org_roster_csv_export_link_preserves_lang_query_on_roster_page(): void
+    {
+        [$org, $manager] = $this->approvedOrgManager();
+        $event = Event::factory()->create(['organization_id' => $org->id]);
+
+        $exportUrl = route('organization.events.roster.export', ['event' => $event, 'lang' => 'ar'], false);
+
+        $this->actingAs($manager)
+            ->get(route('organization.events.roster', ['event' => $event, 'lang' => 'ar']))
+            ->assertOk()
+            ->assertSee($exportUrl, false);
+    }
+
     public function test_org_manager_roster_csv_export_contains_volunteer_row(): void
     {
         [$org, $manager] = $this->approvedOrgManager();

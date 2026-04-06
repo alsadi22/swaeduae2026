@@ -86,7 +86,7 @@ final class SwaedUaeStructuredData
     {
         $event->loadMissing('organization');
 
-        $localeQ = PublicLocale::query();
+        $localeQ = PublicLocale::queryFromRequestOrUser(auth()->user());
 
         $data = [
             '@context' => 'https://schema.org',

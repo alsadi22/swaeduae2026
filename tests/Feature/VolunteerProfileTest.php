@@ -19,6 +19,12 @@ class VolunteerProfileTest extends TestCase
             ->assertRedirect(route('login', ['lang' => 'en'], absolute: false));
     }
 
+    public function test_guest_redirect_to_login_preserves_lang_query_on_volunteer_profile(): void
+    {
+        $this->get(route('volunteer.profile.edit', ['lang' => 'ar']))
+            ->assertRedirect(route('login', ['lang' => 'ar'], absolute: false));
+    }
+
     public function test_non_volunteer_cannot_access_volunteer_profile_edit(): void
     {
         $this->seed(RoleSeeder::class);

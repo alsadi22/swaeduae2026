@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Support\AuthRedirect;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Tests\TestCase;
 
 class AuthRedirectTest extends TestCase
@@ -47,5 +48,17 @@ class AuthRedirectTest extends TestCase
 
         $this->assertStringContainsString('verified=1', $url);
         $this->assertStringContainsString('lang=', $url);
+    }
+
+    public function test_home_for_user_prefers_request_lang_over_locale_preferred(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $user = User::factory()->create(['locale_preferred' => 'ar']);
+        $user->assignRole('volunteer');
+        $this->app->instance('request', Request::create('/dashboard', 'GET', ['lang' => 'en']));
+
+        $url = AuthRedirect::homeForUser($user);
+
+        $this->assertStringContainsString('lang=en', $url);
     }
 }
