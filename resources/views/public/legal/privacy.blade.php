@@ -4,7 +4,7 @@
 
     $pageTitle = __('Privacy').' — '.__('SwaedUAE');
     $metaDescription = __('site.privacy_intro');
-    $localeQ = PublicLocale::query();
+    $localeQ = PublicLocale::queryFromRequestOrUser(auth()->user());
     $breadcrumbItems = PublicBreadcrumbs::homeAndCurrent(__('Privacy policy'), route('legal.privacy', $localeQ, true));
 @endphp
 <x-public-layout :title="$pageTitle" :metaDescription="$metaDescription" :breadcrumbItems="$breadcrumbItems">

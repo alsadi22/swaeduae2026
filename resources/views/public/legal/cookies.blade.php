@@ -4,7 +4,7 @@
 
     $pageTitle = __('Cookie policy').' — '.__('SwaedUAE');
     $metaDescription = __('site.cookies_intro');
-    $localeQ = PublicLocale::query();
+    $localeQ = PublicLocale::queryFromRequestOrUser(auth()->user());
     $breadcrumbItems = PublicBreadcrumbs::homeAndCurrent(__('Cookie policy'), route('legal.cookies', $localeQ, true));
 @endphp
 <x-public-layout :title="$pageTitle" :metaDescription="$metaDescription" :breadcrumbItems="$breadcrumbItems">

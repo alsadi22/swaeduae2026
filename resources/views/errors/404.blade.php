@@ -1,6 +1,6 @@
 @php
     $pageTitle = __('Page not found').' — '.__('SwaedUAE');
-    $localeQ = \App\Support\PublicLocale::query();
+    $localeQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
 @endphp
 <x-public-layout :title="$pageTitle" :metaDescription="__('site.meta_description')">
     <div class="mx-auto max-w-content px-4 py-16 sm:px-6 sm:py-20">

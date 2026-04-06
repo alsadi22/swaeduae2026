@@ -5,6 +5,9 @@
         </h2>
     </x-slot>
 
+    @php
+        $volProfileLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
+    @endphp
     <div class="py-12">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="border border-slate-200 bg-white p-4 shadow-sm sm:rounded-lg sm:p-8">
@@ -39,7 +42,7 @@
                         </div>
                     @endif
 
-                    <form method="post" action="{{ route('volunteer.profile.update') }}" class="mt-6 space-y-6">
+                    <form method="post" action="{{ route('volunteer.profile.update', $volProfileLocaleQ) }}" class="mt-6 space-y-6">
                         @csrf
                         @method('patch')
 

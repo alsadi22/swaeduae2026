@@ -3,7 +3,7 @@
     use App\Support\PublicLocale;
 
     $pageTitle = __('About').' — '.__('SwaedUAE');
-    $localeQ = PublicLocale::query();
+    $localeQ = PublicLocale::queryFromRequestOrUser(auth()->user());
     $breadcrumbItems = PublicBreadcrumbs::homeAndCurrent(__('About'), route('about', $localeQ, true));
 @endphp
 <x-public-layout :title="$pageTitle" :metaDescription="__('site.meta_description')" :breadcrumbItems="$breadcrumbItems">

@@ -4,7 +4,7 @@
 
     $pageTitle = __('Partners').' — '.__('SwaedUAE');
     $pagePartners = config('swaeduae.home_partners', []);
-    $localeQ = PublicLocale::query();
+    $localeQ = PublicLocale::queryFromRequestOrUser(auth()->user());
     $breadcrumbItems = PublicBreadcrumbs::homeAndCurrent(__('Partners'), route('partners', $localeQ, true));
 @endphp
 <x-public-layout :title="$pageTitle" :metaDescription="__('site.meta_description')" :breadcrumbItems="$breadcrumbItems">

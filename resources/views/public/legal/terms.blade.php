@@ -4,7 +4,7 @@
 
     $pageTitle = __('Terms').' — '.__('SwaedUAE');
     $metaDescription = __('site.terms_intro');
-    $localeQ = PublicLocale::query();
+    $localeQ = PublicLocale::queryFromRequestOrUser(auth()->user());
     $breadcrumbItems = PublicBreadcrumbs::homeAndCurrent(__('Terms of use'), route('legal.terms', $localeQ, true));
 @endphp
 <x-public-layout :title="$pageTitle" :metaDescription="$metaDescription" :breadcrumbItems="$breadcrumbItems">

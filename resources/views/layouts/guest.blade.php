@@ -1,4 +1,4 @@
-@php($guestLocaleQ = \App\Support\PublicLocale::query())
+@php($guestLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user()))
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
     <head>

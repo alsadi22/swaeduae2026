@@ -1,4 +1,4 @@
-@php($authLocaleQ = \App\Support\PublicLocale::query())
+@php($authLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user()))
 <x-guest-layout>
     <div class="mb-6 text-center">
         <h1 class="font-display text-xl font-bold text-emerald-950">{{ __('Volunteer registration') }}</h1>

@@ -7,7 +7,7 @@
     $ogImage = \App\Models\CmsPage::resolveShareImageUrl(config('swaeduae.default_og_image_url'));
     $board = __('site.leadership_board');
     $board = is_array($board) ? $board : [];
-    $localeQ = PublicLocale::query();
+    $localeQ = PublicLocale::queryFromRequestOrUser(auth()->user());
     $breadcrumbItems = PublicBreadcrumbs::homeAndCurrent(__('Leadership'), route('leadership', $localeQ, true));
 @endphp
 <x-public-layout

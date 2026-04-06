@@ -4,7 +4,7 @@
 
     $pageTitle = __('Gallery').' — '.__('SwaedUAE');
     $downloads = config('swaeduae.document_downloads', []);
-    $localeQ = PublicLocale::query();
+    $localeQ = PublicLocale::queryFromRequestOrUser(auth()->user());
     $breadcrumbItems = PublicBreadcrumbs::homeAndCurrent(__('Gallery'), route('gallery', $localeQ, true));
 @endphp
 <x-public-layout :title="$pageTitle" :metaDescription="__('site.gallery_meta_description')" :breadcrumbItems="$breadcrumbItems">

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -93,5 +94,28 @@ class PublicSiteTest extends TestCase
         ] as $path) {
             $this->get($path)->assertOk();
         }
+    }
+
+    public function test_about_with_lang_query_preserves_lang_in_atom_feed_link(): void
+    {
+        $feedUrl = route('feed', ['lang' => 'ar'], false);
+
+        $this->get('/about?lang=ar')
+            ->assertOk()
+            ->assertSee($feedUrl, false);
+    }
+
+    public function test_logged_in_user_sees_preferred_lang_in_about_feed_link_when_no_query(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $user = User::factory()->create(['locale_preferred' => 'ar']);
+        $user->assignRole('volunteer');
+
+        $feedUrl = route('feed', PublicLocale::queryForUser($user), false);
+
+        $this->actingAs($user)
+            ->get('/about')
+            ->assertOk()
+            ->assertSee($feedUrl, false);
     }
 }

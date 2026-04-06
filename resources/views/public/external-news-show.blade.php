@@ -4,7 +4,7 @@
     use App\Support\SwaedUaeStructuredData;
 
     /** @var \App\Models\ExternalNewsItem $item */
-    $localeQ = PublicLocale::query();
+    $localeQ = PublicLocale::queryFromRequestOrUser(auth()->user());
     $pageAbsoluteUrl = $item->absolutePublicUrl();
     $pageTitle = $item->titleForLocale().' — '.__('SwaedUAE');
     $sum = $item->summaryForLocale();

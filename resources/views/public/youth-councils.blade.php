@@ -33,7 +33,7 @@
     }
 
     $youthEmail = config('swaeduae.mail.youth_councils');
-    $localeQ = PublicLocale::query();
+    $localeQ = PublicLocale::queryFromRequestOrUser(auth()->user());
     $breadcrumbItems = null;
     if (! $previewMode) {
         $breadcrumbItems = PublicBreadcrumbs::homeAndCurrent(

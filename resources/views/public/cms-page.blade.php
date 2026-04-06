@@ -9,7 +9,7 @@
     $breadcrumbItems = null;
     $extraJsonLd = null;
     if (empty($previewMode ?? false)) {
-        $localeQ = \App\Support\PublicLocale::query();
+        $localeQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
         $breadcrumbItems = [
             ['name' => __('Home'), 'url' => route('home', $localeQ, true)],
             ['name' => $cmsPage->title, 'url' => $cmsPage->absolutePublicUrl()],

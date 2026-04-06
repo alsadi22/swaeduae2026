@@ -1,4 +1,4 @@
-@php($authLocaleQ = \App\Support\PublicLocale::query())
+@php($authLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user()))
 <x-guest-layout>
     <form method="POST" action="{{ route('password.store', $authLocaleQ) }}">
         @csrf
