@@ -163,6 +163,19 @@ class OrganizationDocumentTest extends TestCase
             ->assertHeader('content-disposition', 'attachment; filename=policy.pdf');
     }
 
+    public function test_get_organization_documents_redirects_to_dashboard_with_locale(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $org = Organization::factory()->create();
+        $owner = User::factory()->create();
+        $owner->forceFill(['organization_id' => $org->id])->save();
+        $owner->assignRole('org-owner');
+
+        $this->actingAs($owner)
+            ->get('/organization/documents?lang=en')
+            ->assertRedirect(route('organization.dashboard', ['lang' => 'en'], false));
+    }
+
     public function test_pending_dashboard_shows_documents_panel(): void
     {
         $this->seed(RoleSeeder::class);

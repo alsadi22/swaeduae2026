@@ -13,6 +13,8 @@ use App\Http\Controllers\UserDataExportController;
 use App\Http\Controllers\Volunteer\VolunteerAttendanceController;
 use App\Http\Controllers\Volunteer\VolunteerDisputeController;
 use App\Http\Controllers\Volunteer\VolunteerProfileController;
+use App\Support\PublicLocale;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verified'])->name('dashboard');
@@ -66,6 +68,15 @@ Route::middleware(['auth', 'verified', 'can:view-organization-event-applications
 Route::middleware(['auth', 'verified', 'role:org-owner', 'throttle:org-verification-resubmit'])->group(function () {
     Route::post('/organization/verification-resubmit', OrganizationVerificationResubmitController::class)
         ->name('organization.verification-resubmit');
+});
+
+Route::middleware(['auth', 'verified', 'role:org-owner|org-manager'])->group(function () {
+    Route::get('/organization/documents', function (Request $request) {
+        return redirect()->route(
+            'organization.dashboard',
+            PublicLocale::queryFromRequestOrUser($request->user())
+        );
+    })->name('organization.documents.index');
 });
 
 Route::middleware(['auth', 'verified', 'role:org-owner|org-manager', 'throttle:org-document-upload'])->group(function () {
