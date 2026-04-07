@@ -12,12 +12,26 @@
         </div>
     @endif
 
-    <div class="mb-4 flex justify-center">
-        <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full [&_button]:border-slate-300 [&_button]:text-slate-700" test-id="login-copy-page-url" />
-    </div>
+    @if (! empty($authPortal) && $authPortal === 'admin')
+        <div class="mb-4 flex justify-center">
+            <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full [&_button]:border-slate-300 [&_button]:text-slate-700" test-id="login-copy-page-url" />
+        </div>
+    @endif
 
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
+
+    @if (empty($authPortal))
+        @include('auth.partials.google-sign-in', ['authLocaleQ' => $authLocaleQ])
+        <div class="relative my-6">
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t border-slate-200"></div>
+            </div>
+            <div class="relative flex justify-center text-xs font-semibold uppercase tracking-wide">
+                <span class="bg-white px-3 text-slate-500">{{ __('Or sign in with email') }}</span>
+            </div>
+        </div>
+    @endif
 
     <form method="POST" action="{{ route('login', $authLocaleQ) }}">
         @csrf
@@ -68,9 +82,6 @@
             <a href="{{ route('register.volunteer', array_merge(\App\Support\IntendedUrl::queryParamsForRelativeUri((string) request()->query('return', '')), $authLocaleQ)) }}" class="mt-2 inline-block font-semibold text-emerald-800 hover:underline">{{ __('Create volunteer account') }}</a>
             <p class="mt-4 font-medium text-slate-800">{{ __('Register Organization') }}</p>
             <a href="{{ route('register.organization', $authLocaleQ) }}" class="mt-2 inline-block font-semibold text-emerald-800 hover:underline">{{ __('Start organization registration') }}</a>
-            <p class="mt-4">
-                <a href="{{ route('admin.login', $authLocaleQ) }}" class="text-xs font-medium text-slate-500 hover:text-emerald-800 hover:underline">{{ __('Admin sign-in') }}</a>
-            </p>
         </div>
     @endif
 </x-guest-layout>

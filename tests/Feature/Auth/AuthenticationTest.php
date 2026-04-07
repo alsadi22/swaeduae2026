@@ -16,13 +16,38 @@ class AuthenticationTest extends TestCase
         $response = $this->get('/login');
 
         $response->assertStatus(200);
-        $response->assertSee('data-testid="login-copy-page-url"', false);
+        $response->assertDontSee('data-testid="login-copy-page-url"', false);
         $response->assertSee(route('site.favicon', [], true), false);
         $response->assertSee('name="theme-color" content="#047857"', false);
         $response->assertSee('data-testid="skip-to-main-content"', false);
         $response->assertSee('id="main-content"', false);
         $response->assertSee('<title>'.e(__('Log in').' — '.__('SwaedUAE')).'</title>', false);
         $response->assertSee('rel="manifest"', false);
+        $response->assertDontSee(__('Admin sign-in'), false);
+    }
+
+    public function test_login_shows_google_sign_in_when_oauth_is_configured(): void
+    {
+        config([
+            'services.google.client_id' => 'test-google-client-id',
+            'services.google.client_secret' => 'test-google-client-secret',
+        ]);
+
+        $this->get('/login')
+            ->assertOk()
+            ->assertSee('data-testid="auth-google-sign-in"', false);
+    }
+
+    public function test_login_hides_google_sign_in_when_oauth_is_not_configured(): void
+    {
+        config([
+            'services.google.client_id' => '',
+            'services.google.client_secret' => '',
+        ]);
+
+        $this->get('/login')
+            ->assertOk()
+            ->assertDontSee('data-testid="auth-google-sign-in"', false);
     }
 
     public function test_login_form_includes_lang_in_action_when_ar_requested(): void
