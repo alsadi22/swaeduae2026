@@ -113,11 +113,19 @@
 
         <section class="mx-auto mt-14 max-w-3xl border-t border-slate-200 pt-12" aria-labelledby="youth-related-heading">
             <h2 id="youth-related-heading" class="font-display text-xl font-bold text-emerald-950 sm:text-2xl">{{ __('Youth councils related pages') }}</h2>
-            <ul class="mt-6 grid gap-3 text-sm font-semibold text-emerald-900 sm:grid-cols-2">
-                <li><a href="{{ route('about', $localeQ) }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('About the Association') }}</a></li>
-                <li><a href="{{ route('programs.index', $localeQ) }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Programs & initiatives') }}</a></li>
-                <li><a href="{{ route('volunteer.index', $localeQ) }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Volunteer') }}</a></li>
-                <li><a href="{{ route('contact.show', $localeQ) }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Contact and support') }}</a></li>
+            <ul class="mt-6 grid list-none grid-cols-1 gap-3 p-0 text-sm font-semibold text-emerald-900 sm:grid-cols-2 sm:items-stretch sm:gap-4">
+                <li class="min-w-0">
+                    <a href="{{ route('about', $localeQ) }}" class="flex min-h-[3.25rem] w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-3 text-center leading-snug shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('About the Association') }}</a>
+                </li>
+                <li class="min-w-0">
+                    <a href="{{ route('programs.index', $localeQ) }}" class="flex min-h-[3.25rem] w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-3 text-center leading-snug shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Programs & initiatives') }}</a>
+                </li>
+                <li class="min-w-0">
+                    <a href="{{ route('volunteer.index', $localeQ) }}" class="flex min-h-[3.25rem] w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-3 text-center leading-snug shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Volunteer') }}</a>
+                </li>
+                <li class="min-w-0">
+                    <a href="{{ route('contact.show', $localeQ) }}" class="flex min-h-[3.25rem] w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-3 text-center leading-snug shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Contact and support') }}</a>
+                </li>
             </ul>
         </section>
 

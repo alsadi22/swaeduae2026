@@ -65,8 +65,12 @@ return [
 
     'partners_strip' => 'Partner and sponsor logos will be showcased here.',
 
-    'gallery_grid_hint' => 'These cards are published CMS pages marked “Show in gallery”. Add or manage them in Admin → CMS pages.',
-    'gallery_placeholder' => 'Photo gallery preview — coming with the media module.',
+    'gallery_grid_hint' => 'These cards are published CMS pages marked “Show in gallery”. Add or manage them in Admin → CMS pages. Uploaded photos are managed under Admin → Gallery photos.',
+    'gallery_placeholder' => 'Photo gallery preview — add images in Admin → Gallery photos.',
+
+    'gallery_home_preview_intro' => 'A selection from our gallery — tap through to see more.',
+
+    'gallery_photos_intro' => 'Official photos from our programs and events. More stories and downloads appear below.',
 
     'gallery_page_intro' => 'Event photos, cultural highlights, and community moments will be published here. Editors can override this page with a CMS slug “gallery” for a full narrative.',
 

@@ -30,9 +30,11 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail
         'first_name',
         'last_name',
         'email',
+        'google_id',
         'phone',
         'locale_preferred',
         'terms_accepted_at',
+        'email_verified_at',
         'password',
     ];
 

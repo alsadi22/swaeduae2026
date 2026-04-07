@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CmsPageStoreRequest;
 use App\Http\Requests\Admin\CmsPageUpdateRequest;
 use App\Models\CmsPage;
+use App\Support\AdminCmsOgImage;
 use App\Support\PublicLocale;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -92,10 +93,22 @@ class CmsPageController extends Controller
 
     public function store(CmsPageStoreRequest $request): RedirectResponse
     {
-        $data = $request->validated();
+        $data = collect($request->validated())
+            ->except(['og_image_upload', 'remove_og_image'])
+            ->all();
         $data['author_id'] = $request->user()->id;
 
-        CmsPage::query()->create($data);
+        $upload = $request->file('og_image_upload');
+        if ($upload !== null) {
+            $data['og_image'] = null;
+        }
+
+        $page = CmsPage::query()->create($data);
+
+        if ($upload !== null) {
+            $path = $upload->store('cms/og/'.$page->id, 'public');
+            $page->update(['og_image' => '/storage/'.$path]);
+        }
 
         return redirect()
             ->route('admin.cms-pages.index', PublicLocale::queryFromRequestOrUser($request->user()))
@@ -133,7 +146,20 @@ class CmsPageController extends Controller
 
     public function update(CmsPageUpdateRequest $request, CmsPage $cms_page): RedirectResponse
     {
-        $cms_page->update($request->validated());
+        $data = collect($request->validated())
+            ->except(['og_image_upload', 'remove_og_image'])
+            ->all();
+
+        if ($request->hasFile('og_image_upload')) {
+            AdminCmsOgImage::deleteIfManaged($cms_page->og_image);
+            $path = $request->file('og_image_upload')->store('cms/og/'.$cms_page->id, 'public');
+            $data['og_image'] = '/storage/'.$path;
+        } elseif ($request->boolean('remove_og_image')) {
+            AdminCmsOgImage::deleteIfManaged($cms_page->og_image);
+            $data['og_image'] = null;
+        }
+
+        $cms_page->update($data);
 
         return redirect()
             ->route('admin.cms-pages.index', PublicLocale::queryFromRequestOrUser($request->user()))
@@ -144,6 +170,7 @@ class CmsPageController extends Controller
     {
         $this->authorize('delete', $cms_page);
 
+        AdminCmsOgImage::deleteIfManaged($cms_page->og_image);
         $cms_page->delete();
 
         return redirect()

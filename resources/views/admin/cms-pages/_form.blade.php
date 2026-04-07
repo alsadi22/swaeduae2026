@@ -8,14 +8,14 @@
             <x-input-label for="slug" value="{{ __('URL slug') }}" />
             <x-text-input id="slug" class="block mt-1 w-full font-mono text-sm" type="text" name="slug" :value="old('slug', $page->slug)" required
                 pattern="[a-z0-9]+(-[a-z0-9]+)*"
-                title="lowercase letters, numbers, hyphens" />
+                :title="__('Slug pattern hint')" />
             <x-input-error :messages="$errors->get('slug')" class="mt-2" />
         </div>
         <div>
             <x-input-label for="locale" value="{{ __('Language') }}" />
             <select id="locale" name="locale" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
-                <option value="en" @selected(old('locale', $page->locale) === 'en')>English</option>
-                <option value="ar" @selected(old('locale', $page->locale) === 'ar')>العربية</option>
+                <option value="en" @selected(old('locale', $page->locale) === 'en')>{{ __('Language English') }}</option>
+                <option value="ar" @selected(old('locale', $page->locale) === 'ar')>{{ __('Language Arabic') }}</option>
             </select>
             <x-input-error :messages="$errors->get('locale')" class="mt-2" />
         </div>
@@ -34,11 +34,30 @@
     </div>
 
     <div>
-        <x-input-label for="og_image" value="{{ __('Share image (Open Graph)') }}" />
-        <x-text-input id="og_image" class="block mt-1 w-full font-mono text-sm" type="text" name="og_image" :value="old('og_image', $page->og_image)"
-            placeholder="https://… or /images/og.jpg" />
-        <p class="mt-1 text-xs text-gray-500">{{ __('HTTPS URL or site path (e.g. /images/og.jpg). ~1200×630. Empty uses DEFAULT_OG_IMAGE_URL if set.') }}</p>
-        <x-input-error :messages="$errors->get('og_image')" class="mt-2" />
+        <x-input-label for="og_image_upload" value="{{ __('Upload share image (Open Graph)') }}" />
+        <input id="og_image_upload" name="og_image_upload" type="file" accept=".jpg,.jpeg,.png,.webp,.gif,image/jpeg,image/png,image/webp,image/gif" class="mt-1 block w-full text-sm text-gray-600" />
+        <p class="mt-1 text-xs text-gray-500">{{ __('CMS share image upload help') }}</p>
+        <x-input-error :messages="$errors->get('og_image_upload')" class="mt-2" />
+        @php($ogPreviewUrl = filled(old('og_image', $page->og_image)) ? \App\Models\CmsPage::resolveShareImageUrl(old('og_image', $page->og_image)) : null)
+        @if ($ogPreviewUrl)
+            <div class="mt-3">
+                <p class="text-xs font-medium text-gray-600">{{ __('Current share image preview') }}</p>
+                <img src="{{ $ogPreviewUrl }}" alt="" class="mt-1 max-h-36 max-w-full rounded-md border border-gray-200 object-contain" />
+            </div>
+        @endif
+        @if ($page->exists && old('og_image', $page->og_image))
+            <label class="mt-3 inline-flex items-center gap-2 text-sm text-gray-700">
+                <input type="checkbox" name="remove_og_image" value="1" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" @checked(old('remove_og_image')) />
+                {{ __('Remove share image') }}
+            </label>
+        @endif
+        <div class="mt-6 border-t border-gray-100 pt-4">
+            <x-input-label for="og_image" value="{{ __('Share image URL (optional)') }}" />
+            <x-text-input id="og_image" class="block mt-1 w-full font-mono text-sm" type="text" name="og_image" :value="old('og_image', $page->og_image)"
+                placeholder="https://… or /images/og.jpg" />
+            <p class="mt-1 text-xs text-gray-500">{{ __('HTTPS URL or site path (e.g. /images/og.jpg). ~1200×630. Empty uses DEFAULT_OG_IMAGE_URL if set.') }}</p>
+            <x-input-error :messages="$errors->get('og_image')" class="mt-2" />
+        </div>
     </div>
 
     <div>

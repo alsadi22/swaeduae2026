@@ -142,11 +142,18 @@
             <div class="mx-auto max-w-content px-4 sm:px-6" x-data="{ open: false }">
                 <div class="flex h-[4.25rem] items-center justify-between gap-4 lg:h-20">
                     <a href="{{ route('home', $navLocaleQ) }}" class="group flex min-w-0 items-center gap-3 rounded-xl py-1 pe-2 outline-none transition hover:opacity-95 focus-visible:ring-2 focus-visible:ring-emerald-500/40">
-                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-900 text-white shadow-card ring-1 ring-emerald-950/15 transition group-hover:shadow-card-hover" aria-hidden="true">
-                            <svg class="h-6 w-6 opacity-95" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                <path d="M12 2l2.09 6.26H21l-5.45 4.2 2.09 6.54L12 16.77 6.36 19l2.09-6.54L3 8.26h6.91L12 2z"/>
-                            </svg>
-                        </span>
+                        @php($headerLogo = $publicSiteBranding?->headerLogoPublicUrl())
+                        @if ($headerLogo)
+                            <span class="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white shadow-card ring-1 ring-emerald-950/10 transition group-hover:shadow-card-hover" aria-hidden="true">
+                                <img src="{{ $headerLogo }}" alt="" class="max-h-11 max-w-11 object-contain" width="44" height="44" />
+                            </span>
+                        @else
+                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-900 text-white shadow-card ring-1 ring-emerald-950/15 transition group-hover:shadow-card-hover" aria-hidden="true">
+                                <svg class="h-6 w-6 opacity-95" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M12 2l2.09 6.26H21l-5.45 4.2 2.09 6.54L12 16.77 6.36 19l2.09-6.54L3 8.26h6.91L12 2z"/>
+                                </svg>
+                            </span>
+                        @endif
                         <span class="min-w-0 text-start">
                             <span class="block truncate font-display text-base font-bold tracking-tight text-emerald-950 group-hover:text-emerald-800 sm:text-lg">{{ __('SwaedUAE') }}</span>
                             <span class="hidden truncate text-[11px] font-medium leading-tight text-slate-500 sm:block sm:text-xs">{{ __('SwaedUAE Association for Culture and Community Empowerment') }}</span>

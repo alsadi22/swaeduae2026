@@ -14,7 +14,7 @@
                 <div class="flex flex-wrap items-center justify-end gap-2 border-b border-gray-100 px-6 py-3">
                     <x-copy-filtered-list-url-button class="[&_button]:border-gray-300 [&_button]:text-gray-700" test-id="admin-cms-page-edit-copy-page-url" />
                 </div>
-                <form method="post" action="{{ route('admin.cms-pages.update', array_merge(['cms_page' => $page], $adminLocaleQ)) }}" class="p-6 space-y-6">
+                <form method="post" action="{{ route('admin.cms-pages.update', array_merge(['cms_page' => $page], $adminLocaleQ)) }}" enctype="multipart/form-data" class="p-6 space-y-6">
                     @csrf
                     @method('put')
                     @include('admin.cms-pages._form', ['page' => $page])

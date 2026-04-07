@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class CmsPageAdminTest extends TestCase
@@ -25,6 +27,24 @@ class CmsPageAdminTest extends TestCase
         $user->assignRole('admin');
 
         return $user;
+    }
+
+    /** Minimal valid 1×1 PNG (no GD required). */
+    private function tinyPng(): UploadedFile
+    {
+        $binary = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', true);
+
+        return UploadedFile::fake()->createWithContent('og.png', $binary);
+    }
+
+    private function assertOgStoredOnPublicDisk(CmsPage $page): string
+    {
+        $this->assertIsString($page->og_image);
+        $this->assertStringStartsWith('/storage/cms/og/'.$page->id.'/', $page->og_image);
+        $relative = substr($page->og_image, strlen('/storage/'));
+        Storage::disk('public')->assertExists($relative);
+
+        return $relative;
     }
 
     public function test_guest_redirected_from_admin_cms_index(): void
@@ -226,6 +246,129 @@ class CmsPageAdminTest extends TestCase
         $user->assignRole('super-admin');
 
         $this->actingAs($user)->get('/admin/cms-pages')->assertOk();
+    }
+
+    public function test_admin_sidebar_includes_locale_switch(): void
+    {
+        $user = $this->adminUser();
+
+        $this->actingAs($user)
+            ->get(route('admin.cms-pages.index', ['lang' => 'ar']))
+            ->assertOk()
+            ->assertSee('data-testid="admin-sidebar-locale-switch"', false)
+            ->assertSee(__('Admin interface language'), false);
+    }
+
+    public function test_admin_can_upload_og_image_when_creating_cms_page(): void
+    {
+        Storage::fake('public');
+        $user = $this->adminUser();
+        $file = $this->tinyPng();
+
+        $this->actingAs($user)->post('/admin/cms-pages', [
+            'slug' => 'og-upload-create',
+            'locale' => 'en',
+            'title' => 'OG upload',
+            'meta_description' => null,
+            'og_image' => null,
+            'og_image_upload' => $file,
+            'excerpt' => null,
+            'body' => '# Hello',
+            'status' => CmsPage::STATUS_DRAFT,
+            'published_at' => null,
+            'show_on_home' => '0',
+        ])->assertRedirect(route('admin.cms-pages.index', PublicLocale::query()));
+
+        $page = CmsPage::query()->where('slug', 'og-upload-create')->first();
+        $this->assertNotNull($page);
+        $this->assertOgStoredOnPublicDisk($page);
+    }
+
+    public function test_admin_upload_on_update_replaces_previous_managed_og_image(): void
+    {
+        Storage::fake('public');
+        $user = $this->adminUser();
+
+        $this->actingAs($user)->post('/admin/cms-pages', [
+            'slug' => 'og-replace',
+            'locale' => 'en',
+            'title' => 'First',
+            'meta_description' => null,
+            'og_image' => null,
+            'og_image_upload' => $this->tinyPng(),
+            'excerpt' => null,
+            'body' => '# a',
+            'status' => CmsPage::STATUS_DRAFT,
+            'published_at' => null,
+            'show_on_home' => '0',
+        ]);
+
+        $page = CmsPage::query()->where('slug', 'og-replace')->first();
+        $this->assertNotNull($page);
+        $firstRelative = $this->assertOgStoredOnPublicDisk($page);
+
+        $second = UploadedFile::fake()->createWithContent('og2.png', (string) base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', true));
+
+        $this->actingAs($user)->put("/admin/cms-pages/{$page->id}", [
+            'slug' => 'og-replace',
+            'locale' => 'en',
+            'title' => 'Second',
+            'meta_description' => null,
+            'og_image' => $page->og_image,
+            'og_image_upload' => $second,
+            'excerpt' => null,
+            'body' => '# b',
+            'status' => CmsPage::STATUS_DRAFT,
+            'published_at' => null,
+            'show_on_home' => '0',
+        ])->assertRedirect(route('admin.cms-pages.index', PublicLocale::query()));
+
+        $page->refresh();
+        $secondRelative = $this->assertOgStoredOnPublicDisk($page);
+        Storage::disk('public')->assertMissing($firstRelative);
+        $this->assertNotSame($firstRelative, $secondRelative);
+    }
+
+    public function test_admin_can_remove_managed_og_image_on_update(): void
+    {
+        Storage::fake('public');
+        $user = $this->adminUser();
+
+        $this->actingAs($user)->post('/admin/cms-pages', [
+            'slug' => 'og-remove',
+            'locale' => 'en',
+            'title' => 'R',
+            'meta_description' => null,
+            'og_image' => null,
+            'og_image_upload' => $this->tinyPng(),
+            'excerpt' => null,
+            'body' => '# x',
+            'status' => CmsPage::STATUS_DRAFT,
+            'published_at' => null,
+            'show_on_home' => '0',
+        ]);
+
+        $page = CmsPage::query()->where('slug', 'og-remove')->first();
+        $this->assertNotNull($page);
+        $relative = $this->assertOgStoredOnPublicDisk($page);
+
+        $this->actingAs($user)->put("/admin/cms-pages/{$page->id}", [
+            'slug' => 'og-remove',
+            'locale' => 'en',
+            'title' => 'R',
+            'meta_description' => null,
+            'og_image' => $page->og_image,
+            'excerpt' => null,
+            'body' => '# x',
+            'status' => CmsPage::STATUS_DRAFT,
+            'published_at' => null,
+            'show_on_home' => '0',
+            'remove_og_image' => '1',
+        ])->assertRedirect(route('admin.cms-pages.index', PublicLocale::query()));
+
+        $page->refresh();
+        $this->assertNull($page->og_image);
+        Storage::disk('public')->assertMissing($relative);
     }
 
     public function test_admin_can_create_cms_page(): void

@@ -64,7 +64,23 @@
             <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full" test-id="gallery-copy-page-url" />
         </div>
 
-        <section class="{{ $introPage ? 'mt-16 border-t border-slate-200 pt-14' : 'mt-12' }}" aria-labelledby="gallery-grid-heading">
+        @if ($galleryPhotos->isNotEmpty())
+            <section class="{{ $introPage ? 'mt-16 border-t border-slate-200 pt-14' : 'mt-12' }}" aria-labelledby="gallery-photos-heading">
+                <h2 id="gallery-photos-heading" class="font-display text-xl font-bold text-emerald-950 sm:text-2xl">
+                    {{ __('Photo gallery') }}
+                </h2>
+                <p class="mt-3 max-w-2xl text-sm text-slate-600">{{ __('site.gallery_photos_intro') }}</p>
+                <div class="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                    @foreach ($galleryPhotos as $photo)
+                        <figure class="overflow-hidden rounded-2xl bg-slate-100 ring-1 ring-slate-200/80 shadow-sm">
+                            <img src="{{ $photo->publicUrl() }}" alt="{{ $photo->altForLocale() }}" class="aspect-square w-full object-cover" loading="lazy" />
+                        </figure>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
+        <section class="{{ $introPage || $galleryPhotos->isNotEmpty() ? 'mt-16 border-t border-slate-200 pt-14' : 'mt-12' }}" aria-labelledby="gallery-grid-heading">
             <h2 id="gallery-grid-heading" class="font-display text-xl font-bold text-emerald-950 sm:text-2xl">
                 {{ __('Photos and stories') }}
             </h2>

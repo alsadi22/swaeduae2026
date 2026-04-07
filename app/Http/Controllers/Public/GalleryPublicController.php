@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\CmsPage;
+use App\Models\GalleryImage;
 use Illuminate\View\View;
 
 class GalleryPublicController extends Controller
@@ -25,10 +26,16 @@ class GalleryPublicController extends Controller
 
         $downloads = config('swaeduae.document_downloads', []);
 
+        $galleryPhotos = GalleryImage::query()
+            ->visible()
+            ->ordered()
+            ->get();
+
         return view('public.gallery', [
             'introPage' => $introPage,
             'galleryPages' => $galleryPages,
             'downloads' => $downloads,
+            'galleryPhotos' => $galleryPhotos,
         ]);
     }
 }

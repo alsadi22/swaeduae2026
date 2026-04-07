@@ -17,9 +17,30 @@
         </div>
     </div>
 
+    <div class="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border border-slate-200/90 bg-slate-50/80 px-2.5 py-2 text-xs" data-testid="admin-sidebar-locale-switch">
+        <span class="font-medium text-slate-600">{{ __('Admin interface language') }}</span>
+        <span class="inline-flex flex-wrap items-center gap-1">
+            <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" @class([
+                'rounded px-1.5 py-0.5 font-semibold transition',
+                app()->getLocale() === 'en' ? 'bg-white text-emerald-900 shadow-sm ring-1 ring-emerald-100' : 'text-slate-600 hover:bg-white/80 hover:text-emerald-900',
+            ])>{{ __('Language English') }}</a>
+            <span class="text-slate-300" aria-hidden="true">·</span>
+            <a href="{{ request()->fullUrlWithQuery(['lang' => 'ar']) }}" @class([
+                'rounded px-1.5 py-0.5 font-semibold transition',
+                app()->getLocale() === 'ar' ? 'bg-white text-emerald-900 shadow-sm ring-1 ring-emerald-100' : 'text-slate-600 hover:bg-white/80 hover:text-emerald-900',
+            ])>{{ __('Language Arabic') }}</a>
+        </span>
+    </div>
+
     <nav class="min-h-0 flex-1 space-y-0.5 overflow-y-auto overscroll-contain" aria-label="{{ __('Admin navigation') }}">
         <a href="{{ route('admin.cms-pages.index', $q) }}" @class([$linkBase, request()->routeIs('admin.cms-pages.*') ? $linkActive : $linkInactive]) data-testid="admin-sidebar-cms">
             {{ __('CMS') }}
+        </a>
+        <a href="{{ route('admin.site-settings.edit', $q) }}" @class([$linkBase, request()->routeIs('admin.site-settings.*') ? $linkActive : $linkInactive]) data-testid="admin-sidebar-site-settings">
+            {{ __('Site settings') }}
+        </a>
+        <a href="{{ route('admin.gallery-images.index', $q) }}" @class([$linkBase, request()->routeIs('admin.gallery-images.*') ? $linkActive : $linkInactive]) data-testid="admin-sidebar-gallery-images">
+            {{ __('Gallery photos') }}
         </a>
         <a href="{{ route('admin.external-news-sources.index', $q) }}" @class([$linkBase, request()->routeIs('admin.external-news-sources.*') ? $linkActive : $linkInactive])>
             {{ __('News sources') }}

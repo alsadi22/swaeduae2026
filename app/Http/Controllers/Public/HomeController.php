@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\CmsPage;
 use App\Models\Event;
 use App\Models\ExternalNewsItem;
+use App\Models\GalleryImage;
+use App\Models\SiteSetting;
 use App\Support\HomeImpactStats;
 use Illuminate\View\View;
 
@@ -82,12 +84,21 @@ class HomeController extends Controller
             ->limit(5)
             ->get();
 
+        $siteSetting = SiteSetting::forPublic();
+        $homeGalleryPreview = GalleryImage::query()
+            ->visible()
+            ->ordered()
+            ->limit(4)
+            ->get();
+
         return view('public.home', compact(
             'featuredCmsPages',
             'latestCmsTeasers',
             'homeNewsTeasers',
             'impactStats',
             'upcomingEvents',
+            'siteSetting',
+            'homeGalleryPreview',
         ));
     }
 }

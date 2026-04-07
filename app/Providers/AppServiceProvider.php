@@ -8,6 +8,7 @@ use App\Models\Dispute;
 use App\Models\EventApplication;
 use App\Models\ExternalNewsItem;
 use App\Models\Organization;
+use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -98,6 +99,18 @@ class AppServiceProvider extends ServiceProvider
             $id = $request->user()?->getAuthIdentifier();
 
             return Limit::perMinute(30)->by($id !== null ? 'admin-events-export|'.$id : 'admin-events-export|'.$request->ip());
+        });
+
+        RateLimiter::for('admin-site-settings-update', function (Request $request): Limit {
+            $id = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute(10)->by($id !== null ? 'admin-site-settings|'.$id : 'admin-site-settings|'.$request->ip());
+        });
+
+        RateLimiter::for('admin-gallery-image-upload', function (Request $request): Limit {
+            $id = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute(30)->by($id !== null ? 'admin-gallery-upload|'.$id : 'admin-gallery-upload|'.$request->ip());
         });
 
         RateLimiter::for('org-invitation-send', function (Request $request): Limit {
@@ -255,6 +268,10 @@ class AppServiceProvider extends ServiceProvider
         if (is_string($replyTo) && $replyTo !== '') {
             Mail::alwaysReplyTo($replyTo, config('mail.reply_to.name'));
         }
+
+        View::composer('components.public-layout', function (\Illuminate\View\View $view): void {
+            $view->with('publicSiteBranding', SiteSetting::forPublic());
+        });
 
         View::composer(['layouts.navigation', 'layouts.admin-sidebar'], function (\Illuminate\View\View $view): void {
             $count = 0;

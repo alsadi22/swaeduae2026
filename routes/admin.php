@@ -11,8 +11,10 @@ use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\ExternalNewsItemController;
 use App\Http\Controllers\Admin\ExternalNewsSourceController;
 use App\Http\Controllers\Admin\FlaggedAttendanceController;
+use App\Http\Controllers\Admin\GalleryImageController;
 use App\Http\Controllers\Admin\OrganizationController;
 use App\Http\Controllers\Admin\OrganizationDocumentDownloadController;
+use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Middleware\RequireAdminTwoFactor;
 use App\Support\PublicLocale;
@@ -52,6 +54,18 @@ Route::middleware(['auth', 'verified', 'role:admin|super-admin', RequireAdminTwo
         Route::get('cms-pages/{cms_page}/preview', [CmsPageController::class, 'preview'])
             ->name('cms-pages.preview');
         Route::resource('cms-pages', CmsPageController::class)->except(['show']);
+        Route::get('site-settings/edit', [SiteSettingController::class, 'edit'])
+            ->name('site-settings.edit');
+        Route::put('site-settings', [SiteSettingController::class, 'update'])
+            ->middleware('throttle:admin-site-settings-update')
+            ->name('site-settings.update');
+        Route::post('gallery-images', [GalleryImageController::class, 'store'])
+            ->middleware('throttle:admin-gallery-image-upload')
+            ->name('gallery-images.store');
+        Route::put('gallery-images/{gallery_image}', [GalleryImageController::class, 'update'])
+            ->middleware('throttle:admin-gallery-image-upload')
+            ->name('gallery-images.update');
+        Route::resource('gallery-images', GalleryImageController::class)->except(['show', 'store', 'update']);
         Route::get('external-news-sources/export', [ExternalNewsSourceController::class, 'exportCsv'])
             ->middleware('throttle:admin-external-news-sources-export')
             ->name('external-news-sources.export');

@@ -1,5 +1,6 @@
 # Deploys via SSH after you add repository secrets (see below).
-# Run: Actions → "Deploy to production" → Run workflow.
+# Runs automatically after the "Tests" workflow succeeds on a push to `master`, or manually:
+#   Actions → "Deploy to production" → Run workflow.
 #
 # Required secrets (Settings → Secrets and variables → Actions):
 #   DEPLOY_HOST     — server hostname or IP
@@ -11,6 +12,9 @@ name: Deploy to production
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: [Tests]
+    types: [completed]
 
 concurrency:
   group: deploy-production
@@ -20,6 +24,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'master' &&
+       github.event.workflow_run.event == 'push')
 
     steps:
       - name: Checkout (for deploy script reference)

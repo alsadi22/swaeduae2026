@@ -19,10 +19,10 @@
         <div class="relative mx-auto max-w-content px-4 py-14 sm:px-6 sm:py-20 lg:py-24">
             <p class="max-w-3xl text-sm font-semibold uppercase tracking-[0.2em] text-emerald-200/90">{{ __('SwaedUAE Association for Culture and Community Empowerment') }}</p>
             <h1 class="font-display mt-5 max-w-4xl text-balance text-3xl font-bold leading-[1.15] tracking-tight sm:text-4xl lg:text-5xl">
-                {{ __('site.hero_mission') }}
+                {{ $siteSetting?->heroMission() ?? __('site.hero_mission') }}
             </h1>
             <p class="mt-6 max-w-3xl text-base leading-relaxed text-emerald-100/95 sm:text-lg">
-                {{ __('site.hero_subline') }}
+                {{ $siteSetting?->heroSubline() ?? __('site.hero_subline') }}
             </p>
             <div class="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <a href="{{ route('programs.index', $homeLocaleQ) }}" class="btn-hero-solid">{{ __('Explore programs') }}</a>
@@ -311,12 +311,23 @@
                 <h2 class="public-section-title">{{ __('Gallery') }}</h2>
                 <a href="{{ route('gallery', $homeLocaleQ) }}" class="shrink-0 text-sm font-bold text-emerald-800 hover:underline">{{ __('View gallery') }}</a>
             </div>
-            <p class="mt-8 text-slate-600">{{ __('site.gallery_placeholder') }}</p>
-            <div class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                @foreach (range(1, 4) as $i)
-                    <div class="aspect-square rounded-xl bg-gradient-to-br from-slate-200 via-slate-100 to-emerald-100 ring-1 ring-slate-200/80"></div>
-                @endforeach
-            </div>
+            @if ($homeGalleryPreview->isEmpty())
+                <p class="mt-8 text-slate-600">{{ __('site.gallery_placeholder') }}</p>
+                <div class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    @foreach (range(1, 4) as $i)
+                        <div class="aspect-square rounded-xl bg-gradient-to-br from-slate-200 via-slate-100 to-emerald-100 ring-1 ring-slate-200/80"></div>
+                    @endforeach
+                </div>
+            @else
+                <p class="mt-8 text-sm text-slate-600">{{ __('site.gallery_home_preview_intro') }}</p>
+                <div class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    @foreach ($homeGalleryPreview as $gimg)
+                        <a href="{{ route('gallery', $homeLocaleQ) }}" class="group block aspect-square overflow-hidden rounded-xl ring-1 ring-slate-200/80 transition hover:ring-emerald-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">
+                            <img src="{{ $gimg->publicUrl() }}" alt="{{ $gimg->altForLocale() }}" class="h-full w-full object-cover transition duration-200 group-hover:scale-[1.02]" loading="lazy" />
+                        </a>
+                    @endforeach
+                </div>
+            @endif
         </section>
     </div>
 </x-public-layout>

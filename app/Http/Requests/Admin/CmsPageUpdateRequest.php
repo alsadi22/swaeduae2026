@@ -46,6 +46,8 @@ class CmsPageUpdateRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'og_image' => ['nullable', 'string', 'max:2048', 'regex:/^(https?:\\/\\/\\S+|\\/\\S*)$/i'],
+            'og_image_upload' => ['nullable', 'file', 'image', 'max:2048', 'mimes:jpeg,jpg,png,webp,gif'],
+            'remove_og_image' => ['sometimes', 'boolean'],
             'excerpt' => ['nullable', 'string', 'max:2000'],
             'body' => ['required', 'string'],
             'status' => ['required', 'string', Rule::in([
