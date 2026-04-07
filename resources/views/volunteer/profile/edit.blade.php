@@ -1,13 +1,13 @@
-<x-app-layout>
+@php
+    $volProfileLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
+    $appShellTitle = __('Volunteer profile').' — '.__('SwaedUAE');
+@endphp
+<x-app-layout :title="$appShellTitle" :meta-description="__('site.meta_description')">
     <x-slot name="header">
         <h2 class="font-display text-xl font-bold leading-tight text-emerald-950">
             {{ __('Volunteer profile') }}
         </h2>
     </x-slot>
-
-    @php
-        $volProfileLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
-    @endphp
     <div class="py-12">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="border border-slate-200 bg-white p-4 shadow-sm sm:rounded-lg sm:p-8">
@@ -15,14 +15,23 @@
                     <p class="text-sm text-slate-600">
                         {{ __('Volunteer profile intro') }}
                     </p>
+                    <div class="mt-4">
+                        <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full [&_button]:border-slate-300 [&_button]:text-slate-700" test-id="volunteer-profile-edit-copy-page-url" />
+                    </div>
+
+                    @if (session('status') === 'erasure-request-submitted')
+                        <div class="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900" role="status" aria-live="polite" data-testid="volunteer-profile-erasure-request-flash-success">
+                            {{ __('Erasure request sent') }}
+                        </div>
+                    @endif
 
                     @if (! $meetsMinimum)
-                        <div class="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950" role="status">
+                        <div class="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950" role="status" aria-live="polite" data-testid="volunteer-profile-incomplete-banner">
                             {{ __('Volunteer profile incomplete banner') }}
                         </div>
                     @endif
 
-                    <div class="mt-4 rounded-lg border border-slate-200 bg-slate-50/80 p-4" role="status">
+                    <div class="mt-4 rounded-lg border border-slate-200 bg-slate-50/80 p-4" role="status" aria-live="polite">
                         <div class="flex flex-wrap items-center justify-between gap-2">
                             <p class="text-sm font-semibold text-slate-900">{{ __('Profile completion') }}</p>
                             <p class="text-sm font-bold text-emerald-800"><span data-testid="profile-completion-percent">{{ $profileCompletionPercent }}</span>%</p>
@@ -36,8 +45,8 @@
                         @endif
                     </div>
 
-                    @if (session('status'))
-                        <div class="mt-4 rounded-lg border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900" role="status">
+                    @if (session('status') && session('status') !== 'erasure-request-submitted')
+                        <div class="mt-4 rounded-lg border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900" role="status" aria-live="polite" data-testid="volunteer-profile-saved">
                             {{ session('status') }}
                         </div>
                     @endif
@@ -106,7 +115,7 @@
 
                     @if (auth()->user()->hasVerifiedEmail())
                         <div class="mt-10 border-t border-slate-100 pt-8">
-                            @include('profile.partials.data-privacy-export')
+                            @include('profile.partials.data-privacy-export', ['profileLocaleQ' => $volProfileLocaleQ, 'dataPrivacyReturn' => 'volunteer_profile'])
                         </div>
                     @endif
                 </div>

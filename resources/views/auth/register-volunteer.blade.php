@@ -1,8 +1,14 @@
-@php($authLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user()))
-<x-guest-layout>
+@php
+    $authLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
+    $guestPageTitle = __('Volunteer registration').' — '.__('SwaedUAE');
+@endphp
+<x-guest-layout :title="$guestPageTitle" :meta-description="__('site.meta_description')">
     <div class="mb-6 text-center">
         <h1 class="font-display text-xl font-bold text-emerald-950">{{ __('Volunteer registration') }}</h1>
         <p class="mt-2 text-sm text-slate-600">{{ __('Join as Volunteer') }}</p>
+        <div class="mt-4 flex justify-center">
+            <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full [&_button]:border-slate-300 [&_button]:text-slate-700" test-id="register-volunteer-copy-page-url" />
+        </div>
     </div>
 
     <form method="POST" action="{{ route('register.volunteer.store', $authLocaleQ) }}">

@@ -21,7 +21,9 @@ class RegistrationTest extends TestCase
 
     public function test_volunteer_registration_screen_can_be_rendered(): void
     {
-        $this->get('/register/volunteer')->assertOk();
+        $this->get('/register/volunteer')
+            ->assertOk()
+            ->assertSee('data-testid="register-volunteer-copy-page-url"', false);
     }
 
     public function test_volunteer_registration_includes_opportunities_footer_with_locale(): void

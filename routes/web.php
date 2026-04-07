@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Organization\OrganizationDocumentController;
 use App\Http\Controllers\Organization\OrganizationEventApplicationController;
 use App\Http\Controllers\Organization\OrganizationEventController;
 use App\Http\Controllers\Organization\OrganizationInvitationController;
 use App\Http\Controllers\Organization\OrganizationVerificationResubmitController;
 use App\Http\Controllers\OrganizationDashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProfileErasureRequestController;
 use App\Http\Controllers\UserDataExportController;
 use App\Http\Controllers\Volunteer\VolunteerAttendanceController;
 use App\Http\Controllers\Volunteer\VolunteerDisputeController;
@@ -50,6 +52,9 @@ Route::middleware(['auth', 'verified', 'can:manage-organization-events'])->group
 });
 
 Route::middleware(['auth', 'verified', 'can:view-organization-event-applications'])->group(function () {
+    Route::get('/organization/event-applications/export', [OrganizationEventApplicationController::class, 'exportCsv'])
+        ->middleware('throttle:org-event-applications-export')
+        ->name('organization.event-applications.export');
     Route::get('/organization/event-applications', [OrganizationEventApplicationController::class, 'index'])
         ->name('organization.event-applications.index');
     Route::post('/organization/event-applications/{event_application}/approve', [OrganizationEventApplicationController::class, 'approve'])
@@ -61,6 +66,13 @@ Route::middleware(['auth', 'verified', 'can:view-organization-event-applications
 Route::middleware(['auth', 'verified', 'role:org-owner', 'throttle:org-verification-resubmit'])->group(function () {
     Route::post('/organization/verification-resubmit', OrganizationVerificationResubmitController::class)
         ->name('organization.verification-resubmit');
+});
+
+Route::middleware(['auth', 'verified', 'role:org-owner|org-manager', 'throttle:org-document-upload'])->group(function () {
+    Route::post('/organization/documents', [OrganizationDocumentController::class, 'store'])
+        ->name('organization.documents.store');
+    Route::delete('/organization/documents/{organization_document}', [OrganizationDocumentController::class, 'destroy'])
+        ->name('organization.documents.destroy');
 });
 
 Route::middleware(['auth', 'verified', 'role:org-owner'])->group(function () {
@@ -99,6 +111,10 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'verified', 'throttle:user-data-export'])->group(function () {
     Route::get('/profile/data-export', UserDataExportController::class)->name('profile.data-export');
+});
+
+Route::middleware(['auth', 'verified', 'throttle:user-erasure-request'])->group(function () {
+    Route::post('/profile/erasure-request', ProfileErasureRequestController::class)->name('profile.erasure-request');
 });
 
 require __DIR__.'/auth.php';

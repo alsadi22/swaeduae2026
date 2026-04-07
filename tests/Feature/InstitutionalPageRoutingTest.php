@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\CmsPage;
 use App\Models\User;
+use App\Support\PublicLocale;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -13,12 +14,35 @@ class InstitutionalPageRoutingTest extends TestCase
 
     public function test_institutional_route_uses_blade_fallback_when_no_cms_page(): void
     {
-        $this->get('/about')->assertOk()->assertViewIs('public.about');
+        $this->get('/about')
+            ->assertOk()
+            ->assertViewIs('public.about')
+            ->assertSee('data-testid="about-copy-page-url"', false);
     }
 
-    public function test_leadership_route_uses_blade_fallback_when_no_cms_page(): void
+    public function test_leadership_route_redirects_to_about_when_no_cms_page(): void
     {
-        $this->get('/leadership')->assertOk()->assertViewIs('public.leadership');
+        $this->get('/leadership')->assertRedirect(route('about', PublicLocale::mergeQuery([]), false));
+    }
+
+    public function test_leadership_route_uses_cms_when_published(): void
+    {
+        $user = User::factory()->create();
+        CmsPage::query()->create([
+            'slug' => 'leadership',
+            'locale' => 'en',
+            'title' => 'CMS Leadership Title',
+            'body' => 'Unique CMS leadership body.',
+            'status' => CmsPage::STATUS_PUBLISHED,
+            'published_at' => now()->subHour(),
+            'author_id' => $user->id,
+        ]);
+
+        $response = $this->get('/leadership');
+
+        $response->assertOk();
+        $response->assertViewIs('public.cms-page');
+        $response->assertSee('CMS Leadership Title', false);
     }
 
     public function test_cookies_route_uses_blade_fallback_when_no_cms_page(): void
@@ -45,6 +69,7 @@ class InstitutionalPageRoutingTest extends TestCase
         $response->assertViewIs('public.cms-page');
         $response->assertViewHas('cmsPage', fn (CmsPage $p) => $p->slug === 'about' && $p->title === 'CMS About Title');
         $response->assertSee('CMS About Title', false);
+        $response->assertSee('data-testid="cms-page-copy-page-url"', false);
     }
 
     public function test_institutional_route_falls_back_when_cms_row_is_draft(): void
@@ -89,5 +114,12 @@ class InstitutionalPageRoutingTest extends TestCase
         $page = new CmsPage(['slug' => 'leadership', 'locale' => 'en']);
 
         $this->assertStringContainsString('/leadership', $page->publicUrl());
+    }
+
+    public function test_media_institutional_fallback_view_includes_copy_page_url_marker(): void
+    {
+        $html = view('public.media')->render();
+
+        $this->assertStringContainsString('data-testid="media-fallback-copy-page-url"', $html);
     }
 }

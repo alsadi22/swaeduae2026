@@ -20,6 +20,12 @@ class ProfileTest extends TestCase
             ->get('/profile');
 
         $response->assertOk();
+        $response->assertSee('data-testid="profile-edit-copy-page-url"', false);
+        $response->assertSee('data-testid="profile-data-privacy-copy-page-url"', false);
+        $response->assertSee('data-testid="skip-to-main-content"', false);
+        $response->assertSee('id="main-content"', false);
+        $response->assertSee('<title>'.e(__('Profile').' — '.__('SwaedUAE')).'</title>', false);
+        $response->assertSee('rel="manifest"', false);
     }
 
     public function test_profile_information_can_be_updated(): void

@@ -8,11 +8,13 @@ use App\Mail\EventApplicationReviewedMail;
 use App\Models\Event;
 use App\Models\EventApplication;
 use App\Support\PublicLocale;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class EventApplicationController extends Controller
 {
@@ -20,6 +22,90 @@ class EventApplicationController extends Controller
     {
         $this->authorize('viewAny', EventApplication::class);
 
+        $state = $this->validatedApplicationsFilters($request);
+
+        $applications = $this->applicationsQuery($state)
+            ->with(['event.organization', 'user'])
+            ->paginate(25)
+            ->withQueryString()
+            ->appends(PublicLocale::queryFromRequestOrUser($request->user()));
+
+        $filterEvents = Event::query()
+            ->whereIn('id', EventApplication::query()->select('event_id')->distinct())
+            ->orderBy('title_en')
+            ->get();
+
+        return view('admin.event-applications.index', [
+            'applications' => $applications,
+            'filterEvents' => $filterEvents,
+            'statusFilter' => $state['status_filter'],
+            'eventId' => $state['event_id'],
+            'search' => $state['search_input'],
+            'sort' => $state['sort'],
+        ]);
+    }
+
+    public function exportCsv(Request $request): StreamedResponse
+    {
+        $this->authorize('viewAny', EventApplication::class);
+
+        $state = $this->validatedApplicationsFilters($request);
+
+        $rows = $this->applicationsQuery($state)
+            ->with(['event.organization', 'user'])
+            ->get();
+
+        $filtered = $state['search_term'] !== null
+            || $state['status_filter'] !== 'all'
+            || $state['event_id'] !== null;
+        $filename = 'event-applications-admin'.($filtered ? '-filtered' : '').'-'.now()->format('Y-m-d').'.csv';
+
+        $tz = config('app.timezone');
+
+        return response()->streamDownload(function () use ($rows, $tz): void {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF");
+            fputcsv($out, [
+                __('Status'),
+                __('Submitted at'),
+                __('Organization'),
+                __('Event'),
+                __('Volunteer name'),
+                __('Email'),
+                __('Application message'),
+                __('Review note'),
+            ]);
+            foreach ($rows as $app) {
+                $event = $app->event;
+                $user = $app->user;
+                fputcsv($out, [
+                    $app->status,
+                    $app->created_at?->timezone($tz)->format('Y-m-d H:i') ?? '',
+                    $event?->organization?->name_en ?? '',
+                    $event ? $event->title_en : '',
+                    $user?->name ?? '',
+                    $user?->email ?? '',
+                    $app->message ?? '',
+                    $app->review_note ?? '',
+                ]);
+            }
+            fclose($out);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    /**
+     * @return array{
+     *     status_filter: string,
+     *     event_id: int|null,
+     *     search_input: string,
+     *     search_term: string|null,
+     *     sort: string
+     * }
+     */
+    private function validatedApplicationsFilters(Request $request): array
+    {
         $validated = $request->validate([
             'status' => [
                 'nullable',
@@ -46,50 +132,56 @@ class EventApplicationController extends Controller
             $sort = 'default';
         }
 
-        $query = EventApplication::query()
-            ->with(['event.organization', 'user']);
+        return [
+            'status_filter' => $statusFilter,
+            'event_id' => $eventId,
+            'search_input' => $searchInput,
+            'search_term' => $searchTerm,
+            'sort' => $sort,
+        ];
+    }
 
-        if ($statusFilter !== 'all') {
-            $query->where('status', $statusFilter);
+    /**
+     * @param  array{
+     *     status_filter: string,
+     *     event_id: int|null,
+     *     search_term: string|null,
+     *     sort: string
+     * }  $state
+     * @return Builder<EventApplication>
+     */
+    private function applicationsQuery(array $state): Builder
+    {
+        $query = EventApplication::query();
+
+        if ($state['status_filter'] !== 'all') {
+            $query->where('status', $state['status_filter']);
         }
 
-        if ($eventId !== null) {
-            $query->where('event_id', $eventId);
+        if ($state['event_id'] !== null) {
+            $query->where('event_id', $state['event_id']);
         }
 
-        if ($searchTerm !== null) {
+        if ($state['search_term'] !== null) {
+            $searchTerm = $state['search_term'];
             $query->whereHas('user', function ($q) use ($searchTerm): void {
                 $q->whereRaw('strpos(lower(name::text), lower(?::text)) > 0', [$searchTerm])
                     ->orWhereRaw('strpos(lower(email::text), lower(?::text)) > 0', [$searchTerm]);
             });
         }
 
-        if ($sort === 'submitted_asc') {
+        if ($state['sort'] === 'submitted_asc') {
             $query->orderBy('created_at');
-        } elseif ($sort === 'submitted_desc') {
+        } elseif ($state['sort'] === 'submitted_desc') {
             $query->orderByDesc('created_at');
-        } elseif ($statusFilter === 'all' && $eventId === null) {
+        } elseif ($state['status_filter'] === 'all' && $state['event_id'] === null) {
             $query->orderByRaw('CASE status WHEN ? THEN 0 ELSE 1 END', [EventApplication::STATUS_PENDING])
                 ->orderByDesc('created_at');
         } else {
             $query->orderByDesc('created_at');
         }
 
-        $applications = $query->paginate(25)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
-
-        $filterEvents = Event::query()
-            ->whereIn('id', EventApplication::query()->select('event_id')->distinct())
-            ->orderBy('title_en')
-            ->get();
-
-        return view('admin.event-applications.index', [
-            'applications' => $applications,
-            'filterEvents' => $filterEvents,
-            'statusFilter' => $statusFilter,
-            'eventId' => $eventId,
-            'search' => $searchInput,
-            'sort' => $sort,
-        ]);
+        return $query;
     }
 
     public function approve(EventApplication $event_application): RedirectResponse

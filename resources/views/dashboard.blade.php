@@ -1,15 +1,18 @@
-<x-app-layout>
+@php
+    $dashLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
+    $appShellTitle = __('Dashboard').' — '.__('SwaedUAE');
+@endphp
+<x-app-layout :title="$appShellTitle" :meta-description="__('site.meta_description')">
     <x-slot name="header">
         <h2 class="font-display text-xl font-bold leading-tight text-emerald-950">
             {{ __('Dashboard') }}
         </h2>
     </x-slot>
-
-    @php
-        $dashLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
-    @endphp
     <div class="py-12">
         <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap justify-end">
+                <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full [&_button]:border-slate-300 [&_button]:text-slate-700" test-id="main-dashboard-copy-page-url" />
+            </div>
             <div class="overflow-hidden border border-slate-200 bg-white shadow-sm sm:rounded-lg">
                 <div class="p-6 text-slate-900">
                     {{ __("You're logged in!") }}
@@ -68,7 +71,7 @@
                     <div class="p-6 space-y-4">
                         <p class="text-sm text-slate-600">{{ __('Certificates coming soon message') }}</p>
                         <p class="text-sm text-slate-600">{{ __('Certificates dashboard support hint') }}</p>
-                        <a href="{{ route('support.show', $dashLocaleQ) }}" class="inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline" data-testid="dashboard-certificates-support">{{ __('Help and support') }} →</a>
+                        <a href="{{ route('contact.show', array_merge($dashLocaleQ, ['topic' => 'certificate'])) }}" class="inline-flex text-sm font-bold text-emerald-700 hover:text-emerald-900 hover:underline" data-testid="dashboard-certificates-support">{{ __('Contact and support') }} →</a>
                     </div>
                 </div>
 
@@ -132,9 +135,10 @@
                                 <option value="{{ \App\Models\EventApplication::STATUS_WITHDRAWN }}" @selected(($applicationStatusFilter ?? '') === \App\Models\EventApplication::STATUS_WITHDRAWN)>{{ __('Application status withdrawn') }}</option>
                             </select>
                         </div>
-                        <div class="flex flex-wrap gap-2">
+                        <div class="flex flex-wrap items-center gap-2">
                             <button type="submit" class="inline-flex items-center rounded-lg bg-emerald-700 px-4 py-2 text-xs font-bold uppercase tracking-wide text-white shadow-sm hover:bg-emerald-800">{{ __('Apply filters') }}</button>
                             <a href="{{ route('dashboard', $dashLocaleQ) }}" class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-bold uppercase tracking-wide text-slate-700 shadow-sm hover:bg-slate-50">{{ __('Clear filters') }}</a>
+                            <x-copy-filtered-list-url-button class="max-sm:w-full max-sm:[&_button]:w-full" test-id="dashboard-copy-filtered-url" />
                         </div>
                     </form>
                     <div class="p-6">

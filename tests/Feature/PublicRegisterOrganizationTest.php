@@ -13,6 +13,7 @@ class PublicRegisterOrganizationTest extends TestCase
     {
         $this->get(route('register.organization'))
             ->assertOk()
+            ->assertSee('data-testid="register-organization-copy-page-url"', false)
             ->assertSee(__('Register Organization'), false)
             ->assertSee(__('Organization name (English)'), false)
             ->assertSee(__('Submit organization registration'), false);

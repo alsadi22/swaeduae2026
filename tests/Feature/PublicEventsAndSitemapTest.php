@@ -27,6 +27,7 @@ class PublicEventsAndSitemapTest extends TestCase
             ->assertViewIs('public.events-index')
             ->assertSee('Unique Public Event Title XYZ', false)
             ->assertSee('data-testid="events-list-volunteer-link"', false)
+            ->assertSee('data-testid="events-copy-filtered-url"', false)
             ->assertSee('data-testid="events-footer-opportunities"', false)
             ->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
 
@@ -277,6 +278,8 @@ class PublicEventsAndSitemapTest extends TestCase
         $this->assertStringContainsString(route('events.show', $event, true), $body);
         $this->assertStringContainsString(route('volunteer.opportunities.show', $event, true), $body);
         $this->assertStringContainsString(route('volunteer.opportunities.feed', [], true), $body);
+        $this->assertStringContainsString(route('register.volunteer', [], true), $body);
+        $this->assertStringContainsString(route('register.organization', [], true), $body);
 
         $event->refresh();
         $this->assertStringContainsString(
@@ -306,6 +309,8 @@ class PublicEventsAndSitemapTest extends TestCase
         $this->assertStringContainsString('Disallow: /dashboard', $body);
         $this->assertStringContainsString('Disallow: /profile', $body);
         $this->assertStringContainsString('Disallow: /organization/', $body);
+        $this->assertStringContainsString('Disallow: /verify-email', $body);
+        $this->assertStringContainsString('Disallow: /confirm-password', $body);
         $this->assertStringNotContainsString("Disallow: /register\n", $body);
     }
 }

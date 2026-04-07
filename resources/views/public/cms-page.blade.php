@@ -51,6 +51,11 @@
                     <p class="mt-6 text-lg text-slate-600 leading-relaxed">{{ $cmsPage->excerpt }}</p>
                 @endif
             </header>
+            @if (empty($previewMode ?? false))
+                <div class="mt-6">
+                    <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full" test-id="cms-page-copy-page-url" />
+                </div>
+            @endif
             <div class="cms-body prose prose-slate mt-10 max-w-none prose-headings:font-display prose-headings:text-emerald-950 prose-a:text-emerald-800 prose-a:font-medium">
                 {!! str($cmsPage->body)->markdown() !!}
             </div>

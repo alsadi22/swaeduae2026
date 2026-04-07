@@ -21,6 +21,9 @@
             <p class="text-xs font-bold uppercase tracking-wider text-emerald-800">{{ __('Governance') }}</p>
             <h1 class="public-page-title mt-3">{{ __('Leadership') }}</h1>
             <p class="mt-6 text-lg leading-relaxed text-slate-600">{{ __('site.leadership_intro') }}</p>
+            <div class="mt-6">
+                <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full" test-id="leadership-copy-page-url" />
+            </div>
         </header>
 
         <ul class="mt-12 grid list-none gap-6 sm:grid-cols-2 lg:grid-cols-3" role="list">

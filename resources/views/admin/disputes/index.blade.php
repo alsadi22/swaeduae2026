@@ -1,4 +1,7 @@
-<x-app-layout>
+@php
+    $appShellTitle = __('Disputes').' — '.__('SwaedUAE');
+@endphp
+<x-admin-layout :title="$appShellTitle" :meta-description="__('site.meta_description')">
     <x-slot name="header">
         <h2 class="font-semibold text-xl leading-tight text-gray-800">
             {{ __('Disputes') }}
@@ -8,9 +11,7 @@
     <div class="py-12">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             @if (session('status'))
-                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800" role="status">
-                    {{ session('status') }}
-                </div>
+                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800" role="status" aria-live="polite" data-testid="admin-disputes-flash-status">{{ session('status') }}</div>
             @endif
 
             <div class="mb-6 overflow-hidden bg-white shadow-sm sm:rounded-lg">
@@ -40,10 +41,23 @@
                         <x-input-label for="filter_dispute_search" :value="__('Volunteer name or email')" />
                         <input type="search" id="filter_dispute_search" name="search" value="{{ $search }}" maxlength="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                     </div>
-                    <div class="flex flex-wrap gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
                         <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
                         <a href="{{ route('admin.disputes.index', $adminLocaleQ) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
+                        @php
+                            $disputesExportQs = array_filter(
+                                array_merge($adminLocaleQ, request()->only(['status', 'event_id', 'search'])),
+                                static fn ($v) => $v !== null && $v !== ''
+                            );
+                        @endphp
+                        <a
+                            href="{{ route('admin.disputes.export', $disputesExportQs) }}"
+                            class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50"
+                            data-testid="admin-disputes-export-csv"
+                        >{{ __('Download disputes CSV') }}</a>
+                        <x-copy-filtered-list-url-button class="[&_button]:border-gray-300 [&_button]:text-gray-700" test-id="admin-disputes-copy-filtered-url" />
                     </div>
+                    <p class="mt-3 text-xs text-gray-500">{{ __('Admin disputes export hint') }}</p>
                 </form>
             </div>
 
@@ -106,4 +120,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

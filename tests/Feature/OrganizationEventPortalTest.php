@@ -112,7 +112,8 @@ class OrganizationEventPortalTest extends TestCase
             ->get(route('organization.events.index'))
             ->assertOk()
             ->assertSee('Org A Event Title', false)
-            ->assertDontSee('Org B Other Event', false);
+            ->assertDontSee('Org B Other Event', false)
+            ->assertSee('data-testid="org-events-copy-filtered-url"', false);
     }
 
     public function test_org_events_index_search_filters_by_title(): void
@@ -268,6 +269,12 @@ class OrganizationEventPortalTest extends TestCase
             ->post(route('organization.events.store'), $payload)
             ->assertRedirect(route('organization.events.index', PublicLocale::query()));
 
+        $this->actingAs($manager)
+            ->get(route('organization.events.index', PublicLocale::query()))
+            ->assertOk()
+            ->assertSee('data-testid="org-events-flash-status"', false)
+            ->assertSee(__('Event created.'), false);
+
         $this->assertDatabaseHas('events', [
             'organization_id' => $org->id,
             'title_en' => 'Portal Created Event',
@@ -399,7 +406,8 @@ class OrganizationEventPortalTest extends TestCase
             ->get(route('organization.events.roster', ['event' => $event, 'search' => 'UniqueName']))
             ->assertOk()
             ->assertSee('Alpha UniqueName', false)
-            ->assertDontSee('Beta Other', false);
+            ->assertDontSee('Beta Other', false)
+            ->assertSee('data-testid="org-roster-copy-filtered-url"', false);
     }
 
     public function test_org_roster_csv_export_link_preserves_lang_query_on_roster_page(): void
@@ -533,6 +541,8 @@ class OrganizationEventPortalTest extends TestCase
         $this->actingAs($manager)
             ->get(route('organization.events.roster', $event))
             ->assertOk()
+            ->assertSee('<title>'.e(__('Organization portal event roster title').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
             ->assertSee('Status Volunteer', false)
             ->assertSee('Checked out', false)
             ->assertSee('Verified minutes', false);
@@ -570,8 +580,12 @@ class OrganizationEventPortalTest extends TestCase
         $event->volunteers()->attach($volunteer->id);
 
         $this->actingAs($coordinator)
+            ->from(route('organization.events.roster', $event))
+            ->followingRedirects()
             ->delete(route('organization.events.roster.volunteers.destroy', [$event, $volunteer]))
-            ->assertRedirect(route('organization.events.roster', array_merge(['event' => $event], PublicLocale::query())));
+            ->assertOk()
+            ->assertSee('data-testid="org-roster-flash-status"', false)
+            ->assertSee(__('Volunteer removed from roster.'), false);
 
         $this->assertFalse($event->fresh()->userIsOnRoster($volunteer));
     }
@@ -621,5 +635,33 @@ class OrganizationEventPortalTest extends TestCase
         $this->actingAs($manager)
             ->delete(route('organization.events.roster.volunteers.destroy', [$eventB, $volunteer]))
             ->assertForbidden();
+    }
+
+    public function test_org_manager_event_edit_includes_copy_page_url_control(): void
+    {
+        [$org, $manager] = $this->approvedOrgManager();
+        $event = Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'Portal Edit Copy Event',
+        ]);
+
+        $this->actingAs($manager)
+            ->get(route('organization.events.edit', array_merge(['event' => $event], PublicLocale::query())))
+            ->assertOk()
+            ->assertSee('<title>'.e(__('Organization portal edit event title').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
+            ->assertSee('data-testid="organization-event-edit-copy-page-url"', false);
+    }
+
+    public function test_org_manager_event_create_includes_copy_page_url_control(): void
+    {
+        [$org, $manager] = $this->approvedOrgManager();
+
+        $this->actingAs($manager)
+            ->get(route('organization.events.create', PublicLocale::query()))
+            ->assertOk()
+            ->assertSee('<title>'.e(__('Organization portal new event title').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
+            ->assertSee('data-testid="organization-event-create-copy-page-url"', false);
     }
 }

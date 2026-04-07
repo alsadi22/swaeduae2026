@@ -38,14 +38,56 @@ class CmsPageAdminTest extends TestCase
         $user = User::factory()->create();
         $user->assignRole('volunteer');
 
-        $this->actingAs($user)->get('/admin/cms-pages')->assertForbidden();
+        $this->actingAs($user)
+            ->get('/admin/cms-pages')
+            ->assertForbidden()
+            ->assertSee('data-testid="error-403-copy-page-url"', false)
+            ->assertSee(__('Access denied'), false);
     }
 
     public function test_admin_can_view_cms_index(): void
     {
         $user = $this->adminUser();
 
-        $this->actingAs($user)->get('/admin/cms-pages')->assertOk();
+        $this->actingAs($user)
+            ->get('/admin/cms-pages')
+            ->assertOk()
+            ->assertSee('data-testid="admin-cms-pages-export-csv"', false)
+            ->assertSee('data-testid="admin-cms-pages-copy-filtered-url"', false)
+            ->assertSee('<title>'.e(__('CMS pages').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false);
+    }
+
+    public function test_admin_can_download_cms_pages_csv(): void
+    {
+        $user = $this->adminUser();
+        CmsPage::query()->create([
+            'slug' => 'csv-cms-slug-unique',
+            'locale' => 'en',
+            'title' => 'Csv Cms Title Unique',
+            'body' => 'body',
+            'status' => CmsPage::STATUS_PUBLISHED,
+            'author_id' => $user->id,
+            'show_on_home' => false,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('admin.cms-pages.export'));
+
+        $response->assertOk();
+        $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
+        $content = $response->streamedContent();
+        $this->assertStringStartsWith("\xEF\xBB\xBF", $content);
+        $this->assertStringContainsString('csv-cms-slug-unique', $content);
+        $this->assertStringContainsString('Csv Cms Title Unique', $content);
+    }
+
+    public function test_volunteer_cannot_access_cms_pages_export(): void
+    {
+        $this->seedRoles();
+        $user = User::factory()->create();
+        $user->assignRole('volunteer');
+
+        $this->actingAs($user)->get(route('admin.cms-pages.export'))->assertForbidden();
     }
 
     public function test_admin_cms_index_shows_visibility_badges_when_flags_set(): void
@@ -66,6 +108,7 @@ class CmsPageAdminTest extends TestCase
         $this->actingAs($user)
             ->get(route('admin.cms-pages.index'))
             ->assertOk()
+            ->assertSee('data-admin-shell="sidebar-v1"', false)
             ->assertSee('title="'.__('Show on home page').'"', false)
             ->assertSee('title="'.__('Show on programs page').'"', false)
             ->assertSee('title="'.__('Show in media center').'"', false);
@@ -203,6 +246,11 @@ class CmsPageAdminTest extends TestCase
         ]);
 
         $response->assertRedirect(route('admin.cms-pages.index', PublicLocale::query()));
+        $this->actingAs($user)
+            ->get(route('admin.cms-pages.index', PublicLocale::query()))
+            ->assertOk()
+            ->assertSee('data-testid="admin-cms-pages-flash-status"', false)
+            ->assertSee(__('CMS page created.'), false);
         $this->assertDatabaseHas('cms_pages', [
             'slug' => 'admin-test-page',
             'author_id' => $user->id,
@@ -301,6 +349,7 @@ class CmsPageAdminTest extends TestCase
         $response->assertOk();
         $response->assertSee('Draft title', false);
         $response->assertSee(__('Preview mode'), false);
+        $response->assertDontSee('data-testid="cms-page-copy-page-url"', false);
     }
 
     public function test_admin_cannot_publish_without_matching_locale_row(): void
@@ -429,5 +478,37 @@ class CmsPageAdminTest extends TestCase
         $this->actingAs($volunteer)
             ->get(route('admin.cms-pages.preview', $page))
             ->assertForbidden();
+    }
+
+    public function test_admin_cms_page_edit_includes_copy_page_url_control(): void
+    {
+        $user = $this->adminUser();
+        $page = CmsPage::query()->create([
+            'slug' => 'edit-copy-url-slug',
+            'locale' => 'en',
+            'title' => 'Edit Copy Url Title',
+            'body' => 'body',
+            'status' => CmsPage::STATUS_DRAFT,
+            'author_id' => $user->id,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('admin.cms-pages.edit', array_merge(['cms_page' => $page], PublicLocale::query())))
+            ->assertOk()
+            ->assertSee('<title>'.e(__('Edit CMS page').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
+            ->assertSee('data-testid="admin-cms-page-edit-copy-page-url"', false);
+    }
+
+    public function test_admin_cms_page_create_includes_copy_page_url_control(): void
+    {
+        $user = $this->adminUser();
+
+        $this->actingAs($user)
+            ->get(route('admin.cms-pages.create', PublicLocale::query()))
+            ->assertOk()
+            ->assertSee('<title>'.e(__('New CMS page').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
+            ->assertSee('data-testid="admin-cms-page-create-copy-page-url"', false);
     }
 }

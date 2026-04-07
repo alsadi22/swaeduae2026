@@ -1,4 +1,7 @@
-<x-app-layout>
+@php
+    $appShellTitle = __('News sources').' — '.__('SwaedUAE');
+@endphp
+<x-admin-layout :title="$appShellTitle" :meta-description="__('site.meta_description')">
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('News sources') }}</h2>
@@ -11,8 +14,18 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if (session('status'))
-                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800" role="status">{{ session('status') }}</div>
+                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800" role="status" aria-live="polite" data-testid="admin-external-news-sources-flash-status">{{ session('status') }}</div>
             @endif
+
+            <div class="mb-4 flex flex-wrap items-center justify-end gap-2 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+                <x-copy-filtered-list-url-button class="[&_button]:border-gray-300 [&_button]:text-gray-700" test-id="admin-external-news-sources-copy-filtered-url" />
+                <a
+                    href="{{ route('admin.external-news-sources.export', $adminLocaleQ) }}"
+                    class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50"
+                    data-testid="admin-external-news-sources-export-csv"
+                >{{ __('Download news sources CSV') }}</a>
+            </div>
+            <p class="mb-4 text-xs text-gray-500">{{ __('Admin news sources export hint') }}</p>
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 overflow-x-auto">
@@ -58,4 +71,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

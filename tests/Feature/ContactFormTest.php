@@ -14,7 +14,46 @@ class ContactFormTest extends TestCase
 
     public function test_contact_page_renders(): void
     {
-        $this->get(route('contact.show'))->assertOk();
+        $this->get(route('contact.show'))
+            ->assertOk()
+            ->assertSee('data-testid="contact-copy-page-url"', false)
+            ->assertSee('data-testid="contact-type-select"', false)
+            ->assertSee('data-testid="support-topic-select"', false)
+            ->assertSee('autocomplete="name"', false)
+            ->assertSee('autocomplete="email"', false)
+            ->assertSee('autocomplete="tel"', false);
+    }
+
+    public function test_contact_success_message_uses_accessible_live_region(): void
+    {
+        Mail::fake();
+
+        $this->followingRedirects()
+            ->post(route('contact.store'), [
+                'name' => 'Live Region',
+                'email' => 'live@example.com',
+                'phone' => '',
+                'subject' => 'Hello',
+                'message' => str_repeat('m', 40),
+            ])
+            ->assertOk()
+            ->assertSee('data-testid="contact-form-success"', false)
+            ->assertSee('aria-live="polite"', false);
+    }
+
+    public function test_contact_page_prefills_type_from_valid_query(): void
+    {
+        $this->get(route('contact.show', ['contact_type' => 'media']))
+            ->assertOk()
+            ->assertSee('data-testid="contact-type-select"', false)
+            ->assertSee('<option value="media" selected', false);
+    }
+
+    public function test_contact_page_ignores_invalid_contact_type_query(): void
+    {
+        $this->get(route('contact.show', ['contact_type' => 'not-a-real-type']))
+            ->assertOk()
+            ->assertSee('<option value="general" selected', false);
     }
 
     public function test_contact_page_includes_opportunities_footer_with_locale(): void
@@ -94,6 +133,28 @@ class ContactFormTest extends TestCase
         Mail::assertSent(ContactFormMail::class, function (ContactFormMail $mail) {
             return $mail->payload['contact_type'] === 'youth_programmes'
                 && $mail->hasTo(config('swaeduae.mail.youth_councils'));
+        });
+    }
+
+    public function test_contact_data_rights_type_routes_to_privacy_inbox(): void
+    {
+        Mail::fake();
+        config(['swaeduae.mail.privacy' => 'privacy-inbox@example.com']);
+
+        $this->post(route('contact.store'), [
+            'name' => 'Privacy Sender',
+            'email' => 'privacy@example.com',
+            'phone' => '',
+            'subject' => 'Data request',
+            'message' => str_repeat('p', 40),
+            'contact_type' => 'data_rights',
+        ])
+            ->assertRedirect(route('contact.show', PublicLocale::query()))
+            ->assertSessionHas('success');
+
+        Mail::assertSent(ContactFormMail::class, function (ContactFormMail $mail) {
+            return $mail->payload['contact_type'] === 'data_rights'
+                && $mail->hasTo('privacy-inbox@example.com');
         });
     }
 

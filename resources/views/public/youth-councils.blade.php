@@ -76,6 +76,12 @@
             @endif
         </header>
 
+        @if (! $previewMode)
+            <div class="mx-auto mt-6 max-w-3xl">
+                <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full" test-id="youth-councils-copy-page-url" />
+            </div>
+        @endif
+
         @if ($heroImageUrl && $cmsPage !== null)
             <div class="mx-auto mt-10 max-w-3xl">
                 <img
@@ -111,8 +117,7 @@
                 <li><a href="{{ route('about', $localeQ) }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('About the Association') }}</a></li>
                 <li><a href="{{ route('programs.index', $localeQ) }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Programs & initiatives') }}</a></li>
                 <li><a href="{{ route('volunteer.index', $localeQ) }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Volunteer') }}</a></li>
-                <li><a href="{{ route('contact.show', $localeQ) }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Contact') }}</a></li>
-                <li><a href="{{ route('support.show', $localeQ) }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Help and support') }}</a></li>
+                <li><a href="{{ route('contact.show', $localeQ) }}" class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-emerald-200 hover:bg-emerald-50/50">{{ __('Contact and support') }}</a></li>
             </ul>
         </section>
 

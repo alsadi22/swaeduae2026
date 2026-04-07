@@ -154,8 +154,7 @@
                     </a>
 
                     <nav class="hidden flex-wrap items-center justify-end gap-1 lg:flex" aria-label="{{ __('Main navigation') }}">
-                        <a href="{{ route('about', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('about') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('About') }}</a>
-                        <a href="{{ route('leadership', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('leadership') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('Leadership') }}</a>
+                        <a href="{{ route('about', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('about', 'leadership') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('About and leadership') }}</a>
                         <a href="{{ route('programs.index', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('programs.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('Programs') }}</a>
                         <a href="{{ route('youth-councils', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('youth-councils') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('Youth Councils') }}</a>
                         <a href="{{ route('events.index', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('events.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('Events') }}</a>
@@ -165,8 +164,7 @@
                         @role('volunteer')
                             <a href="{{ route('volunteer.opportunities.index', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('volunteer.opportunities.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('Opportunities') }}</a>
                         @endrole
-                        <a href="{{ route('support.show', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('support.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('Help and support') }}</a>
-                        <a href="{{ route('contact.show', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('contact.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('Contact') }}</a>
+                        <a href="{{ route('contact.show', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('contact.*', 'support.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}">{{ __('Contact and support') }}</a>
                         @auth
                             <a href="{{ route('dashboard', $navLocaleQ) }}" class="ms-2 inline-flex items-center rounded-xl border border-slate-200/80 bg-slate-50/90 px-3 py-2 text-sm font-bold text-slate-800 shadow-sm transition duration-200 hover:border-slate-300 hover:bg-white">{{ __('Dashboard') }}</a>
                         @else
@@ -189,8 +187,7 @@
 
                 <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="border-t border-slate-100 bg-white/98 py-3 shadow-inner backdrop-blur-sm lg:hidden" x-cloak>
                     <div class="flex flex-col gap-0.5 text-sm font-semibold">
-                        <a href="{{ route('about', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('about') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('About') }}</a>
-                        <a href="{{ route('leadership', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('leadership') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('Leadership') }}</a>
+                        <a href="{{ route('about', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('about', 'leadership') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('About and leadership') }}</a>
                         <a href="{{ route('programs.index', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('programs.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('Programs') }}</a>
                         <a href="{{ route('youth-councils', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('youth-councils') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('Youth Councils') }}</a>
                         <a href="{{ route('events.index', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('events.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('Events') }}</a>
@@ -200,8 +197,7 @@
                         @role('volunteer')
                             <a href="{{ route('volunteer.opportunities.index', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('volunteer.opportunities.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('Opportunities') }}</a>
                         @endrole
-                        <a href="{{ route('support.show', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('support.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('Help and support') }}</a>
-                        <a href="{{ route('contact.show', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('contact.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('Contact') }}</a>
+                        <a href="{{ route('contact.show', $navLocaleQ) }}" class="public-nav-link {{ request()->routeIs('contact.*', 'support.*') ? 'public-nav-link--active' : 'public-nav-link--inactive' }}" @click="open=false">{{ __('Contact and support') }}</a>
                         @auth
                             <a href="{{ route('dashboard', $navLocaleQ) }}" class="public-nav-link public-nav-link--inactive mt-1 border-t border-slate-100 pt-2" @click="open=false">{{ __('Dashboard') }}</a>
                         @else
@@ -268,12 +264,10 @@
                     <div class="lg:col-span-3">
                         <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{{ __('Organization') }}</p>
                         <ul class="mt-4 space-y-2.5 text-sm text-slate-600">
-                            <li><a href="{{ route('about', $footerLocaleQ) }}" class="footer-link">{{ __('About') }}</a></li>
-                            <li><a href="{{ route('leadership', $footerLocaleQ) }}" class="footer-link">{{ __('Leadership') }}</a></li>
+                            <li><a href="{{ route('about', $footerLocaleQ) }}" class="footer-link">{{ __('About and leadership') }}</a></li>
                             <li><a href="{{ route('partners', $footerLocaleQ) }}" class="footer-link">{{ __('Partners') }}</a></li>
                             <li><a href="{{ route('faq', $footerLocaleQ) }}" class="footer-link">{{ __('FAQ') }}</a></li>
-                            <li><a href="{{ route('support.show', $footerLocaleQ) }}" class="footer-link">{{ __('Help and support') }}</a></li>
-                            <li><a href="{{ route('contact.show', $footerLocaleQ) }}" class="footer-link">{{ __('Contact') }}</a></li>
+                            <li><a href="{{ route('contact.show', $footerLocaleQ) }}" class="footer-link">{{ __('Contact and support') }}</a></li>
                         </ul>
                     </div>
                     <div class="lg:col-span-3">

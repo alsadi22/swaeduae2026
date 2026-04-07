@@ -72,7 +72,43 @@ class EventAdminTest extends TestCase
     {
         $user = $this->adminUser();
 
-        $this->actingAs($user)->get('/admin/events')->assertOk();
+        $this->actingAs($user)
+            ->get('/admin/events')
+            ->assertOk()
+            ->assertSee('data-testid="admin-events-copy-filtered-url"', false)
+            ->assertSee('data-testid="admin-events-export-csv"', false)
+            ->assertSee('<title>'.e(__('Admin events').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false);
+    }
+
+    public function test_admin_can_download_events_csv(): void
+    {
+        $user = $this->adminUser();
+        $org = Organization::factory()->create(['name_en' => 'CsvOrgUniqueName']);
+        $event = Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'CsvEventTitleUnique',
+            'title_ar' => 'عنوان',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('admin.events.export'));
+
+        $response->assertOk();
+        $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
+        $content = $response->streamedContent();
+        $this->assertStringStartsWith("\xEF\xBB\xBF", $content);
+        $this->assertStringContainsString((string) $event->id, $content);
+        $this->assertStringContainsString('CsvEventTitleUnique', $content);
+        $this->assertStringContainsString('CsvOrgUniqueName', $content);
+    }
+
+    public function test_volunteer_cannot_access_admin_events_export(): void
+    {
+        $this->seedRoles();
+        $user = User::factory()->create();
+        $user->assignRole('volunteer');
+
+        $this->actingAs($user)->get(route('admin.events.export'))->assertForbidden();
     }
 
     public function test_admin_can_create_event_with_capacity(): void
@@ -85,6 +121,11 @@ class EventAdminTest extends TestCase
         $response = $this->actingAs($user)->post('/admin/events', $payload);
 
         $response->assertRedirect(route('admin.events.index', PublicLocale::query()));
+        $this->actingAs($user)
+            ->get(route('admin.events.index', PublicLocale::query()))
+            ->assertOk()
+            ->assertSee('data-testid="admin-events-flash-status"', false)
+            ->assertSee(__('Event created.'), false);
         $this->assertDatabaseHas('events', [
             'organization_id' => $org->id,
             'title_en' => 'Admin-managed event',
@@ -254,5 +295,34 @@ class EventAdminTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.events.index', ['search' => str_repeat('b', 101)]))
             ->assertSessionHasErrors('search');
+    }
+
+    public function test_admin_event_edit_includes_copy_page_url_control(): void
+    {
+        $user = $this->adminUser();
+        $org = Organization::factory()->create();
+        $event = Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'EditPageCopyUrlEvent',
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('admin.events.edit', array_merge(['event' => $event], PublicLocale::query())))
+            ->assertOk()
+            ->assertSee('<title>'.e(__('Edit event').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
+            ->assertSee('data-testid="admin-event-edit-copy-page-url"', false);
+    }
+
+    public function test_admin_event_create_includes_copy_page_url_control(): void
+    {
+        $user = $this->adminUser();
+
+        $this->actingAs($user)
+            ->get(route('admin.events.create', PublicLocale::query()))
+            ->assertOk()
+            ->assertSee('<title>'.e(__('New event').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
+            ->assertSee('data-testid="admin-event-create-copy-page-url"', false);
     }
 }

@@ -33,6 +33,18 @@ class VolunteerProfileTest extends TestCase
         $this->actingAs($user)->get(route('volunteer.profile.edit'))->assertForbidden();
     }
 
+    public function test_volunteer_without_minimum_profile_sees_incomplete_banner(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $user = User::factory()->create();
+        $user->assignRole('volunteer');
+
+        $this->actingAs($user)
+            ->get(route('volunteer.profile.edit'))
+            ->assertOk()
+            ->assertSee('data-testid="volunteer-profile-incomplete-banner"', false);
+    }
+
     public function test_volunteer_can_view_and_update_profile(): void
     {
         $this->seed(RoleSeeder::class);
@@ -43,6 +55,10 @@ class VolunteerProfileTest extends TestCase
             ->get(route('volunteer.profile.edit'))
             ->assertOk()
             ->assertSee(__('Volunteer profile'), false)
+            ->assertSee('data-testid="volunteer-profile-edit-copy-page-url"', false)
+            ->assertSee('data-testid="skip-to-main-content"', false)
+            ->assertSee('<title>'.e(__('Volunteer profile').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
             ->assertSee(__('Profile completion'), false);
 
         $bio = str_repeat('a', 20);
@@ -63,7 +79,8 @@ class VolunteerProfileTest extends TestCase
         $this->actingAs($user)
             ->get(route('volunteer.profile.edit'))
             ->assertOk()
-            ->assertSee('data-testid="volunteer-profile-last-saved"', false);
+            ->assertSee('data-testid="volunteer-profile-last-saved"', false)
+            ->assertSee('data-testid="volunteer-profile-saved"', false);
 
         $this->assertTrue($user->fresh()->hasMinimumVolunteerProfileForCommitments());
 

@@ -1,7 +1,8 @@
-<x-app-layout>
-    @php
-        $orgLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
-    @endphp
+@php
+    $orgLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
+    $appShellTitle = __('Applications for your organization').' — '.__('SwaedUAE');
+@endphp
+<x-app-layout :title="$appShellTitle" :meta-description="__('site.meta_description')">
     <x-slot name="header">
         <h2 class="font-display text-xl font-bold leading-tight text-emerald-950">
             {{ __('Applications for your organization') }}
@@ -11,13 +12,13 @@
     <div class="py-12">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             @if (session('status'))
-                <div class="mb-4 rounded-lg border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900" role="status">{{ session('status') }}</div>
+                <div class="mb-4 rounded-lg border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900" role="status" aria-live="polite" data-testid="org-event-applications-flash-status">{{ session('status') }}</div>
             @endif
             @if (session('error'))
-                <div class="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-900" role="alert">{{ session('error') }}</div>
+                <div class="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-900" role="alert" aria-live="assertive" data-testid="org-event-applications-flash-error">{{ session('error') }}</div>
             @endif
             @if ($errors->any())
-                <div class="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-900" role="alert">
+                <div class="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-900" role="alert" aria-live="assertive" data-testid="org-event-applications-validation-errors">
                     <ul class="list-inside list-disc">
                         @foreach ($errors->all() as $err)
                             <li>{{ $err }}</li>
@@ -62,12 +63,25 @@
                             <option value="submitted_asc" @selected($sort === 'submitted_asc')>{{ __('Application sort oldest first') }}</option>
                         </select>
                     </div>
-                    <div class="flex flex-wrap gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
                         <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
                         @if (filled($search) || $statusFilter !== 'all' || $eventId !== null || $sort !== 'default')
                             <a href="{{ route('organization.event-applications.index', $orgLocaleQ) }}" class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50">{{ __('Clear filters') }}</a>
                         @endif
+                        @php
+                            $exportQs = array_filter(
+                                array_merge($orgLocaleQ, request()->only(['status', 'event_id', 'search', 'sort'])),
+                                static fn ($v) => $v !== null && $v !== ''
+                            );
+                        @endphp
+                        <a
+                            href="{{ route('organization.event-applications.export', $exportQs) }}"
+                            class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
+                            data-testid="organization-event-applications-export-csv"
+                        >{{ __('Download applications CSV') }}</a>
+                        <x-copy-filtered-list-url-button class="[&_button]:border-slate-300 [&_button]:text-slate-700" test-id="organization-event-applications-copy-filtered-url" />
                     </div>
+                    <p class="mt-3 text-xs text-slate-500">{{ __('Organization portal applications export hint') }}</p>
                 </form>
             </div>
 

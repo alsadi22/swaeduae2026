@@ -10,10 +10,12 @@ use App\Mail\OrganizationVerificationMail;
 use App\Models\Organization;
 use App\Models\User;
 use App\Support\PublicLocale;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class OrganizationController extends Controller
 {
@@ -21,6 +23,64 @@ class OrganizationController extends Controller
     {
         $this->authorize('viewAny', Organization::class);
 
+        $state = $this->validatedOrganizationListFilters($request);
+
+        $organizations = $this->organizationsQuery($state)
+            ->paginate(20)
+            ->withQueryString()
+            ->appends(PublicLocale::queryFromRequestOrUser($request->user()));
+
+        $pendingCount = Organization::query()->pendingVerification()->count();
+
+        return view('admin.organizations.index', [
+            'organizations' => $organizations,
+            'filter' => $state['filter'],
+            'pendingCount' => $pendingCount,
+            'search' => $state['search_input'],
+        ]);
+    }
+
+    public function exportCsv(Request $request): StreamedResponse
+    {
+        $this->authorize('viewAny', Organization::class);
+
+        $state = $this->validatedOrganizationListFilters($request);
+
+        $rows = $this->organizationsQuery($state)->get();
+
+        $filtered = $state['search_term'] !== null || $state['filter'] !== 'all';
+        $filename = 'organizations-admin'.($filtered ? '-filtered' : '').'-'.now()->format('Y-m-d').'.csv';
+
+        return response()->streamDownload(function () use ($rows): void {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF");
+            fputcsv($out, [
+                'id',
+                __('Name (English)'),
+                __('Name (Arabic)'),
+                __('Verification status'),
+                __('Events'),
+            ]);
+            foreach ($rows as $org) {
+                fputcsv($out, [
+                    (string) $org->id,
+                    $org->name_en,
+                    $org->name_ar ?? '',
+                    $org->verification_status,
+                    (string) ($org->events_count ?? 0),
+                ]);
+            }
+            fclose($out);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    /**
+     * @return array{filter: string, search_input: string, search_term: string|null}
+     */
+    private function validatedOrganizationListFilters(Request $request): array
+    {
         $filter = $request->query('verification', 'all');
         if (! in_array($filter, ['all', 'pending', 'rejected', 'approved'], true)) {
             $filter = 'all';
@@ -32,36 +92,41 @@ class OrganizationController extends Controller
         $searchInput = isset($validated['search']) ? trim((string) $validated['search']) : '';
         $searchTerm = $searchInput === '' ? null : $searchInput;
 
+        return [
+            'filter' => $filter,
+            'search_input' => $searchInput,
+            'search_term' => $searchTerm,
+        ];
+    }
+
+    /**
+     * @param  array{filter: string, search_term: string|null}  $state
+     * @return Builder<Organization>
+     */
+    private function organizationsQuery(array $state): Builder
+    {
         $query = Organization::query()
             ->withCount('events')
             ->orderByRaw("CASE verification_status WHEN 'pending' THEN 0 WHEN 'rejected' THEN 1 ELSE 2 END")
             ->orderBy('name_en');
 
-        if ($filter === 'pending') {
+        if ($state['filter'] === 'pending') {
             $query->pendingVerification();
-        } elseif ($filter === 'rejected') {
+        } elseif ($state['filter'] === 'rejected') {
             $query->where('verification_status', Organization::VERIFICATION_REJECTED);
-        } elseif ($filter === 'approved') {
+        } elseif ($state['filter'] === 'approved') {
             $query->where('verification_status', Organization::VERIFICATION_APPROVED);
         }
 
-        if ($searchTerm !== null) {
+        if ($state['search_term'] !== null) {
+            $searchTerm = $state['search_term'];
             $query->where(function ($q) use ($searchTerm): void {
                 $q->whereRaw('strpos(lower(name_en::text), lower(?::text)) > 0', [$searchTerm])
                     ->orWhereRaw('strpos(lower(name_ar::text), lower(?::text)) > 0', [$searchTerm]);
             });
         }
 
-        $organizations = $query->paginate(20)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
-
-        $pendingCount = Organization::query()->pendingVerification()->count();
-
-        return view('admin.organizations.index', [
-            'organizations' => $organizations,
-            'filter' => $filter,
-            'pendingCount' => $pendingCount,
-            'search' => $searchInput,
-        ]);
+        return $query;
     }
 
     public function create(): View
@@ -84,7 +149,12 @@ class OrganizationController extends Controller
     {
         $this->authorize('update', $organization);
 
-        return view('admin.organizations.edit', compact('organization'));
+        $organizationDocuments = $organization->documents()
+            ->with('uploadedByUser')
+            ->latest()
+            ->get();
+
+        return view('admin.organizations.edit', compact('organization', 'organizationDocuments'));
     }
 
     public function update(OrganizationUpdateRequest $request, Organization $organization): RedirectResponse

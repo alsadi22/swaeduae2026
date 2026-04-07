@@ -37,16 +37,12 @@
                         @endif
                     </div>
                 </div>
-                <div class="flex flex-shrink-0 flex-wrap items-center gap-2" x-data="{ copied: false }">
-                    <button
-                        type="button"
-                        data-testid="public-event-copy-link"
-                        class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:border-emerald-200 hover:text-emerald-900"
-                        @click="navigator.clipboard.writeText({{ \Illuminate\Support\Js::from(url()->current()) }}).then(() => { copied = true; setTimeout(() => copied = false, 2000); }).catch(() => {})"
-                    >
-                        <span x-show="!copied">{{ __('Copy page link') }}</span>
-                        <span x-show="copied" x-cloak>{{ __('Link copied') }}</span>
-                    </button>
+                <div class="flex flex-shrink-0 flex-wrap items-center gap-2">
+                    <x-copy-filtered-list-url-button
+                        class="inline-flex items-center [&_button]:px-3 [&_button]:py-1.5"
+                        test-id="public-event-copy-link"
+                        :label="__('Copy page link')"
+                    />
                 </div>
             </div>
 

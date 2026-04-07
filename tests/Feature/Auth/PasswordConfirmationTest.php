@@ -17,6 +17,7 @@ class PasswordConfirmationTest extends TestCase
         $response = $this->actingAs($user)->get('/confirm-password');
 
         $response->assertStatus(200);
+        $response->assertSee('data-testid="confirm-password-copy-page-url"', false);
     }
 
     public function test_confirm_password_form_includes_lang_in_action_when_ar_requested(): void

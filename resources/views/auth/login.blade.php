@@ -1,11 +1,20 @@
-@php($authLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user()))
-<x-guest-layout>
+@php
+    $authLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
+    $guestPageTitle = (! empty($authPortal) && $authPortal === 'admin')
+        ? __('Admin sign-in').' — '.__('SwaedUAE')
+        : __('Log in').' — '.__('SwaedUAE');
+@endphp
+<x-guest-layout :title="$guestPageTitle" :meta-description="__('site.meta_description')">
     @if (! empty($authPortal) && $authPortal === 'admin')
         <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
             <p class="font-semibold">{{ __('Admin sign-in') }}</p>
             <p class="mt-1 text-amber-900">{{ __('You are signing in to the staff admin area.') }}</p>
         </div>
     @endif
+
+    <div class="mb-4 flex justify-center">
+        <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full [&_button]:border-slate-300 [&_button]:text-slate-700" test-id="login-copy-page-url" />
+    </div>
 
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />

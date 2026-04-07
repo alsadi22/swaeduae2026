@@ -1,4 +1,7 @@
-<x-app-layout>
+@php
+    $appShellTitle = __('Check-in log').' — '.__('SwaedUAE');
+@endphp
+<x-admin-layout :title="$appShellTitle" :meta-description="__('site.meta_description')">
     <x-slot name="header">
         <h2 class="font-semibold text-xl leading-tight text-gray-800">
             {{ __('Check-in log') }}
@@ -34,10 +37,23 @@
                         <x-input-label for="filter_checkin_search" :value="__('Volunteer name or email')" />
                         <input type="search" id="filter_checkin_search" name="search" value="{{ $search }}" maxlength="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                     </div>
-                    <div class="flex flex-wrap gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
                         <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
                         <a href="{{ route('admin.checkin-attempts.index', $adminLocaleQ) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
+                        @php
+                            $checkinExportQs = array_filter(
+                                array_merge($adminLocaleQ, request()->only(['outcome', 'event_id', 'search'])),
+                                static fn ($v) => $v !== null && $v !== ''
+                            );
+                        @endphp
+                        <a
+                            href="{{ route('admin.checkin-attempts.export', $checkinExportQs) }}"
+                            class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50"
+                            data-testid="admin-checkin-attempts-export-csv"
+                        >{{ __('Download check-in log CSV') }}</a>
+                        <x-copy-filtered-list-url-button class="[&_button]:border-gray-300 [&_button]:text-gray-700" test-id="admin-checkin-attempts-copy-filtered-url" />
                     </div>
+                    <p class="mt-3 text-xs text-gray-500">{{ __('Admin check-in log export hint') }}</p>
                 </form>
             </div>
 
@@ -108,4 +124,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

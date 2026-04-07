@@ -8,6 +8,7 @@ use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class AttendanceCheckpointTest extends TestCase
@@ -42,8 +43,11 @@ class AttendanceCheckpointTest extends TestCase
         $this->actingAs($volunteer)
             ->get($signedUrl)
             ->assertOk()
+            ->assertSee('<title>'.e(__('Attendance').' — '.Str::limit($event->titleForLocale(), 70, '…').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
             ->assertSee($event->title_en, false)
             ->assertSee(__('Event summary'), false)
+            ->assertSee('data-testid="attendance-checkpoint-copy-page-url"', false)
             ->assertSee(__('Attendance checkpoint session hint'), false)
             ->assertSee(__('Back to opportunity'), false);
 
@@ -56,6 +60,11 @@ class AttendanceCheckpointTest extends TestCase
                 'accuracy_meters' => 25,
             ])
             ->assertSessionHas('success');
+
+        $this->actingAs($volunteer)
+            ->get($signedUrl)
+            ->assertOk()
+            ->assertSee('data-testid="checkpoint-flash-success"', false);
 
         $this->assertDatabaseHas('attendances', [
             'event_id' => $event->id,
@@ -93,6 +102,11 @@ class AttendanceCheckpointTest extends TestCase
                 'accuracy_meters' => 10,
             ])
             ->assertSessionHas('error');
+
+        $this->actingAs($stranger)
+            ->get($signedUrl)
+            ->assertOk()
+            ->assertSee('data-testid="checkpoint-flash-error"', false);
     }
 
     public function test_strict_geofence_rejects_distant_coordinates(): void

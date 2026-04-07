@@ -1,4 +1,7 @@
-<x-app-layout>
+@php
+    $appShellTitle = __('Dispute detail').' — '.__('SwaedUAE');
+@endphp
+<x-admin-layout :title="$appShellTitle" :meta-description="__('site.meta_description')">
     <x-slot name="header">
         <h2 class="font-semibold text-xl leading-tight text-gray-800">
             {{ __('Dispute detail') }}
@@ -8,12 +11,10 @@
     <div class="py-12">
         <div class="mx-auto max-w-4xl sm:px-6 lg:px-8">
             @if (session('status'))
-                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800" role="status">
-                    {{ session('status') }}
-                </div>
+                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800" role="status" aria-live="polite" data-testid="admin-dispute-show-flash-status">{{ session('status') }}</div>
             @endif
             @if ($errors->any())
-                <div class="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-800" role="alert">
+                <div class="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-800" role="alert" aria-live="assertive" data-testid="admin-dispute-show-validation-errors">
                     <ul class="list-inside list-disc">
                         @foreach ($errors->all() as $err)
                             <li>{{ $err }}</li>
@@ -21,6 +22,10 @@
                     </ul>
                 </div>
             @endif
+
+            <div class="mb-4 flex flex-wrap items-center gap-2">
+                <x-copy-filtered-list-url-button class="[&_button]:border-gray-300 [&_button]:text-gray-700" test-id="admin-dispute-show-copy-page-url" />
+            </div>
 
             <div class="mb-6 overflow-hidden bg-white shadow-sm sm:rounded-lg">
                 <div class="space-y-3 border-b border-gray-100 px-6 py-4">
@@ -110,4 +115,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

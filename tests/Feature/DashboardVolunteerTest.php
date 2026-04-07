@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\EventApplication;
 use App\Models\Organization;
 use App\Models\User;
+use App\Support\PublicLocale;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -36,6 +37,11 @@ class DashboardVolunteerTest extends TestCase
         $response = $this->actingAs($user)->get(route('dashboard'));
 
         $response->assertOk();
+        $response->assertSee('data-testid="main-dashboard-copy-page-url"', false);
+        $response->assertSee(route('site.favicon', [], true), false);
+        $response->assertSee('name="theme-color" content="#047857"', false);
+        $response->assertSee('<title>'.e(__('Dashboard').' — '.__('SwaedUAE')).'</title>', false);
+        $response->assertSee('rel="manifest"', false);
         $response->assertSee('Dashboard Listed Event', false);
     }
 
@@ -49,7 +55,7 @@ class DashboardVolunteerTest extends TestCase
             ->get(route('dashboard'))
             ->assertOk()
             ->assertSee('data-testid="dashboard-certificates-support"', false)
-            ->assertSee(route('support.show', ['lang' => 'en'], true), false);
+            ->assertSee(e(route('contact.show', PublicLocale::mergeQuery(['topic' => 'certificate']), true)), false);
     }
 
     public function test_volunteer_dashboard_shows_stay_informed_section(): void
@@ -142,6 +148,7 @@ class DashboardVolunteerTest extends TestCase
 
         $response->assertOk();
         $response->assertSee(__('Your opportunity applications'), false);
+        $response->assertSee('data-testid="dashboard-copy-filtered-url"', false);
         $response->assertSee('Applied Event Title', false);
         $response->assertSee(__('Application status pending'), false);
     }

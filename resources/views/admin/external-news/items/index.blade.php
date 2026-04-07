@@ -1,4 +1,7 @@
-<x-app-layout>
+@php
+    $appShellTitle = __('External news').' — '.__('SwaedUAE');
+@endphp
+<x-admin-layout :title="$appShellTitle" :meta-description="__('site.meta_description')">
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('External news') }}</h2>
@@ -9,7 +12,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             @if (session('status'))
-                <div class="rounded-md bg-green-50 p-4 text-sm text-green-800" role="status">{{ session('status') }}</div>
+                <div class="rounded-md bg-green-50 p-4 text-sm text-green-800" role="status" aria-live="polite" data-testid="admin-external-news-items-flash-status">{{ session('status') }}</div>
             @endif
 
             <form method="get" action="{{ route('admin.external-news-items.index', $adminLocaleQ) }}" class="flex flex-wrap items-end gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
@@ -36,12 +39,25 @@
                     <x-input-label for="en_filter_search" :value="__('Search titles')" />
                     <x-text-input id="en_filter_search" name="search" type="search" class="mt-1 block w-64 max-w-full" :value="$filters['search'] ?? ''" maxlength="100" autocomplete="off" />
                 </div>
-                <div class="flex flex-wrap items-end gap-2">
+                <div class="flex flex-wrap items-center gap-2">
                     <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
                     @if (filled($filters['status'] ?? '') || filled($filters['source_id'] ?? '') || filled($filters['search'] ?? ''))
                         <a href="{{ route('admin.external-news-items.index', $adminLocaleQ) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
                     @endif
+                    @php
+                        $enItemsExportQs = array_filter(
+                            array_merge($adminLocaleQ, request()->only(['status', 'source_id', 'search'])),
+                            static fn ($v) => $v !== null && $v !== ''
+                        );
+                    @endphp
+                    <a
+                        href="{{ route('admin.external-news-items.export', $enItemsExportQs) }}"
+                        class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50"
+                        data-testid="admin-external-news-items-export-csv"
+                    >{{ __('Download external news items CSV') }}</a>
+                    <x-copy-filtered-list-url-button class="[&_button]:border-gray-300 [&_button]:text-gray-700" test-id="admin-external-news-items-copy-filtered-url" />
                 </div>
+                <p class="mt-3 text-xs text-gray-500">{{ __('Admin external news items export hint') }}</p>
             </form>
 
             <form method="post" action="{{ route('admin.external-news-items.bulk', $adminLocaleQ) }}" class="bg-white p-4 shadow-sm sm:rounded-lg border border-gray-100">
@@ -98,4 +114,4 @@
             <div class="px-1">{{ $items->links() }}</div>
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

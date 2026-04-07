@@ -1,4 +1,7 @@
-<x-app-layout>
+@php
+    $appShellTitle = __('Flagged attendance').' — '.__('SwaedUAE');
+@endphp
+<x-admin-layout :title="$appShellTitle" :meta-description="__('site.meta_description')">
     <x-slot name="header">
         <h2 class="font-semibold text-xl leading-tight text-gray-800">
             {{ __('Flagged attendance') }}
@@ -8,7 +11,7 @@
     <div class="py-12">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             @if (session('status'))
-                <div class="mb-6 rounded-md border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900" role="status">{{ session('status') }}</div>
+                <div class="mb-6 rounded-md border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900" role="status" aria-live="polite" data-testid="admin-flagged-attendance-flash-status">{{ session('status') }}</div>
             @endif
             <div class="mb-6 overflow-hidden bg-white shadow-sm sm:rounded-lg">
                 <div class="border-b border-gray-100 px-6 py-4">
@@ -28,12 +31,25 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="flex flex-wrap gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
                         <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
                         @if (filled($search) || $eventId !== null)
                             <a href="{{ route('admin.flagged-attendance.index', $adminLocaleQ) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
                         @endif
+                        @php
+                            $flaggedExportQs = array_filter(
+                                array_merge($adminLocaleQ, request()->only(['event_id', 'search'])),
+                                static fn ($v) => $v !== null && $v !== ''
+                            );
+                        @endphp
+                        <a
+                            href="{{ route('admin.flagged-attendance.export', $flaggedExportQs) }}"
+                            class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50"
+                            data-testid="admin-flagged-attendance-export-csv"
+                        >{{ __('Download flagged attendance CSV') }}</a>
+                        <x-copy-filtered-list-url-button class="[&_button]:border-gray-300 [&_button]:text-gray-700" test-id="admin-flagged-attendance-copy-filtered-url" />
                     </div>
+                    <p class="mt-3 text-xs text-gray-500">{{ __('Admin flagged attendance export hint') }}</p>
                 </form>
             </div>
 
@@ -127,4 +143,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

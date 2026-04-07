@@ -1,13 +1,14 @@
-<x-app-layout>
+@php
+    $cpLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
+    $appShellTitle = __('Attendance').' — '.\Illuminate\Support\Str::limit($event->titleForLocale(), 70, '…').' — '.__('SwaedUAE');
+    $cpMeta = \Illuminate\Support\Str::limit($event->titleForLocale().' — '.__('Attendance checkpoint session hint'), 220);
+@endphp
+<x-app-layout :title="$appShellTitle" :meta-description="$cpMeta">
     <x-slot name="header">
         <h2 class="font-display text-xl font-bold leading-tight text-emerald-950">
             {{ __('Attendance') }} — {{ $event->titleForLocale() }}
         </h2>
     </x-slot>
-
-    @php
-        $cpLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
-    @endphp
     <div class="pb-[max(2rem,env(safe-area-inset-bottom))] pt-6 sm:pt-8">
         <div class="mx-auto max-w-lg px-4 sm:px-6 lg:px-8">
             <div class="mb-4 rounded-lg border border-slate-200 bg-slate-50/90 p-4 text-sm text-slate-700" role="note">
@@ -20,6 +21,10 @@
                 @if ($event->organization)
                     <p class="mt-2 text-xs text-slate-500">{{ $event->organization->nameForLocale() }}</p>
                 @endif
+            </div>
+
+            <div class="mb-4">
+                <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full" test-id="attendance-checkpoint-copy-page-url" />
             </div>
 
             <p class="mb-4 text-xs leading-relaxed text-slate-600">
@@ -38,12 +43,12 @@
             @endif
 
             @if (session('success'))
-                <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900" role="status" aria-live="polite">
+                <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900" role="status" aria-live="polite" data-testid="checkpoint-flash-success">
                     {{ session('success') }}
                 </div>
             @endif
             @if (session('error'))
-                <div class="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-900" role="alert" aria-live="assertive">
+                <div class="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-900" role="alert" aria-live="assertive" data-testid="checkpoint-flash-error">
                     {{ session('error') }}
                 </div>
             @endif

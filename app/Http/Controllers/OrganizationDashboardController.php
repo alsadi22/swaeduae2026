@@ -64,6 +64,18 @@ class OrganizationDashboardController extends Controller
                 ->count();
         }
 
+        $organizationDocuments = collect();
+        $canManageOrganizationDocuments = false;
+        if ($organization !== null && $request->user()->hasAnyRole(['org-owner', 'org-manager'])) {
+            $canManageOrganizationDocuments = $organization->isPendingVerification() || $organization->isApproved();
+            if ($canManageOrganizationDocuments) {
+                $organizationDocuments = $organization->documents()
+                    ->with('uploadedByUser')
+                    ->latest()
+                    ->get();
+            }
+        }
+
         return view('organization.dashboard', compact(
             'organization',
             'canInviteStaff',
@@ -73,6 +85,8 @@ class OrganizationDashboardController extends Controller
             'canViewOrganizationEvents',
             'pendingOrganizationApplicationsCount',
             'upcomingOrganizationEventsCount',
+            'organizationDocuments',
+            'canManageOrganizationDocuments',
         ));
     }
 }

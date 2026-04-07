@@ -45,7 +45,12 @@ class EventApplicationAdminTest extends TestCase
     {
         $admin = $this->adminUser();
 
-        $this->actingAs($admin)->get('/admin/event-applications')->assertOk();
+        $this->actingAs($admin)
+            ->get('/admin/event-applications')
+            ->assertOk()
+            ->assertSee('<title>'.e(__('Event applications').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
+            ->assertSee('data-testid="admin-event-applications-copy-filtered-url"', false);
     }
 
     public function test_admin_can_approve_pending_application(): void
@@ -255,7 +260,7 @@ class EventApplicationAdminTest extends TestCase
         EventApplication::factory()->create(['event_id' => $event->id, 'user_id' => $u1->id, 'status' => EventApplication::STATUS_PENDING]);
         EventApplication::factory()->create(['event_id' => $event->id, 'user_id' => $u2->id, 'status' => EventApplication::STATUS_PENDING]);
 
-        $response = $this->actingAs($admin)->get(route('dashboard'));
+        $response = $this->actingAs($admin)->get(route('admin.event-applications.index'));
 
         $response->assertOk();
         $response->assertSee('data-testid="pending-event-applications-badge"', false);
@@ -474,5 +479,49 @@ class EventApplicationAdminTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.event-applications.index', ['sort' => 'bogus']))
             ->assertSessionHasErrors('sort');
+    }
+
+    public function test_admin_can_download_event_applications_csv_export(): void
+    {
+        $admin = $this->adminUser();
+        $org = Organization::factory()->create(['name_en' => 'AdminCsvOrgUnique']);
+        $event = Event::factory()->create([
+            'organization_id' => $org->id,
+            'application_required' => true,
+            'title_en' => 'Admin Export Event Title',
+            'event_starts_at' => now()->addDay(),
+            'event_ends_at' => now()->addDays(2),
+            'checkin_window_starts_at' => now(),
+            'checkin_window_ends_at' => now()->addDays(2),
+        ]);
+        $volunteer = User::factory()->create(['name' => 'AdminCsv Volunteer', 'email' => 'admin-csv-vol@example.com']);
+        $volunteer->assignRole('volunteer');
+        EventApplication::factory()->create([
+            'event_id' => $event->id,
+            'user_id' => $volunteer->id,
+            'status' => EventApplication::STATUS_PENDING,
+            'message' => 'Please approve',
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.event-applications.export'));
+
+        $response->assertOk()
+            ->assertHeader('content-type', 'text/csv; charset=UTF-8');
+        $body = $response->streamedContent();
+        $this->assertStringContainsString('admin-csv-vol@example.com', $body);
+        $this->assertStringContainsString('AdminCsvOrgUnique', $body);
+        $this->assertStringContainsString('Admin Export Event Title', $body);
+        $this->assertStringContainsString(EventApplication::STATUS_PENDING, $body);
+    }
+
+    public function test_volunteer_cannot_download_admin_event_applications_export(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $user = User::factory()->create();
+        $user->assignRole('volunteer');
+
+        $this->actingAs($user)
+            ->get(route('admin.event-applications.export'))
+            ->assertForbidden();
     }
 }

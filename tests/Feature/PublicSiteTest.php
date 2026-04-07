@@ -14,7 +14,9 @@ class PublicSiteTest extends TestCase
 
     public function test_home_page_is_ok(): void
     {
-        $this->get('/')->assertOk();
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('data-testid="home-copy-page-url"', false);
     }
 
     public function test_site_webmanifest_is_served_as_json(): void
@@ -53,7 +55,8 @@ class PublicSiteTest extends TestCase
             ->assertOk()
             ->assertSee('data-testid="volunteer-hub-programs"', false)
             ->assertSee('data-testid="volunteer-hub-media"', false)
-            ->assertSee('data-testid="volunteer-hub-events"', false);
+            ->assertSee('data-testid="volunteer-hub-events"', false)
+            ->assertSee('data-testid="volunteer-hub-copy-page-url"', false);
     }
 
     public function test_volunteer_hub_shows_dashboard_and_saved_links_for_volunteer(): void
@@ -93,8 +96,17 @@ class PublicSiteTest extends TestCase
 
     public function test_legal_pages_show_placeholder_notice(): void
     {
-        foreach (['/legal/terms', '/legal/privacy', '/legal/cookies'] as $path) {
-            $this->get($path)->assertOk()->assertSee('data-testid="legal-placeholder-notice"', false);
+        foreach (
+            [
+                ['/legal/terms', 'legal-terms-copy-page-url'],
+                ['/legal/privacy', 'legal-privacy-copy-page-url'],
+                ['/legal/cookies', 'legal-cookies-copy-page-url'],
+            ] as [$path, $copyTestId]
+        ) {
+            $this->get($path)
+                ->assertOk()
+                ->assertSee('data-testid="legal-placeholder-notice"', false)
+                ->assertSee('data-testid="'.$copyTestId.'"', false);
         }
     }
 
@@ -102,14 +114,12 @@ class PublicSiteTest extends TestCase
     {
         foreach ([
             '/about',
-            '/leadership',
             '/programs',
             '/events',
             '/media',
             '/gallery',
             '/partners',
             '/faq',
-            '/support',
             '/youth-councils',
             '/legal/terms',
             '/legal/privacy',
@@ -117,6 +127,9 @@ class PublicSiteTest extends TestCase
         ] as $path) {
             $this->get($path)->assertOk();
         }
+
+        $this->get('/leadership')->assertRedirect(route('about', PublicLocale::mergeQuery([]), false));
+        $this->get('/support')->assertRedirect(route('contact.show', PublicLocale::mergeQuery([]), false));
     }
 
     public function test_about_with_lang_query_preserves_lang_in_atom_feed_link(): void
@@ -154,26 +167,19 @@ class PublicSiteTest extends TestCase
     {
         $this->get('/faq')
             ->assertOk()
+            ->assertSee('data-testid="faq-copy-page-url"', false)
             ->assertSee('data-testid="faq-footer-opportunities"', false)
             ->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
     }
 
-    public function test_about_page_leadership_link_preserves_lang_query(): void
+    public function test_about_page_includes_leadership_section_and_preserves_lang(): void
     {
-        $leadershipUrl = route('leadership', ['lang' => 'ar'], false);
-
         $this->get('/about?lang=ar')
             ->assertOk()
-            ->assertSee($leadershipUrl, false)
+            ->assertSee('data-testid="about-copy-page-url"', false)
+            ->assertSee('id="leadership"', false)
+            ->assertSee('data-testid="leadership-copy-page-url"', false)
             ->assertSee('data-testid="about-footer-opportunities"', false);
-    }
-
-    public function test_leadership_page_includes_opportunities_footer_link(): void
-    {
-        $this->get('/leadership')
-            ->assertOk()
-            ->assertSee('data-testid="leadership-footer-opportunities"', false)
-            ->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
     }
 
     public function test_legal_pages_include_opportunities_footer_with_locale(): void

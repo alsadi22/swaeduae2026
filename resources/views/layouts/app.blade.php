@@ -3,9 +3,16 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="{{ route('site.favicon', [], true) }}" type="image/svg+xml" sizes="any">
+        <link rel="apple-touch-icon" href="{{ url('/favicon.svg') }}">
+        <meta name="theme-color" content="#047857">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        @if ($metaDescription)
+            <meta name="description" content="{{ $metaDescription }}">
+        @endif
 
-        <title>{{ config('app.name', 'SwaedUAE') }}</title>
+        <title>{{ $title ?? config('app.name', 'SwaedUAE') }}</title>
+        <link rel="manifest" href="{{ route('site.webmanifest', absolute: true) }}">
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +21,9 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="theme-page font-sans">
+        <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-white focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-emerald-900 focus:shadow-card focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2" data-testid="skip-to-main-content">
+            {{ __('Skip to main content') }}
+        </a>
         <div class="min-h-screen">
             @include('layouts.navigation')
 
@@ -25,7 +35,7 @@
                 </header>
             @endisset
 
-            <main class="pb-12">
+            <main id="main-content" tabindex="-1" class="pb-12">
                 {{ $slot }}
             </main>
         </div>

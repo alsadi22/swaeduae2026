@@ -6,6 +6,7 @@ use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\ExternalNewsPublicController;
 use App\Http\Controllers\Public\GalleryPublicController;
 use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\LeadershipEntryController;
 use App\Http\Controllers\Public\InstitutionalPageController;
 use App\Http\Controllers\Public\MediaAtomFeedController;
 use App\Http\Controllers\Public\MediaHubController;
@@ -46,6 +47,8 @@ Route::get('/robots.txt', function () {
         'Disallow: /login',
         'Disallow: /forgot-password',
         'Disallow: /reset-password',
+        'Disallow: /verify-email',
+        'Disallow: /confirm-password',
         '',
         'Sitemap: '.route('sitemap', [], true),
     ];
@@ -61,9 +64,11 @@ Route::get('/humans.txt', static function (): Response {
         '# SwaedUAE — humans.txt',
         'Site: '.$appUrl,
         'Volunteer hub: '.$appUrl.'/volunteer',
-        'Contact: '.route('contact.show', [], true),
-        'Help & support: '.route('support.show', [], true),
+        'Volunteer registration: '.route('register.volunteer', [], true),
+        'Organization registration: '.route('register.organization', [], true),
+        'Contact & support: '.route('contact.show', [], true),
         'News feed: '.route('feed', [], true),
+        'Sitemap: '.route('sitemap', [], true),
         '',
         'Built with Laravel. Security disclosure: '.$appUrl.'/.well-known/security.txt',
     ];
@@ -93,10 +98,7 @@ Route::get('/about', [InstitutionalPageController::class, 'show'])
     ->defaults('cms_slug', 'about')
     ->defaults('fallback_view', 'public.about')
     ->name('about');
-Route::get('/leadership', [InstitutionalPageController::class, 'show'])
-    ->defaults('cms_slug', 'leadership')
-    ->defaults('fallback_view', 'public.leadership')
-    ->name('leadership');
+Route::get('/leadership', LeadershipEntryController::class)->name('leadership');
 Route::get('/programs', ProgramsIndexController::class)->name('programs.index');
 Route::get('/youth-councils', YouthCouncilsController::class)->name('youth-councils');
 Route::get('/events', [PublicEventController::class, 'index'])->name('events.index');

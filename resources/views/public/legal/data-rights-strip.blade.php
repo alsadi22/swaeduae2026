@@ -9,7 +9,7 @@
     <h2 class="font-display text-base font-bold text-emerald-950">{{ __('Your data and account') }}</h2>
     <ul class="mt-3 list-disc space-y-2 ps-5">
         <li>
-            <a href="{{ route('support.show', $drLocaleQ) }}" class="font-semibold text-emerald-900 hover:underline">{{ __('Help and support') }}</a>
+            <a href="{{ route('contact.show', $drLocaleQ) }}" class="font-semibold text-emerald-900 hover:underline">{{ __('Contact and support') }}</a>
             <span class="text-slate-500"> — {{ __('site.legal_data_rights_support_hint') }}</span>
         </li>
         <li>

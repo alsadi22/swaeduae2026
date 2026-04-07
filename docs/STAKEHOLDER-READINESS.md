@@ -2,6 +2,8 @@
 
 Short, non-binding view of how far the platform is toward the **1.0** bar in the roadmap (`Documents/PROJECT-ROADMAP.md` when checked out beside this repo). Percentages are directional estimates for planning conversations, not a formal audit.
 
+**Full requirement traceability (four phases):** [`Documents/END-TO-END-FOUR-PHASE-CHECKLIST.md`](../../Documents/END-TO-END-FOUR-PHASE-CHECKLIST.md) — maps each launch criterion to code/tests/ops and lists **explicit deferrals** (e.g. block CMS **C9**, kiosk **F1**, admin 2FA **I5**, certificates **G1**). PHPUnit: `php artisan test --filter=EndToEndFourPhaseChecklist` from `app/`. **Legal / content sign-off:** [`Documents/MINIMUM-CONTENT-SIGNOFF.md`](../../Documents/MINIMUM-CONTENT-SIGNOFF.md).
+
 | Area | Approx. done | Notes |
 |------|----------------|--------|
 | Public site and content (EN/AR, CMS-driven pages) | ~85% | Core pages, bilingual shell, programs hub, partners strip; polish and edge cases remain |

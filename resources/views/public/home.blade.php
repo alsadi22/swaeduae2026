@@ -41,6 +41,9 @@
                 <h2 id="start-here-heading" class="font-display text-sm font-bold uppercase tracking-widest text-slate-500">{{ __('Start here') }}</h2>
                 <p class="text-sm text-slate-500">{{ __('site.start_here_tagline') }}</p>
             </div>
+            <div class="mt-4">
+                <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full" test-id="home-copy-page-url" />
+            </div>
             <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <a href="{{ route('programs.index', $homeLocaleQ) }}" class="card-interactive group flex gap-4">
                     <span class="card-icon-tile" aria-hidden="true">

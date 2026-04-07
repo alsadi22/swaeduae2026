@@ -1,4 +1,7 @@
-<x-app-layout>
+@php
+    $appShellTitle = __('Admin events').' — '.__('SwaedUAE');
+@endphp
+<x-admin-layout :title="$appShellTitle" :meta-description="__('site.meta_description')">
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -13,7 +16,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if (session('status'))
-                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800" role="status">
+                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800" role="status" aria-live="polite" data-testid="admin-events-flash-status">
                     {{ session('status') }}
                 </div>
             @endif
@@ -23,12 +26,25 @@
                     <x-input-label for="admin_events_search" :value="__('Search events')" />
                     <x-text-input id="admin_events_search" name="search" type="search" class="mt-1 block w-64 max-w-full" :value="$search" maxlength="100" autocomplete="off" placeholder="{{ __('Title or organization name') }}" />
                 </div>
-                <div class="flex flex-wrap gap-2">
+                <div class="flex flex-wrap items-center gap-2">
                     <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
                     @if (filled($search))
                         <a href="{{ route('admin.events.index', $adminLocaleQ) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
                     @endif
+                    @php
+                        $eventsExportQs = array_filter(
+                            array_merge($adminLocaleQ, request()->only(['search'])),
+                            static fn ($v) => $v !== null && $v !== ''
+                        );
+                    @endphp
+                    <a
+                        href="{{ route('admin.events.export', $eventsExportQs) }}"
+                        class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50"
+                        data-testid="admin-events-export-csv"
+                    >{{ __('Download events CSV') }}</a>
+                    <x-copy-filtered-list-url-button class="[&_button]:border-gray-300 [&_button]:text-gray-700" test-id="admin-events-copy-filtered-url" />
                 </div>
+                <p class="mt-3 text-xs text-gray-500">{{ __('Admin events export hint') }}</p>
             </form>
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -81,4 +97,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

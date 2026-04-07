@@ -20,6 +20,11 @@ class SecurityHeaders
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('Permissions-Policy', 'geolocation=(self), microphone=(), camera=()');
 
+        $cspReportOnly = config('swaeduae.security.csp_report_only');
+        if (is_string($cspReportOnly) && $cspReportOnly !== '') {
+            $response->headers->set('Content-Security-Policy-Report-Only', $cspReportOnly);
+        }
+
         return $response;
     }
 }

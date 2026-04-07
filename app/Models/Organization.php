@@ -66,6 +66,14 @@ class Organization extends Model
     }
 
     /**
+     * @return HasMany<OrganizationDocument, Organization>
+     */
+    public function documents(): HasMany
+    {
+        return $this->hasMany(OrganizationDocument::class);
+    }
+
+    /**
      * @param  Builder<Organization>  $query
      * @return Builder<Organization>
      */

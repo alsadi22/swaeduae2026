@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExternalNewsSourceController extends Controller
 {
@@ -26,6 +27,57 @@ class ExternalNewsSourceController extends Controller
             ->get();
 
         return view('admin.external-news.sources.index', compact('sources'));
+    }
+
+    public function exportCsv(Request $request): StreamedResponse
+    {
+        $this->authorize('viewAny', ExternalNewsSource::class);
+
+        $rows = ExternalNewsSource::query()
+            ->with('latestFetchLog')
+            ->orderByDesc('priority')
+            ->orderBy('name')
+            ->get();
+
+        $filename = 'external-news-sources-admin-'.now()->format('Y-m-d').'.csv';
+        $tz = config('app.timezone');
+
+        return response()->streamDownload(function () use ($rows, $tz): void {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF");
+            fputcsv($out, [
+                'id',
+                __('Name'),
+                __('Slug'),
+                __('Type'),
+                __('Active'),
+                __('Endpoint URL'),
+                __('Website'),
+                __('Fetch interval minutes'),
+                __('Priority'),
+                __('Last fetch status'),
+                __('Last fetch finished at'),
+            ]);
+            foreach ($rows as $s) {
+                $log = $s->latestFetchLog;
+                fputcsv($out, [
+                    (string) $s->id,
+                    $s->name,
+                    $s->slug,
+                    $s->type,
+                    $s->is_active ? '1' : '0',
+                    $s->endpoint_url ?? '',
+                    $s->website_url ?? '',
+                    (string) $s->fetch_interval_minutes,
+                    (string) $s->priority,
+                    $log?->status ?? '',
+                    $log?->finished_at?->timezone($tz)->format('Y-m-d H:i') ?? '',
+                ]);
+            }
+            fclose($out);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
     }
 
     public function create(): View

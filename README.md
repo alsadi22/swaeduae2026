@@ -16,6 +16,8 @@ All product specs, architecture, design notes, and the full developer guide live
 Quick links from there:
 
 - [docs/STAKEHOLDER-READINESS.md](docs/STAKEHOLDER-READINESS.md) — short readiness snapshot (in-repo)
+- [../Documents/END-TO-END-FOUR-PHASE-CHECKLIST.md](../Documents/END-TO-END-FOUR-PHASE-CHECKLIST.md) — four-phase traceability + `EndToEndFourPhaseChecklistTest`
+- [../Documents/MINIMUM-CONTENT-SIGNOFF.md](../Documents/MINIMUM-CONTENT-SIGNOFF.md) — legal / minimum content sign-off
 - [docs/POST-DEPLOY-SMOKE.md](docs/POST-DEPLOY-SMOKE.md) — post-deploy checks + Node 22 build note
 - [Developer-README.md](../Documents/Developer-README.md) — setup, tests, stack, where UI tokens live (run commands from this `app/` folder)
 - [PRD-swaeduae-bilingual-volunteer-attendance.md](../Documents/PRD-swaeduae-bilingual-volunteer-attendance.md)
@@ -36,7 +38,7 @@ php artisan serve
 
 ## Quality checks (before merge / deploy)
 
-From **`app/`** (Postgres + `swaeduae_testing` must exist — see **[Developer-README.md](../Documents/Developer-README.md)**):
+From **`app/`** use **Node 22+** (see **`.node-version`**; **`npm ci`** enforces **`engines`** via **`.npmrc`**). Postgres + `swaeduae_testing` must exist for PHPUnit — see **[Developer-README.md](../Documents/Developer-README.md)**.
 
 ```bash
 composer ci:full        # full mirror: validate + audits + Pint + tests + npm ci/audit/build
@@ -44,6 +46,8 @@ composer ci             # validate + composer audit + Pint + php artisan test
 composer check-composer # composer.json / lock only
 composer composer-audit # Composer advisory check only
 ```
+
+**Browser smoke (Playwright):** with `php artisan serve` running on port 8000, `npm run test:e2e`. Against production or staging: `PLAYWRIGHT_BASE_URL=https://… npm run test:e2e` (after `npx playwright install chromium`). See **[docs/POST-DEPLOY-SMOKE.md](docs/POST-DEPLOY-SMOKE.md)**.
 
 ---
 

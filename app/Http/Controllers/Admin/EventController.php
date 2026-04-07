@@ -9,9 +9,11 @@ use App\Models\Event;
 use App\Models\Organization;
 use App\Support\AttendanceCheckpointUrl;
 use App\Support\PublicLocale;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class EventController extends Controller
 {
@@ -19,32 +21,65 @@ class EventController extends Controller
     {
         $this->authorize('viewAny', Event::class);
 
-        $validated = $request->validate([
-            'search' => ['nullable', 'string', 'max:100'],
-        ]);
-        $searchInput = isset($validated['search']) ? trim((string) $validated['search']) : '';
-        $searchTerm = $searchInput === '' ? null : $searchInput;
+        $state = $this->validatedEventListFilters($request);
 
-        $query = Event::query()
-            ->with('organization')
-            ->withCount('volunteers');
-
-        if ($searchTerm !== null) {
-            $query->where(function ($q) use ($searchTerm): void {
-                $q->whereRaw('strpos(lower(title_en::text), lower(?::text)) > 0', [$searchTerm])
-                    ->orWhereRaw('strpos(lower(title_ar::text), lower(?::text)) > 0', [$searchTerm])
-                    ->orWhereHas('organization', function ($oq) use ($searchTerm): void {
-                        $oq->whereRaw('strpos(lower(name_en::text), lower(?::text)) > 0', [$searchTerm])
-                            ->orWhereRaw('strpos(lower(name_ar::text), lower(?::text)) > 0', [$searchTerm]);
-                    });
-            });
-        }
-
-        $events = $query->orderByDesc('event_starts_at')->paginate(15)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
+        $events = $this->eventsListQuery($state)
+            ->orderByDesc('event_starts_at')
+            ->paginate(15)
+            ->withQueryString()
+            ->appends(PublicLocale::queryFromRequestOrUser($request->user()));
 
         return view('admin.events.index', [
             'events' => $events,
-            'search' => $searchInput,
+            'search' => $state['search_input'],
+        ]);
+    }
+
+    public function exportCsv(Request $request): StreamedResponse
+    {
+        $this->authorize('viewAny', Event::class);
+
+        $state = $this->validatedEventListFilters($request);
+
+        $rows = $this->eventsListQuery($state)
+            ->orderByDesc('event_starts_at')
+            ->get();
+
+        $filtered = $state['search_term'] !== null;
+        $filename = 'events-admin'.($filtered ? '-filtered' : '').'-'.now()->format('Y-m-d').'.csv';
+
+        $tz = config('app.timezone');
+
+        return response()->streamDownload(function () use ($rows, $tz): void {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF");
+            fputcsv($out, [
+                'id',
+                __('Title (English)'),
+                __('Title (Arabic)'),
+                __('Organization'),
+                __('Event starts'),
+                __('Event ends'),
+                __('Capacity'),
+                __('Application required'),
+                __('Roster'),
+            ]);
+            foreach ($rows as $e) {
+                fputcsv($out, [
+                    (string) $e->id,
+                    $e->title_en,
+                    $e->title_ar ?? '',
+                    $e->organization?->name_en ?? '',
+                    $e->event_starts_at?->timezone($tz)->format('Y-m-d H:i') ?? '',
+                    $e->event_ends_at?->timezone($tz)->format('Y-m-d H:i') ?? '',
+                    $e->capacity !== null ? (string) $e->capacity : '',
+                    $e->application_required ? '1' : '0',
+                    (string) ($e->volunteers_count ?? 0),
+                ]);
+            }
+            fclose($out);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
 
@@ -111,5 +146,48 @@ class EventController extends Controller
         return redirect()
             ->route('admin.events.edit', array_merge(['event' => $event], PublicLocale::queryFromRequestOrUser($request->user())))
             ->with('checkpoint_signed_url', AttendanceCheckpointUrl::temporarySignedShowUrl($event, $days));
+    }
+
+    /**
+     * @return array{search_input: string, search_term: string|null}
+     */
+    private function validatedEventListFilters(Request $request): array
+    {
+        $validated = $request->validate([
+            'search' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $searchInput = isset($validated['search']) ? trim((string) $validated['search']) : '';
+        $searchTerm = $searchInput === '' ? null : $searchInput;
+
+        return [
+            'search_input' => $searchInput,
+            'search_term' => $searchTerm,
+        ];
+    }
+
+    /**
+     * @param  array{search_term: string|null}  $state
+     * @return Builder<Event>
+     */
+    private function eventsListQuery(array $state): Builder
+    {
+        $query = Event::query()
+            ->with('organization')
+            ->withCount('volunteers');
+
+        if ($state['search_term'] !== null) {
+            $searchTerm = $state['search_term'];
+            $query->where(function ($q) use ($searchTerm): void {
+                $q->whereRaw('strpos(lower(title_en::text), lower(?::text)) > 0', [$searchTerm])
+                    ->orWhereRaw('strpos(lower(title_ar::text), lower(?::text)) > 0', [$searchTerm])
+                    ->orWhereHas('organization', function ($oq) use ($searchTerm): void {
+                        $oq->whereRaw('strpos(lower(name_en::text), lower(?::text)) > 0', [$searchTerm])
+                            ->orWhereRaw('strpos(lower(name_ar::text), lower(?::text)) > 0', [$searchTerm]);
+                    });
+            });
+        }
+
+        return $query;
     }
 }

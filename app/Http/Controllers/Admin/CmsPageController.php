@@ -7,9 +7,11 @@ use App\Http\Requests\Admin\CmsPageStoreRequest;
 use App\Http\Requests\Admin\CmsPageUpdateRequest;
 use App\Models\CmsPage;
 use App\Support\PublicLocale;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CmsPageController extends Controller
 {
@@ -17,40 +19,67 @@ class CmsPageController extends Controller
     {
         $this->authorize('viewAny', CmsPage::class);
 
-        $validated = $request->validate([
-            'search' => ['nullable', 'string', 'max:100'],
-            'placement' => ['nullable', 'string', 'in:all,home,programs,media,gallery'],
-        ]);
-        $searchInput = isset($validated['search']) ? trim((string) $validated['search']) : '';
-        $searchTerm = $searchInput === '' ? null : $searchInput;
+        $state = $this->validatedCmsListFilters($request);
 
-        $placement = $validated['placement'] ?? 'all';
-
-        $query = CmsPage::query()->orderByDesc('updated_at');
-
-        if ($searchTerm !== null) {
-            $query->where(function ($q) use ($searchTerm): void {
-                $q->whereRaw('strpos(lower(title::text), lower(?::text)) > 0', [$searchTerm])
-                    ->orWhereRaw('strpos(lower(slug::text), lower(?::text)) > 0', [$searchTerm]);
-            });
-        }
-
-        if ($placement === 'home') {
-            $query->where('show_on_home', true);
-        } elseif ($placement === 'programs') {
-            $query->where('show_on_programs', true);
-        } elseif ($placement === 'media') {
-            $query->where('show_on_media', true);
-        } elseif ($placement === 'gallery') {
-            $query->where('show_in_gallery', true);
-        }
-
-        $pages = $query->paginate(20)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
+        $pages = $this->cmsPagesListQuery($state)
+            ->paginate(20)
+            ->withQueryString()
+            ->appends(PublicLocale::queryFromRequestOrUser($request->user()));
 
         return view('admin.cms-pages.index', [
             'pages' => $pages,
-            'search' => $searchInput,
-            'placement' => $placement,
+            'search' => $state['search_input'],
+            'placement' => $state['placement'],
+        ]);
+    }
+
+    public function exportCsv(Request $request): StreamedResponse
+    {
+        $this->authorize('viewAny', CmsPage::class);
+
+        $state = $this->validatedCmsListFilters($request);
+
+        $rows = $this->cmsPagesListQuery($state)->get();
+
+        $filtered = $state['search_term'] !== null || $state['placement'] !== 'all';
+        $filename = 'cms-pages-admin'.($filtered ? '-filtered' : '').'-'.now()->format('Y-m-d').'.csv';
+
+        $tz = config('app.timezone');
+
+        return response()->streamDownload(function () use ($rows, $tz): void {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF");
+            fputcsv($out, [
+                'id',
+                __('Title'),
+                __('Slug'),
+                __('Lang'),
+                __('Status'),
+                __('Show on home page'),
+                __('Show on programs page'),
+                __('Show in media center'),
+                __('Show in gallery'),
+                __('Published at'),
+                __('Updated'),
+            ]);
+            foreach ($rows as $p) {
+                fputcsv($out, [
+                    (string) $p->id,
+                    $p->title,
+                    $p->slug,
+                    $p->locale,
+                    $p->status,
+                    $p->show_on_home ? '1' : '0',
+                    $p->show_on_programs ? '1' : '0',
+                    $p->show_on_media ? '1' : '0',
+                    $p->show_in_gallery ? '1' : '0',
+                    $p->published_at?->timezone($tz)->format('Y-m-d H:i') ?? '',
+                    $p->updated_at?->timezone($tz)->format('Y-m-d H:i') ?? '',
+                ]);
+            }
+            fclose($out);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
 
@@ -120,5 +149,55 @@ class CmsPageController extends Controller
         return redirect()
             ->route('admin.cms-pages.index', PublicLocale::queryFromRequestOrUser($request->user()))
             ->with('status', __('CMS page deleted.'));
+    }
+
+    /**
+     * @return array{search_input: string, search_term: string|null, placement: string}
+     */
+    private function validatedCmsListFilters(Request $request): array
+    {
+        $validated = $request->validate([
+            'search' => ['nullable', 'string', 'max:100'],
+            'placement' => ['nullable', 'string', 'in:all,home,programs,media,gallery'],
+        ]);
+
+        $searchInput = isset($validated['search']) ? trim((string) $validated['search']) : '';
+        $searchTerm = $searchInput === '' ? null : $searchInput;
+        $placement = $validated['placement'] ?? 'all';
+
+        return [
+            'search_input' => $searchInput,
+            'search_term' => $searchTerm,
+            'placement' => $placement,
+        ];
+    }
+
+    /**
+     * @param  array{search_term: string|null, placement: string}  $state
+     * @return Builder<CmsPage>
+     */
+    private function cmsPagesListQuery(array $state): Builder
+    {
+        $query = CmsPage::query()->orderByDesc('updated_at');
+
+        if ($state['search_term'] !== null) {
+            $searchTerm = $state['search_term'];
+            $query->where(function ($q) use ($searchTerm): void {
+                $q->whereRaw('strpos(lower(title::text), lower(?::text)) > 0', [$searchTerm])
+                    ->orWhereRaw('strpos(lower(slug::text), lower(?::text)) > 0', [$searchTerm]);
+            });
+        }
+
+        if ($state['placement'] === 'home') {
+            $query->where('show_on_home', true);
+        } elseif ($state['placement'] === 'programs') {
+            $query->where('show_on_programs', true);
+        } elseif ($state['placement'] === 'media') {
+            $query->where('show_on_media', true);
+        } elseif ($state['placement'] === 'gallery') {
+            $query->where('show_in_gallery', true);
+        }
+
+        return $query;
     }
 }

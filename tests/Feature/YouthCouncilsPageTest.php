@@ -14,6 +14,7 @@ class YouthCouncilsPageTest extends TestCase
     {
         $this->get(route('youth-councils'))
             ->assertOk()
+            ->assertSee('data-testid="youth-councils-copy-page-url"', false)
             ->assertSee('Youth Councils', false)
             ->assertSee('youthcouncils@swaeduae.ae', false)
             ->assertSee(route('about'), false)
@@ -46,6 +47,7 @@ Unique marker YCMS12345.',
 
         $this->get(route('youth-councils'))
             ->assertOk()
+            ->assertSee('data-testid="youth-councils-copy-page-url"', false)
             ->assertSee('Youth Councils CMS Title', false)
             ->assertSee('Custom excerpt for hero.', false)
             ->assertSee('YCMS12345', false)

@@ -1,4 +1,7 @@
-<x-app-layout>
+@php
+    $appShellTitle = __('Organizations').' — '.__('SwaedUAE');
+@endphp
+<x-admin-layout :title="$appShellTitle" :meta-description="__('site.meta_description')">
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <h2 class="text-xl font-semibold leading-tight text-gray-800">
@@ -13,12 +16,12 @@
     <div class="py-12">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             @if (session('status'))
-                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800" role="status">
+                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800" role="status" aria-live="polite" data-testid="admin-organizations-flash-status">
                     {{ session('status') }}
                 </div>
             @endif
             @if (session('error'))
-                <div class="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-800" role="alert">
+                <div class="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-800" role="alert" aria-live="assertive" data-testid="admin-organizations-flash-error">
                     {{ session('error') }}
                 </div>
             @endif
@@ -31,12 +34,25 @@
                     <x-input-label for="admin_orgs_search" :value="__('Search organizations')" />
                     <x-text-input id="admin_orgs_search" name="search" type="search" class="mt-1 block w-64 max-w-full" :value="$search" maxlength="100" autocomplete="off" />
                 </div>
-                <div class="flex flex-wrap gap-2">
+                <div class="flex flex-wrap items-center gap-2">
                     <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
                     @if (filled($search))
                         <a href="{{ route('admin.organizations.index', array_merge($adminLocaleQ, array_filter(['verification' => $filter !== 'all' ? $filter : null]))) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">{{ __('Clear filters') }}</a>
                     @endif
+                    @php
+                        $orgExportQs = array_filter(
+                            array_merge($adminLocaleQ, request()->only(['verification', 'search'])),
+                            static fn ($v) => $v !== null && $v !== ''
+                        );
+                    @endphp
+                    <a
+                        href="{{ route('admin.organizations.export', $orgExportQs) }}"
+                        class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50"
+                        data-testid="admin-organizations-export-csv"
+                    >{{ __('Download organizations CSV') }}</a>
+                    <x-copy-filtered-list-url-button class="[&_button]:border-gray-300 [&_button]:text-gray-700" test-id="admin-organizations-copy-filtered-url" />
                 </div>
+                <p class="mt-3 text-xs text-gray-500">{{ __('Admin organizations export hint') }}</p>
             </form>
 
             <div class="mb-4 flex flex-wrap items-center gap-3 text-sm">
@@ -123,4 +139,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

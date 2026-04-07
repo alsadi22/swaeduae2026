@@ -105,7 +105,55 @@ class AdminCheckinAttemptIndexTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.checkin-attempts.index'))
             ->assertOk()
-            ->assertSee('data-testid="suspicious-checkin-attempts-nav-badge"', false)
-            ->assertSee('data-testid="suspicious-checkin-attempts-nav-badge-mobile"', false);
+            ->assertSee('data-testid="suspicious-checkin-attempts-nav-badge"', false);
+    }
+
+    public function test_admin_checkin_attempts_index_shows_export_and_copy_controls(): void
+    {
+        $admin = $this->adminUser();
+
+        $this->actingAs($admin)
+            ->get(route('admin.checkin-attempts.index'))
+            ->assertOk()
+            ->assertSee('<title>'.e(__('Check-in log').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
+            ->assertSee('data-testid="admin-checkin-attempts-export-csv"', false)
+            ->assertSee('data-testid="admin-checkin-attempts-copy-filtered-url"', false);
+    }
+
+    public function test_admin_can_download_checkin_attempts_csv(): void
+    {
+        $admin = $this->adminUser();
+        $event = Event::factory()->create(['title_en' => 'CheckinCsvEvent']);
+        $user = User::factory()->create(['email' => 'checkincsv@example.test']);
+
+        $attempt = CheckinAttempt::query()->create([
+            'event_id' => $event->id,
+            'user_id' => $user->id,
+            'attempt_type' => CheckinAttempt::TYPE_CHECK_IN,
+            'latitude' => 1.0,
+            'longitude' => 2.0,
+            'outcome' => 'suspicious',
+            'created_at' => now(),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.checkin-attempts.export'));
+
+        $response->assertOk();
+        $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
+        $content = $response->streamedContent();
+        $this->assertStringStartsWith("\xEF\xBB\xBF", $content);
+        $this->assertStringContainsString((string) $attempt->id, $content);
+        $this->assertStringContainsString('CheckinCsvEvent', $content);
+        $this->assertStringContainsString('suspicious', $content);
+    }
+
+    public function test_volunteer_cannot_access_checkin_attempts_export(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $volunteer = User::factory()->create();
+        $volunteer->assignRole('volunteer');
+
+        $this->actingAs($volunteer)->get(route('admin.checkin-attempts.export'))->assertForbidden();
     }
 }

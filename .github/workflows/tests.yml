@@ -30,7 +30,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version-file: .node-version
           cache: npm
 
       - name: Install JS dependencies
@@ -127,3 +127,105 @@ jobs:
 
       - name: Execute tests
         run: php artisan test
+
+  e2e-smoke:
+    runs-on: ubuntu-latest
+    name: E2E browser smoke (Playwright)
+    timeout-minutes: 20
+    needs: [frontend]
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: swaeduae
+          POSTGRES_PASSWORD: swaeduae
+          POSTGRES_DB: swaeduae
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U swaeduae -d swaeduae"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      APP_ENV: local
+      APP_DEBUG: 'true'
+      APP_URL: http://127.0.0.1:8000
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: swaeduae
+      DB_USERNAME: swaeduae
+      DB_PASSWORD: swaeduae
+      PLAYWRIGHT_BASE_URL: http://127.0.0.1:8000
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, pgsql, pdo_pgsql
+          coverage: none
+
+      - name: Composer cache metadata
+        id: composer-cache-e2e
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer downloads
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache-e2e.outputs.dir }}
+          key: ${{ runner.os }}-composer-e2e-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-e2e-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Copy environment file
+        run: cp .env.example .env
+
+      - name: Generate app key
+        run: php artisan key:generate
+
+      - name: Run migrations
+        run: php artisan migrate --no-interaction --force
+
+      - name: Install JS dependencies
+        run: npm ci --no-progress
+
+      - name: npm audit
+        run: npm audit
+
+      - name: Production build
+        run: npm run build
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: Start Laravel server
+        run: |
+          php artisan serve --host=127.0.0.1 --port=8000 &
+          for i in $(seq 1 60); do
+            if curl -sSf "http://127.0.0.1:8000/" >/dev/null 2>&1; then
+              echo "Server ready after ${i}s"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Server did not become ready" >&2
+          exit 1
+
+      - name: Run Playwright smoke tests
+        run: npm run test:e2e

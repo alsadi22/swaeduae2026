@@ -87,8 +87,11 @@ class OrganizationEventApplicationPortalTest extends TestCase
         $response = $this->actingAs($manager)->get(route('organization.event-applications.index'));
 
         $response->assertOk()
+            ->assertSee('<title>'.e(__('Applications for your organization').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
             ->assertSee('Event A Unique Title', false)
-            ->assertDontSee('Event B Other Org', false);
+            ->assertDontSee('Event B Other Org', false)
+            ->assertSee('data-testid="organization-event-applications-copy-filtered-url"', false);
     }
 
     public function test_org_manager_can_approve_pending_application(): void
@@ -284,5 +287,55 @@ class OrganizationEventApplicationPortalTest extends TestCase
         $this->actingAs($manager)
             ->get(route('organization.event-applications.index', ['sort' => 'invalid']))
             ->assertSessionHasErrors('sort');
+    }
+
+    public function test_org_manager_can_download_applications_csv_export(): void
+    {
+        [$org, $manager] = $this->approvedOrgManager();
+        $event = Event::factory()->create([
+            'organization_id' => $org->id,
+            'application_required' => true,
+            'title_en' => 'Export Event CSV',
+        ]);
+        $volunteer = User::factory()->create(['name' => 'CsvApp Volunteer', 'email' => 'csvappvol@example.com']);
+        $volunteer->assignRole('volunteer');
+        EventApplication::factory()->create([
+            'event_id' => $event->id,
+            'user_id' => $volunteer->id,
+            'status' => EventApplication::STATUS_PENDING,
+            'message' => 'Please let me help',
+        ]);
+
+        $response = $this->actingAs($manager)
+            ->get(route('organization.event-applications.export'));
+
+        $response->assertOk()
+            ->assertHeader('content-type', 'text/csv; charset=UTF-8');
+        $this->assertStringContainsString('csvappvol@example.com', $response->streamedContent());
+        $this->assertStringContainsString('Export Event CSV', $response->streamedContent());
+        $this->assertStringContainsString(EventApplication::STATUS_PENDING, $response->streamedContent());
+    }
+
+    public function test_org_viewer_can_download_applications_csv_export(): void
+    {
+        $this->seedRoles();
+        $org = Organization::factory()->create();
+        $viewer = User::factory()->create();
+        $viewer->forceFill(['organization_id' => $org->id])->save();
+        $viewer->assignRole('org-viewer');
+
+        $event = Event::factory()->create(['organization_id' => $org->id, 'application_required' => true]);
+        $volunteer = User::factory()->create();
+        $volunteer->assignRole('volunteer');
+        EventApplication::factory()->create([
+            'event_id' => $event->id,
+            'user_id' => $volunteer->id,
+            'status' => EventApplication::STATUS_APPROVED,
+        ]);
+
+        $this->actingAs($viewer)
+            ->get(route('organization.event-applications.export'))
+            ->assertOk()
+            ->assertHeader('content-type', 'text/csv; charset=UTF-8');
     }
 }

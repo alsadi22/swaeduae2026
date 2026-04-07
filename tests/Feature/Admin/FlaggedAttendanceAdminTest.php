@@ -168,4 +168,55 @@ class FlaggedAttendanceAdminTest extends TestCase
             ->assertOk()
             ->assertSee('data-testid="flagged-attendance-nav-badge"', false);
     }
+
+    public function test_admin_flagged_attendance_index_shows_export_and_copy_controls(): void
+    {
+        $admin = $this->adminUser();
+
+        $this->actingAs($admin)
+            ->get(route('admin.flagged-attendance.index'))
+            ->assertOk()
+            ->assertSee('<title>'.e(__('Flagged attendance').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
+            ->assertSee('data-testid="admin-flagged-attendance-export-csv"', false)
+            ->assertSee('data-testid="admin-flagged-attendance-copy-filtered-url"', false);
+    }
+
+    public function test_admin_can_download_flagged_attendance_csv(): void
+    {
+        $admin = $this->adminUser();
+        $event = Event::factory()->create(['title_en' => 'FlagCsvEventUnique']);
+        $volunteer = User::factory()->create(['name' => 'FlagCsvVolunteer']);
+        $volunteer->assignRole('volunteer');
+        $event->volunteers()->attach($volunteer->id);
+
+        $attendance = Attendance::query()->create([
+            'event_id' => $event->id,
+            'user_id' => $volunteer->id,
+            'state' => Attendance::STATE_CHECKED_OUT,
+            'checked_in_at' => now()->subHour(),
+            'checked_out_at' => now(),
+            'minutes_worked' => 40,
+            'suspicion_flags' => ['csv_flag_marker'],
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.flagged-attendance.export'));
+
+        $response->assertOk();
+        $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
+        $content = $response->streamedContent();
+        $this->assertStringStartsWith("\xEF\xBB\xBF", $content);
+        $this->assertStringContainsString((string) $attendance->id, $content);
+        $this->assertStringContainsString('FlagCsvEventUnique', $content);
+        $this->assertStringContainsString('csv_flag_marker', $content);
+    }
+
+    public function test_volunteer_cannot_access_flagged_attendance_export(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $volunteer = User::factory()->create();
+        $volunteer->assignRole('volunteer');
+
+        $this->actingAs($volunteer)->get(route('admin.flagged-attendance.export'))->assertForbidden();
+    }
 }

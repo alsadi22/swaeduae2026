@@ -8,13 +8,22 @@ use App\Support\PublicLocale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\View\View;
 
 class SupportController extends Controller
 {
-    public function show(): View
+    private const SUPPORT_TOPICS = ['login', 'registration', 'attendance', 'organization', 'certificate', 'other'];
+
+    public function show(Request $request): RedirectResponse
     {
-        return view('public.support');
+        $raw = $request->query('topic');
+        $prefill = is_string($raw) && in_array($raw, self::SUPPORT_TOPICS, true) ? $raw : null;
+
+        $q = PublicLocale::queryFromRequestOrUser($request->user());
+        if ($prefill !== null) {
+            $q['topic'] = $prefill;
+        }
+
+        return redirect()->route('contact.show', $q, 301);
     }
 
     public function store(Request $request): RedirectResponse
@@ -31,7 +40,7 @@ class SupportController extends Controller
         $localeQ = PublicLocale::queryFromRequestOrUser($request->user());
 
         if (trim((string) $request->input('support_trap', '')) !== '') {
-            return redirect()->route('support.show', $localeQ)->with('success', __('Thank you. We will get back to you soon.'));
+            return redirect()->route('contact.show', $localeQ)->with('success', __('Thank you. We will get back to you soon.'));
         }
 
         $validated['topic_label'] = match ($validated['topic']) {
@@ -45,6 +54,6 @@ class SupportController extends Controller
 
         Mail::to(config('swaeduae.mail.support'))->send(new SupportFormMail($validated));
 
-        return redirect()->route('support.show', $localeQ)->with('success', __('Thank you. We will get back to you soon.'));
+        return redirect()->route('contact.show', $localeQ)->with('success', __('Thank you. We will get back to you soon.'));
     }
 }

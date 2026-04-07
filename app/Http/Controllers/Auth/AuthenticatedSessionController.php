@@ -36,6 +36,21 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = $request->user();
+        if (
+            $user !== null
+            && config('swaeduae.security.admin_two_factor_required', false)
+            && $user->hasAnyRole(['admin', 'super-admin'])
+            && $user->two_factor_confirmed_at !== null
+            && $user->two_factor_secret !== null
+        ) {
+            $remember = $request->boolean('remember');
+            Auth::logout();
+            $request->session()->put('admin_two_factor_login.id', $user->getAuthIdentifier());
+            $request->session()->put('admin_two_factor_login.remember', $remember);
+
+            return redirect()->route('admin.two-factor.challenge', PublicLocale::query());
+        }
+
         $default = $user ? AuthRedirect::homeForUser($user) : route('dashboard', absolute: false);
 
         return redirect()->intended($default);

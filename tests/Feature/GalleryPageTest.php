@@ -16,6 +16,7 @@ class GalleryPageTest extends TestCase
     {
         $this->get('/gallery')
             ->assertOk()
+            ->assertSee('data-testid="gallery-copy-page-url"', false)
             ->assertSeeText(__('Gallery'))
             ->assertSeeText(__('Photos and stories'));
     }

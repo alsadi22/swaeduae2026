@@ -1,4 +1,7 @@
-<x-app-layout>
+@php
+    $appShellTitle = __('Review external item').' — '.__('SwaedUAE');
+@endphp
+<x-admin-layout :title="$appShellTitle" :meta-description="__('site.meta_description')">
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Review external item') }}</h2>
@@ -9,10 +12,10 @@
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
             @if (session('status'))
-                <div class="rounded-md bg-green-50 p-4 text-sm text-green-800" role="status">{{ session('status') }}</div>
+                <div class="rounded-md bg-green-50 p-4 text-sm text-green-800" role="status" aria-live="polite" data-testid="admin-external-news-item-edit-flash-status">{{ session('status') }}</div>
             @endif
             @if ($errors->any())
-                <div class="rounded-md bg-red-50 p-4 text-sm text-red-800" role="alert">
+                <div class="rounded-md bg-red-50 p-4 text-sm text-red-800" role="alert" aria-live="assertive" data-testid="admin-external-news-item-edit-validation-errors">
                     <ul class="list-disc ps-5">
                         @foreach ($errors->all() as $e)
                             <li>{{ $e }}</li>
@@ -20,6 +23,10 @@
                     </ul>
                 </div>
             @endif
+
+            <div class="flex flex-wrap justify-end gap-2">
+                <x-copy-filtered-list-url-button class="[&_button]:border-gray-300 [&_button]:text-gray-700" test-id="admin-external-news-item-edit-copy-page-url" />
+            </div>
 
             <div class="bg-white p-6 shadow-sm sm:rounded-lg space-y-4">
                 <p class="text-sm text-gray-600">{{ __('Original title') }}</p>
@@ -111,4 +118,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

@@ -60,6 +60,9 @@
         <p class="mt-8">
             <a href="{{ route('media.index', $localeQ) }}" class="text-sm font-bold text-emerald-800 hover:underline">{{ __('Media center') }} →</a>
         </p>
+        <div class="mt-4">
+            <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full" test-id="gallery-copy-page-url" />
+        </div>
 
         <section class="{{ $introPage ? 'mt-16 border-t border-slate-200 pt-14' : 'mt-12' }}" aria-labelledby="gallery-grid-heading">
             <h2 id="gallery-grid-heading" class="font-display text-xl font-bold text-emerald-950 sm:text-2xl">

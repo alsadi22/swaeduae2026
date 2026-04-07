@@ -11,6 +11,8 @@ return [
         'info' => env('MAIL_INFO_ADDRESS', 'info@swaeduae.ae'),
         /** Volunteer / org user help: login, registration, attendance, certificates. */
         'support' => env('MAIL_SUPPORT_ADDRESS', 'support@swaeduae.ae'),
+        /** Contact form topic “data rights” — erasure / subject-access; defaults to support when unset. */
+        'privacy' => env('MAIL_PRIVACY_ADDRESS') ?: env('MAIL_SUPPORT_ADDRESS', 'support@swaeduae.ae'),
         /** Internal operational alerts (disputes, new org registration copy, etc.). */
         'admin_alerts' => env('MAIL_ADMIN_ADDRESS'),
         /** Same as admin_alerts; used when a volunteer opens an attendance dispute. */
@@ -53,6 +55,25 @@ return [
     */
     'document_downloads' => [
         // ['label' => 'Annual report (PDF)', 'label_ar' => 'التقرير السنوي', 'url' => 'https://example.org/report.pdf'],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Security headers (Phase 4 / roadmap H2)
+    |--------------------------------------------------------------------------
+    |
+    | When CSP_REPORT_ONLY is a non-empty string, it is sent as the
+    | Content-Security-Policy-Report-Only header on every web response.
+    | Start with Report-Only + a report endpoint before enforcing CSP.
+    |
+    */
+    'security' => [
+        'csp_report_only' => env('CSP_REPORT_ONLY'),
+        /**
+         * When true, users with admin or super-admin must complete TOTP setup and enter a code after password sign-in.
+         * Tests set ADMIN_TWO_FACTOR_REQUIRED=false in phpunit.xml.
+         */
+        'admin_two_factor_required' => filter_var(env('ADMIN_TWO_FACTOR_REQUIRED', false), FILTER_VALIDATE_BOOLEAN),
     ],
 
 ];

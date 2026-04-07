@@ -1,11 +1,18 @@
-@php($authLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user()))
-<x-guest-layout>
+@php
+    $authLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
+    $verifyEmailTitle = __('Verify your email').' — '.__('SwaedUAE');
+@endphp
+<x-guest-layout :title="$verifyEmailTitle" :meta-description="__('site.meta_description')">
     <div class="mb-4 text-sm text-slate-600">
         {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
     </div>
 
+    <div class="mb-4 flex justify-center">
+        <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full [&_button]:border-slate-300 [&_button]:text-slate-700" test-id="verify-email-copy-page-url" />
+    </div>
+
     @if (session('status') == 'verification-link-sent')
-        <div class="mb-4 font-medium text-sm text-green-600">
+        <div class="mb-4 font-medium text-sm text-green-600" role="status" aria-live="polite" data-testid="verify-email-link-sent">
             {{ __('A new verification link has been sent to the email address you provided during registration.') }}
         </div>
     @endif

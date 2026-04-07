@@ -26,6 +26,9 @@ class OrganizationDashboardTest extends TestCase
             ->get(route('organization.dashboard'))
             ->assertOk()
             ->assertSee(__('Organization dashboard'), false)
+            ->assertSee('data-testid="organization-dashboard-copy-page-url"', false)
+            ->assertSee('<title>'.e(__('Organization dashboard').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
             ->assertSee('Linked Org', false);
     }
 
@@ -123,7 +126,8 @@ class OrganizationDashboardTest extends TestCase
             ->get(route('organization.dashboard', ['invitation_search' => 'filter_alpha_unique']))
             ->assertOk()
             ->assertSee('filter_alpha_unique@example.com', true)
-            ->assertDontSee('filter_beta_other@example.com', true);
+            ->assertDontSee('filter_beta_other@example.com', true)
+            ->assertSee('data-testid="org-dashboard-invitations-copy-filtered-url"', false);
     }
 
     public function test_org_owner_can_resubmit_rejected_organization_for_review(): void

@@ -44,6 +44,9 @@
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
                     class="text-sm text-slate-600"
+                    role="status"
+                    aria-live="polite"
+                    data-testid="profile-password-saved"
                 >{{ __('Saved.') }}</p>
             @endif
         </div>

@@ -263,4 +263,55 @@ class AttendanceDisputeFlowTest extends TestCase
 
         $this->actingAs($volunteer)->get('/admin/disputes')->assertForbidden();
     }
+
+    public function test_volunteer_dispute_create_form_includes_copy_page_url_control(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $event = Event::factory()->create(['title_en' => 'Dispute Form Event Unique']);
+        $volunteer = User::factory()->create();
+        $volunteer->assignRole('volunteer');
+        $event->volunteers()->attach($volunteer->id);
+
+        $attendance = Attendance::query()->create([
+            'event_id' => $event->id,
+            'user_id' => $volunteer->id,
+            'state' => Attendance::STATE_CHECKED_OUT,
+            'checked_in_at' => now()->subHour(),
+            'checked_out_at' => now(),
+        ]);
+
+        $this->actingAs($volunteer)
+            ->get(route('dashboard.attendance.disputes.create', $attendance))
+            ->assertOk()
+            ->assertSee('data-testid="volunteer-dispute-create-copy-page-url"', false)
+            ->assertSee('<title>'.e(__('Open dispute').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
+            ->assertSee('Dispute Form Event Unique', false);
+    }
+
+    public function test_volunteer_dispute_create_shows_validation_errors_in_live_region(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $event = Event::factory()->create();
+        $volunteer = User::factory()->create();
+        $volunteer->assignRole('volunteer');
+        $event->volunteers()->attach($volunteer->id);
+
+        $attendance = Attendance::query()->create([
+            'event_id' => $event->id,
+            'user_id' => $volunteer->id,
+            'state' => Attendance::STATE_CHECKED_OUT,
+            'checked_in_at' => now()->subHour(),
+            'checked_out_at' => now(),
+        ]);
+
+        $this->actingAs($volunteer)
+            ->from(route('dashboard.attendance.disputes.create', $attendance))
+            ->followingRedirects()
+            ->post(route('dashboard.attendance.disputes.store', $attendance), [
+                'description' => 'too short',
+            ])
+            ->assertOk()
+            ->assertSee('data-testid="volunteer-dispute-create-validation-errors"', false);
+    }
 }

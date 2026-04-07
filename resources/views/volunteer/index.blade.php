@@ -14,6 +14,9 @@
             <p class="mt-8 text-slate-600 leading-relaxed">
                 {{ __('Volunteer attendance hint') }}
             </p>
+            <div class="mt-6">
+                <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full" test-id="volunteer-hub-copy-page-url" />
+            </div>
             <div class="mt-8 flex flex-wrap gap-3">
                 <a href="{{ route('volunteer.opportunities.index', $localeQ) }}" class="btn-primary-solid">{{ __('Browse opportunities') }}</a>
                 @auth

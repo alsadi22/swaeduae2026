@@ -37,6 +37,10 @@
             <p class="mt-4 text-sm text-slate-500">{{ __('Originally published') }}: {{ $item->original_published_at->locale(app()->getLocale())->isoFormat('LL') }}</p>
         @endif
 
+        <div class="mt-6">
+            <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full" test-id="external-news-copy-page-url" />
+        </div>
+
         @if ($item->featureImageUrl())
             <div class="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
                 <img src="{{ $item->featureImageUrl() }}" alt="{{ $item->titleForLocale() }}" class="max-h-[28rem] w-full object-cover" loading="lazy" width="1200" height="630">

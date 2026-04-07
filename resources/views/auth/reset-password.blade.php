@@ -1,5 +1,12 @@
-@php($authLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user()))
-<x-guest-layout>
+@php
+    $authLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
+    $guestPageTitle = __('Reset password').' — '.__('SwaedUAE');
+@endphp
+<x-guest-layout :title="$guestPageTitle" :meta-description="__('site.meta_description')">
+    <div class="mb-4 flex justify-center">
+        <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full [&_button]:border-slate-300 [&_button]:text-slate-700" test-id="reset-password-copy-page-url" />
+    </div>
+
     <form method="POST" action="{{ route('password.store', $authLocaleQ) }}">
         @csrf
 

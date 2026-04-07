@@ -5,6 +5,9 @@
     <div class="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
         <h1 class="public-page-title">{{ __('Media center') }}</h1>
         <p class="mt-8 max-w-2xl text-slate-600 leading-relaxed">{{ __('site.media_intro') }}</p>
+        <div class="mt-6">
+            <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full" test-id="media-fallback-copy-page-url" />
+        </div>
         <div class="mt-12 grid gap-8 lg:grid-cols-3">
             <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm ring-1 ring-slate-100 lg:col-span-2">
                 <h2 class="font-display text-lg font-bold text-emerald-950">{{ __('News') }}</h2>

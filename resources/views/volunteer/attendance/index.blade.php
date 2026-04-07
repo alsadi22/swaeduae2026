@@ -1,17 +1,17 @@
-<x-app-layout>
+@php
+    $attLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
+    $appShellTitle = __('My attendance').' — '.__('SwaedUAE');
+@endphp
+<x-app-layout :title="$appShellTitle" :meta-description="__('site.meta_description')">
     <x-slot name="header">
         <h2 class="font-display text-xl font-bold leading-tight text-emerald-950">
             {{ __('My attendance') }}
         </h2>
     </x-slot>
-
-    @php
-        $attLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
-    @endphp
     <div class="py-12">
         <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
             @if (session('status'))
-                <div class="rounded-md bg-emerald-50 p-4 text-sm text-emerald-900" role="status">
+                <div class="rounded-md bg-emerald-50 p-4 text-sm text-emerald-900" role="status" aria-live="polite" data-testid="volunteer-attendance-flash-status">
                     {{ session('status') }}
                 </div>
             @endif
@@ -32,9 +32,10 @@
                             <option value="{{ \App\Models\Attendance::STATE_INCOMPLETE }}" @selected($stateFilter === \App\Models\Attendance::STATE_INCOMPLETE)>{{ __('Attendance state incomplete') }}</option>
                         </select>
                     </div>
-                    <div class="flex flex-wrap gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
                         <button type="submit" class="inline-flex items-center rounded-lg bg-emerald-700 px-4 py-2 text-xs font-bold uppercase tracking-wide text-white shadow-sm hover:bg-emerald-800">{{ __('Apply filters') }}</button>
                         <a href="{{ route('dashboard.attendance.index', $attLocaleQ) }}" class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-bold uppercase tracking-wide text-slate-700 shadow-sm hover:bg-slate-50">{{ __('Clear filters') }}</a>
+                        <x-copy-filtered-list-url-button test-id="attendance-copy-filtered-url" />
                     </div>
                 </form>
                 <div class="border-b border-slate-100 px-6 py-4">

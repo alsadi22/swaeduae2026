@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\ExternalNewsItem;
 use App\Models\ExternalNewsSource;
 use App\Support\PublicLocale;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExternalNewsItemController extends Controller
 {
@@ -17,49 +19,68 @@ class ExternalNewsItemController extends Controller
     {
         $this->authorize('viewAny', ExternalNewsItem::class);
 
-        $validated = $request->validate([
-            'status' => ['nullable', 'string', Rule::in([
-                ExternalNewsItem::STATUS_PENDING_REVIEW,
-                ExternalNewsItem::STATUS_APPROVED,
-                ExternalNewsItem::STATUS_PUBLISHED,
-                ExternalNewsItem::STATUS_REJECTED,
-            ])],
-            'source_id' => ['nullable', 'integer', 'exists:external_news_sources,id'],
-            'search' => ['nullable', 'string', 'max:100'],
-        ]);
+        $state = $this->validatedExternalNewsItemListFilters($request);
 
-        $searchInput = isset($validated['search']) ? trim((string) $validated['search']) : '';
-        $searchTerm = $searchInput === '' ? null : $searchInput;
-
-        $query = ExternalNewsItem::query()
-            ->with('source')
-            ->orderByDesc('fetched_at');
-
-        if (! empty($validated['status'])) {
-            $query->where('status', $validated['status']);
-        }
-        if (! empty($validated['source_id'])) {
-            $query->where('source_id', (int) $validated['source_id']);
-        }
-        if ($searchTerm !== null) {
-            $query->where(function ($q) use ($searchTerm): void {
-                $q->whereRaw('strpos(lower(coalesce(original_title::text, \'\')), lower(?::text)) > 0', [$searchTerm])
-                    ->orWhereRaw('strpos(lower(coalesce(normalized_title_en::text, \'\')), lower(?::text)) > 0', [$searchTerm])
-                    ->orWhereRaw('strpos(lower(coalesce(normalized_title_ar::text, \'\')), lower(?::text)) > 0', [$searchTerm]);
-            });
-        }
-
-        $items = $query->paginate(25)->withQueryString()->appends(PublicLocale::queryFromRequestOrUser($request->user()));
+        $items = $this->externalNewsItemsListQuery($state)
+            ->paginate(25)
+            ->withQueryString()
+            ->appends(PublicLocale::queryFromRequestOrUser($request->user()));
         $sources = ExternalNewsSource::query()->orderBy('name')->get();
 
         return view('admin.external-news.items.index', [
             'items' => $items,
             'sources' => $sources,
             'filters' => [
-                'status' => $validated['status'] ?? '',
-                'source_id' => $validated['source_id'] ?? '',
-                'search' => $searchInput,
+                'status' => $state['status'] ?? '',
+                'source_id' => $state['source_id'] ?? '',
+                'search' => $state['search_input'],
             ],
+        ]);
+    }
+
+    public function exportCsv(Request $request): StreamedResponse
+    {
+        $this->authorize('viewAny', ExternalNewsItem::class);
+
+        $state = $this->validatedExternalNewsItemListFilters($request);
+
+        $rows = $this->externalNewsItemsListQuery($state)->get();
+
+        $filtered = ($state['status'] ?? null) !== null
+            || ($state['source_id'] ?? null) !== null
+            || $state['search_term'] !== null;
+        $filename = 'external-news-items-admin'.($filtered ? '-filtered' : '').'-'.now()->format('Y-m-d').'.csv';
+
+        $tz = config('app.timezone');
+
+        return response()->streamDownload(function () use ($rows, $tz): void {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF");
+            fputcsv($out, [
+                'id',
+                __('Status'),
+                __('Source'),
+                __('Original title'),
+                __('Normalized title (EN)'),
+                __('Normalized title (AR)'),
+                __('URL'),
+                __('Fetched'),
+            ]);
+            foreach ($rows as $item) {
+                fputcsv($out, [
+                    (string) $item->id,
+                    $item->status,
+                    $item->source?->name ?? '',
+                    $item->original_title ?? '',
+                    $item->normalized_title_en ?? '',
+                    $item->normalized_title_ar ?? '',
+                    $item->external_url ?? '',
+                    $item->fetched_at?->timezone($tz)->format('Y-m-d H:i') ?? '',
+                ]);
+            }
+            fclose($out);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
 
@@ -222,5 +243,60 @@ class ExternalNewsItemController extends Controller
         }
 
         return back()->with('status', __(':count items updated.', ['count' => $count]));
+    }
+
+    /**
+     * @return array{status: string|null, source_id: int|null, search_input: string, search_term: string|null}
+     */
+    private function validatedExternalNewsItemListFilters(Request $request): array
+    {
+        $validated = $request->validate([
+            'status' => ['nullable', 'string', Rule::in([
+                ExternalNewsItem::STATUS_PENDING_REVIEW,
+                ExternalNewsItem::STATUS_APPROVED,
+                ExternalNewsItem::STATUS_PUBLISHED,
+                ExternalNewsItem::STATUS_REJECTED,
+            ])],
+            'source_id' => ['nullable', 'integer', 'exists:external_news_sources,id'],
+            'search' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $searchInput = isset($validated['search']) ? trim((string) $validated['search']) : '';
+        $searchTerm = $searchInput === '' ? null : $searchInput;
+
+        return [
+            'status' => $validated['status'] ?? null,
+            'source_id' => isset($validated['source_id']) ? (int) $validated['source_id'] : null,
+            'search_input' => $searchInput,
+            'search_term' => $searchTerm,
+        ];
+    }
+
+    /**
+     * @param  array{status: string|null, source_id: int|null, search_term: string|null}  $state
+     * @return Builder<ExternalNewsItem>
+     */
+    private function externalNewsItemsListQuery(array $state): Builder
+    {
+        $query = ExternalNewsItem::query()
+            ->with('source')
+            ->orderByDesc('fetched_at');
+
+        if (($state['status'] ?? null) !== null) {
+            $query->where('status', $state['status']);
+        }
+        if (($state['source_id'] ?? null) !== null) {
+            $query->where('source_id', $state['source_id']);
+        }
+        if ($state['search_term'] !== null) {
+            $searchTerm = $state['search_term'];
+            $query->where(function ($q) use ($searchTerm): void {
+                $q->whereRaw('strpos(lower(coalesce(original_title::text, \'\')), lower(?::text)) > 0', [$searchTerm])
+                    ->orWhereRaw('strpos(lower(coalesce(normalized_title_en::text, \'\')), lower(?::text)) > 0', [$searchTerm])
+                    ->orWhereRaw('strpos(lower(coalesce(normalized_title_ar::text, \'\')), lower(?::text)) > 0', [$searchTerm]);
+            });
+        }
+
+        return $query;
     }
 }

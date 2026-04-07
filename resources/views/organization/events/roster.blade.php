@@ -1,7 +1,8 @@
-<x-app-layout>
-    @php
-        $orgLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
-    @endphp
+@php
+    $orgLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
+    $appShellTitle = __('Organization portal event roster title').' — '.__('SwaedUAE');
+@endphp
+<x-app-layout :title="$appShellTitle" :meta-description="__('site.meta_description')">
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -16,7 +17,7 @@
     <div class="py-12">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
             @if (session('status'))
-                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800" role="status">
+                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800" role="status" aria-live="polite" data-testid="org-roster-flash-status">
                     {{ session('status') }}
                 </div>
             @endif
@@ -39,10 +40,13 @@
                         <x-input-label for="roster_search" :value="__('Search roster')" />
                         <x-text-input id="roster_search" name="search" type="search" class="mt-1 block w-64 max-w-full" :value="$search" autocomplete="off" />
                     </div>
-                    <x-secondary-button type="submit">{{ __('Search') }}</x-secondary-button>
-                    @if (filled($search))
-                        <a href="{{ route('organization.events.roster', array_merge(['event' => $event], $orgLocaleQ)) }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">{{ __('Clear') }}</a>
-                    @endif
+                    <div class="flex flex-wrap items-center gap-2">
+                        <x-secondary-button type="submit">{{ __('Search') }}</x-secondary-button>
+                        @if (filled($search))
+                            <a href="{{ route('organization.events.roster', array_merge(['event' => $event], $orgLocaleQ)) }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">{{ __('Clear') }}</a>
+                        @endif
+                        <x-copy-filtered-list-url-button class="[&_button]:border-gray-300 [&_button]:text-gray-700" test-id="org-roster-copy-filtered-url" />
+                    </div>
                 </form>
                 <div class="flex flex-col items-end gap-1">
                     <a href="{{ route('organization.events.roster.export', array_merge($orgLocaleQ, array_filter(['event' => $event, 'search' => filled($search) ? $search : null]))) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">

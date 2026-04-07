@@ -1,7 +1,8 @@
-<x-app-layout>
-    @php
-        $orgLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
-    @endphp
+@php
+    $orgLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
+    $appShellTitle = __('Organization dashboard').' — '.__('SwaedUAE');
+@endphp
+<x-app-layout :title="$appShellTitle" :meta-description="__('site.meta_description')">
     <x-slot name="header">
         <h2 class="font-display text-xl font-bold leading-tight text-emerald-950">
             {{ __('Organization dashboard') }}
@@ -11,8 +12,12 @@
     <div class="py-12">
         <div class="mx-auto max-w-3xl sm:px-6 lg:px-8">
             @if (session('status'))
-                <div class="mb-6 rounded-lg border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900" role="status">{{ session('status') }}</div>
+                <div class="mb-6 rounded-lg border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900" role="status" aria-live="polite" data-testid="organization-dashboard-flash-status">{{ session('status') }}</div>
             @endif
+
+            <div class="mb-6 flex flex-wrap justify-end">
+                <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full [&_button]:border-slate-300 [&_button]:text-slate-700" test-id="organization-dashboard-copy-page-url" />
+            </div>
 
             @if (! $organization)
                 <div class="overflow-hidden border border-amber-200 bg-amber-50/90 p-6 shadow-sm sm:rounded-lg">
@@ -28,6 +33,9 @@
                         {{ $organization->nameForLocale() }}
                     </p>
                 </div>
+                @if ($canManageOrganizationDocuments)
+                    @include('organization.partials.organization-documents-panel', ['organization' => $organization, 'organizationDocuments' => $organizationDocuments, 'orgLocaleQ' => $orgLocaleQ])
+                @endif
             @elseif ($organization->isRejected())
                 <div class="overflow-hidden border border-red-200 bg-red-50/90 p-6 shadow-sm sm:rounded-lg">
                     <p class="font-display text-lg font-bold text-red-950">{{ __('Organization registration rejected title') }}</p>
@@ -61,6 +69,9 @@
                 </div>
             @else
                 <div class="space-y-6">
+                    @if ($canManageOrganizationDocuments)
+                        @include('organization.partials.organization-documents-panel', ['organization' => $organization, 'organizationDocuments' => $organizationDocuments, 'orgLocaleQ' => $orgLocaleQ])
+                    @endif
                     @if ($canViewOrganizationEvents)
                         <div class="overflow-hidden border border-slate-200 bg-white p-6 shadow-sm sm:rounded-lg sm:p-8">
                             <h3 class="font-display text-lg font-bold text-slate-900">{{ __('Organization portal events title') }}</h3>
@@ -126,9 +137,10 @@
                                             <label for="invitation_search" class="block text-xs font-bold uppercase tracking-wide text-slate-500">{{ __('Search invitations by email') }}</label>
                                             <input type="search" id="invitation_search" name="invitation_search" value="{{ $invitationSearch }}" maxlength="100" class="mt-1 block w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:max-w-md" />
                                         </div>
-                                        <div class="flex flex-wrap gap-2">
+                                        <div class="flex flex-wrap items-center gap-2">
                                             <x-primary-button type="submit">{{ __('Apply filters') }}</x-primary-button>
                                             <a href="{{ route('organization.dashboard', $orgLocaleQ) }}" class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50">{{ __('Clear filters') }}</a>
+                                            <x-copy-filtered-list-url-button class="[&_button]:border-slate-300 [&_button]:text-slate-700" test-id="org-dashboard-invitations-copy-filtered-url" />
                                         </div>
                                     </form>
                                     @if ($pendingInvitations->isEmpty())

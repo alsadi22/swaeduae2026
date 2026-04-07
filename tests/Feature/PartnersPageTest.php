@@ -16,6 +16,7 @@ class PartnersPageTest extends TestCase
 
         $this->get('/partners')
             ->assertOk()
+            ->assertSee('data-testid="partners-copy-page-url"', false)
             ->assertSeeText(__('site.partners_strip'));
     }
 

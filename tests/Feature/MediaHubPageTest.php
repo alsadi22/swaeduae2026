@@ -47,6 +47,7 @@ class MediaHubPageTest extends TestCase
             ->assertSeeText('Press release alpha')
             ->assertSeeText(__('News feed'))
             ->assertSeeText(__('site.media_hub_feed_hint'))
+            ->assertSee('data-testid="media-hub-copy-filtered-url"', false)
             ->assertSee('data-testid="media-footer-opportunities"', false)
             ->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
     }
@@ -270,6 +271,7 @@ class MediaHubPageTest extends TestCase
 
         $this->get(route('media.external.show', $item))
             ->assertOk()
+            ->assertSee('data-testid="external-news-copy-page-url"', false)
             ->assertSee('data-testid="external-news-footer-opportunities"', false)
             ->assertSee(route('volunteer.opportunities.index', PublicLocale::query(), true), false);
     }

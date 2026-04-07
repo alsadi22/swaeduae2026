@@ -1,24 +1,32 @@
 <nav x-data="{ open: false }" class="app-shell-header sticky top-0 z-50">
     @php($appNavLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user()))
+    @php($isAdminShellUser = auth()->check() && auth()->user()->hasAnyRole(['admin', 'super-admin']))
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('home', $appNavLocaleQ) }}">
+                    <a href="{{ $isAdminShellUser ? route('admin.cms-pages.index', $appNavLocaleQ) : route('home', $appNavLocaleQ) }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-emerald-900" />
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden gap-1 sm:-my-px sm:ms-8 sm:flex sm:items-center lg:gap-1.5">
-                    <x-nav-link :href="route('home', $appNavLocaleQ)" :active="request()->routeIs('home')">
-                        {{ __('Home') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('volunteer.index', $appNavLocaleQ)" :active="request()->routeIs('volunteer.index')">
-                        {{ __('Volunteer') }}
-                    </x-nav-link>
+                    @unless ($isAdminShellUser)
+                        <x-nav-link :href="route('home', $appNavLocaleQ)" :active="request()->routeIs('home')">
+                            {{ __('Home') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('volunteer.index', $appNavLocaleQ)" :active="request()->routeIs('volunteer.index')">
+                            {{ __('Volunteer') }}
+                        </x-nav-link>
+                    @endunless
+                    @if ($isAdminShellUser)
+                        <x-nav-link :href="route('admin.cms-pages.index', $appNavLocaleQ)" :active="request()->routeIs('admin.*')">
+                            {{ __('Admin panel') }}
+                        </x-nav-link>
+                    @endif
                     @role('volunteer')
                         <x-nav-link :href="route('volunteer.opportunities.index', $appNavLocaleQ)" :active="request()->routeIs('volunteer.opportunities.*')">
                             {{ __('Opportunities') }}
@@ -53,65 +61,6 @@
                             </span>
                         </x-nav-link>
                     @endcan
-                    @hasanyrole('admin|super-admin')
-                        <x-nav-link :href="route('admin.cms-pages.index', $appNavLocaleQ)" :active="request()->routeIs('admin.cms-pages.*')">
-                            {{ __('CMS') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.external-news-sources.index', $appNavLocaleQ)" :active="request()->routeIs('admin.external-news-sources.*')">
-                            {{ __('News sources') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.external-news-items.index', $appNavLocaleQ)" :active="request()->routeIs('admin.external-news-items.*')">
-                            <span class="inline-flex items-center gap-1.5">
-                                {{ __('External news') }}
-                                @if (($pendingExternalNewsItemsCount ?? 0) > 0)
-                                    <span data-testid="pending-external-news-nav-badge" class="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold leading-none text-amber-900">{{ $pendingExternalNewsItemsCount > 99 ? '99+' : $pendingExternalNewsItemsCount }}</span>
-                                @endif
-                            </span>
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.organizations.index', $appNavLocaleQ)" :active="request()->routeIs('admin.organizations.*')">
-                            <span class="inline-flex items-center gap-1.5">
-                                {{ __('Organizations') }}
-                                @if (($pendingOrganizationVerificationsCount ?? 0) > 0)
-                                    <span data-testid="pending-organizations-nav-badge" class="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold leading-none text-amber-900">{{ $pendingOrganizationVerificationsCount > 99 ? '99+' : $pendingOrganizationVerificationsCount }}</span>
-                                @endif
-                            </span>
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.events.index', $appNavLocaleQ)" :active="request()->routeIs('admin.events.*')">
-                            {{ __('Events') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.event-applications.index', $appNavLocaleQ)" :active="request()->routeIs('admin.event-applications.*')">
-                            <span class="inline-flex items-center gap-1.5">
-                                {{ __('Applications') }}
-                                @if (($pendingEventApplicationsCount ?? 0) > 0)
-                                    <span data-testid="pending-event-applications-badge" class="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold leading-none text-amber-900">{{ $pendingEventApplicationsCount > 99 ? '99+' : $pendingEventApplicationsCount }}</span>
-                                @endif
-                            </span>
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.disputes.index', $appNavLocaleQ)" :active="request()->routeIs('admin.disputes.*')">
-                            <span class="inline-flex items-center gap-1.5">
-                                {{ __('Disputes') }}
-                                @if (($openDisputesCount ?? 0) > 0)
-                                    <span data-testid="open-disputes-nav-badge" class="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold leading-none text-amber-900">{{ $openDisputesCount > 99 ? '99+' : $openDisputesCount }}</span>
-                                @endif
-                            </span>
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.checkin-attempts.index', $appNavLocaleQ)" :active="request()->routeIs('admin.checkin-attempts.*')">
-                            <span class="inline-flex items-center gap-1.5">
-                                {{ __('Check-in log') }}
-                                @if (($suspiciousCheckinAttemptsRecentCount ?? 0) > 0)
-                                    <span data-testid="suspicious-checkin-attempts-nav-badge" class="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold leading-none text-amber-900">{{ $suspiciousCheckinAttemptsRecentCount > 99 ? '99+' : $suspiciousCheckinAttemptsRecentCount }}</span>
-                                @endif
-                            </span>
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.flagged-attendance.index', $appNavLocaleQ)" :active="request()->routeIs('admin.flagged-attendance.*')">
-                            <span class="inline-flex items-center gap-1.5">
-                                {{ __('Flagged attendance') }}
-                                @if (($flaggedAttendanceRowsCount ?? 0) > 0)
-                                    <span data-testid="flagged-attendance-nav-badge" class="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold leading-none text-amber-900">{{ $flaggedAttendanceRowsCount > 99 ? '99+' : $flaggedAttendanceRowsCount }}</span>
-                                @endif
-                            </span>
-                        </x-nav-link>
-                    @endhasanyrole
                 </div>
             </div>
 
@@ -131,6 +80,11 @@
                     </x-slot>
 
                     <x-slot name="content">
+                        @if ($isAdminShellUser)
+                            <x-dropdown-link :href="route('home', $appNavLocaleQ)">
+                                {{ __('View website') }}
+                            </x-dropdown-link>
+                        @endif
                         <x-dropdown-link :href="route('profile.edit', $appNavLocaleQ)">
                             {{ __('Profile') }}
                         </x-dropdown-link>
@@ -164,12 +118,22 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('home', $appNavLocaleQ)" :active="request()->routeIs('home')">
-                {{ __('Home') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('volunteer.index', $appNavLocaleQ)" :active="request()->routeIs('volunteer.index')">
-                {{ __('Volunteer') }}
-            </x-responsive-nav-link>
+            @unless ($isAdminShellUser)
+                <x-responsive-nav-link :href="route('home', $appNavLocaleQ)" :active="request()->routeIs('home')">
+                    {{ __('Home') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('volunteer.index', $appNavLocaleQ)" :active="request()->routeIs('volunteer.index')">
+                    {{ __('Volunteer') }}
+                </x-responsive-nav-link>
+            @endunless
+            @if ($isAdminShellUser)
+                <x-responsive-nav-link :href="route('admin.cms-pages.index', $appNavLocaleQ)" :active="request()->routeIs('admin.*')">
+                    {{ __('Admin panel') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('home', $appNavLocaleQ)" :active="request()->routeIs('home')">
+                    {{ __('View website') }}
+                </x-responsive-nav-link>
+            @endif
             @role('volunteer')
                 <x-responsive-nav-link :href="route('volunteer.opportunities.index', $appNavLocaleQ)" :active="request()->routeIs('volunteer.opportunities.*')">
                     {{ __('Opportunities') }}
@@ -204,65 +168,6 @@
                     </span>
                 </x-responsive-nav-link>
             @endcan
-            @hasanyrole('admin|super-admin')
-                <x-responsive-nav-link :href="route('admin.cms-pages.index', $appNavLocaleQ)" :active="request()->routeIs('admin.cms-pages.*')">
-                    {{ __('CMS') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.external-news-sources.index', $appNavLocaleQ)" :active="request()->routeIs('admin.external-news-sources.*')">
-                    {{ __('News sources') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.external-news-items.index', $appNavLocaleQ)" :active="request()->routeIs('admin.external-news-items.*')">
-                    <span class="inline-flex items-center gap-2">
-                        {{ __('External news') }}
-                        @if (($pendingExternalNewsItemsCount ?? 0) > 0)
-                            <span data-testid="pending-external-news-nav-badge-mobile" class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-900">{{ $pendingExternalNewsItemsCount > 99 ? '99+' : $pendingExternalNewsItemsCount }}</span>
-                        @endif
-                    </span>
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.organizations.index', $appNavLocaleQ)" :active="request()->routeIs('admin.organizations.*')">
-                    <span class="inline-flex items-center gap-2">
-                        {{ __('Organizations') }}
-                        @if (($pendingOrganizationVerificationsCount ?? 0) > 0)
-                            <span data-testid="pending-organizations-nav-badge" class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-900">{{ $pendingOrganizationVerificationsCount > 99 ? '99+' : $pendingOrganizationVerificationsCount }}</span>
-                        @endif
-                    </span>
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.events.index', $appNavLocaleQ)" :active="request()->routeIs('admin.events.*')">
-                    {{ __('Events') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.event-applications.index', $appNavLocaleQ)" :active="request()->routeIs('admin.event-applications.*')">
-                    <span class="inline-flex items-center gap-2">
-                        {{ __('Applications') }}
-                        @if (($pendingEventApplicationsCount ?? 0) > 0)
-                            <span data-testid="pending-event-applications-badge" class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-900">{{ $pendingEventApplicationsCount > 99 ? '99+' : $pendingEventApplicationsCount }}</span>
-                        @endif
-                    </span>
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.disputes.index', $appNavLocaleQ)" :active="request()->routeIs('admin.disputes.*')">
-                    <span class="inline-flex items-center gap-2">
-                        {{ __('Disputes') }}
-                        @if (($openDisputesCount ?? 0) > 0)
-                            <span data-testid="open-disputes-nav-badge-mobile" class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-900">{{ $openDisputesCount > 99 ? '99+' : $openDisputesCount }}</span>
-                        @endif
-                    </span>
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.checkin-attempts.index', $appNavLocaleQ)" :active="request()->routeIs('admin.checkin-attempts.*')">
-                    <span class="inline-flex items-center gap-2">
-                        {{ __('Check-in log') }}
-                        @if (($suspiciousCheckinAttemptsRecentCount ?? 0) > 0)
-                            <span data-testid="suspicious-checkin-attempts-nav-badge-mobile" class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-900">{{ $suspiciousCheckinAttemptsRecentCount > 99 ? '99+' : $suspiciousCheckinAttemptsRecentCount }}</span>
-                        @endif
-                    </span>
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.flagged-attendance.index', $appNavLocaleQ)" :active="request()->routeIs('admin.flagged-attendance.*')">
-                    <span class="inline-flex items-center gap-2">
-                        {{ __('Flagged attendance') }}
-                        @if (($flaggedAttendanceRowsCount ?? 0) > 0)
-                            <span data-testid="flagged-attendance-nav-badge-mobile" class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-900">{{ $flaggedAttendanceRowsCount > 99 ? '99+' : $flaggedAttendanceRowsCount }}</span>
-                        @endif
-                    </span>
-                </x-responsive-nav-link>
-            @endhasanyrole
         </div>
 
         <!-- Responsive Settings Options -->

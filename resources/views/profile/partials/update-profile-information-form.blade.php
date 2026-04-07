@@ -42,7 +42,7 @@
                     </p>
 
                     @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600">
+                        <p class="mt-2 font-medium text-sm text-green-600" role="status" aria-live="polite" data-testid="profile-verification-link-sent">
                             {{ __('A new verification link has been sent to your email address.') }}
                         </p>
                     @endif
@@ -60,6 +60,9 @@
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
                     class="text-sm text-slate-600"
+                    role="status"
+                    aria-live="polite"
+                    data-testid="profile-information-saved"
                 >{{ __('Saved.') }}</p>
             @endif
         </div>

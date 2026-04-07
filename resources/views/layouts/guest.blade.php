@@ -4,9 +4,16 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="{{ route('site.favicon', [], true) }}" type="image/svg+xml" sizes="any">
+        <link rel="apple-touch-icon" href="{{ url('/favicon.svg') }}">
+        <meta name="theme-color" content="#047857">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        @if ($metaDescription)
+            <meta name="description" content="{{ $metaDescription }}">
+        @endif
 
-        <title>{{ config('app.name', 'SwaedUAE') }}</title>
+        <title>{{ $title ?? config('app.name', 'SwaedUAE') }}</title>
+        <link rel="manifest" href="{{ route('site.webmanifest', absolute: true) }}">
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,6 +22,9 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="theme-page font-sans">
+        <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-white focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-emerald-900 focus:shadow-card focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2" data-testid="skip-to-main-content">
+            {{ __('Skip to main content') }}
+        </a>
         <div class="relative flex min-h-screen flex-col items-center overflow-hidden pt-8 sm:justify-center sm:pt-0">
             <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-20%,rgba(16,185,129,0.14),transparent_50%),radial-gradient(ellipse_80%_50%_at_100%_50%,rgba(180,134,11,0.06),transparent_45%)]" aria-hidden="true"></div>
             <div class="relative z-[1] w-full px-4">
@@ -26,9 +36,9 @@
                 </a>
             </div>
 
-            <div class="relative z-[1] mt-8 w-full overflow-hidden border border-slate-200/90 bg-white/95 px-6 py-8 shadow-card backdrop-blur-sm sm:mt-10 sm:max-w-md sm:rounded-2xl sm:px-8 sm:py-9">
+            <main id="main-content" tabindex="-1" class="relative z-[1] mt-8 w-full overflow-hidden border border-slate-200/90 bg-white/95 px-6 py-8 shadow-card backdrop-blur-sm sm:mt-10 sm:max-w-md sm:rounded-2xl sm:px-8 sm:py-9">
                 {{ $slot }}
-            </div>
+            </main>
         </div>
     </body>
 </html>

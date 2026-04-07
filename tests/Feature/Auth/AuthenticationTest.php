@@ -16,6 +16,13 @@ class AuthenticationTest extends TestCase
         $response = $this->get('/login');
 
         $response->assertStatus(200);
+        $response->assertSee('data-testid="login-copy-page-url"', false);
+        $response->assertSee(route('site.favicon', [], true), false);
+        $response->assertSee('name="theme-color" content="#047857"', false);
+        $response->assertSee('data-testid="skip-to-main-content"', false);
+        $response->assertSee('id="main-content"', false);
+        $response->assertSee('<title>'.e(__('Log in').' — '.__('SwaedUAE')).'</title>', false);
+        $response->assertSee('rel="manifest"', false);
     }
 
     public function test_login_form_includes_lang_in_action_when_ar_requested(): void
@@ -54,7 +61,11 @@ class AuthenticationTest extends TestCase
 
     public function test_admin_login_screen_renders(): void
     {
-        $this->get('/admin/login')->assertOk()->assertSee(__('Admin sign-in'), false);
+        $this->get('/admin/login')
+            ->assertOk()
+            ->assertSee(__('Admin sign-in'), false)
+            ->assertSee('data-testid="login-copy-page-url"', false)
+            ->assertSee('<title>'.e(__('Admin sign-in').' — '.__('SwaedUAE')).'</title>', false);
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void

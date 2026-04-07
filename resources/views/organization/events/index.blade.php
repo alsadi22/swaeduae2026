@@ -1,7 +1,8 @@
-<x-app-layout>
-    @php
-        $orgLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
-    @endphp
+@php
+    $orgLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
+    $appShellTitle = __('Organization portal events title').' — '.__('SwaedUAE');
+@endphp
+<x-app-layout :title="$appShellTitle" :meta-description="__('site.meta_description')">
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -18,7 +19,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if (session('status'))
-                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800" role="status">
+                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800" role="status" aria-live="polite" data-testid="org-events-flash-status">
                     {{ session('status') }}
                 </div>
             @endif
@@ -45,10 +46,13 @@
                         <option value="starts_asc" @selected($sort === 'starts_asc')>{{ __('Earliest start first') }}</option>
                     </select>
                 </div>
-                <x-secondary-button type="submit">{{ __('Apply filters') }}</x-secondary-button>
-                @if (filled($search) || $timing !== 'all' || $sort !== 'starts_desc')
-                    <a href="{{ route('organization.events.index', $orgLocaleQ) }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">{{ __('Clear filters') }}</a>
-                @endif
+                <div class="flex flex-wrap items-center gap-2">
+                    <x-secondary-button type="submit">{{ __('Apply filters') }}</x-secondary-button>
+                    @if (filled($search) || $timing !== 'all' || $sort !== 'starts_desc')
+                        <a href="{{ route('organization.events.index', $orgLocaleQ) }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">{{ __('Clear filters') }}</a>
+                    @endif
+                    <x-copy-filtered-list-url-button class="[&_button]:border-gray-300 [&_button]:text-gray-700" test-id="org-events-copy-filtered-url" />
+                </div>
             </form>
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">

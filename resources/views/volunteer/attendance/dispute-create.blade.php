@@ -1,17 +1,17 @@
-<x-app-layout>
+@php
+    $attLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
+    $appShellTitle = __('Open dispute').' — '.__('SwaedUAE');
+@endphp
+<x-app-layout :title="$appShellTitle" :meta-description="__('site.meta_description')">
     <x-slot name="header">
         <h2 class="font-display text-xl font-bold leading-tight text-emerald-950">
             {{ __('Open dispute') }}
         </h2>
     </x-slot>
-
-    @php
-        $attLocaleQ = \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user());
-    @endphp
     <div class="py-12">
         <div class="mx-auto max-w-3xl sm:px-6 lg:px-8">
             @if ($errors->any())
-                <div class="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-800" role="alert">
+                <div class="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-800" role="alert" aria-live="assertive" data-testid="volunteer-dispute-create-validation-errors">
                     <ul class="list-inside list-disc">
                         @foreach ($errors->all() as $err)
                             <li>{{ $err }}</li>
@@ -19,6 +19,10 @@
                     </ul>
                 </div>
             @endif
+
+            <div class="mb-4 flex flex-wrap justify-end">
+                <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full [&_button]:border-slate-300 [&_button]:text-slate-700" test-id="volunteer-dispute-create-copy-page-url" />
+            </div>
 
             <div class="card-surface overflow-hidden">
                 <div class="border-b border-slate-200/80 px-6 py-4">

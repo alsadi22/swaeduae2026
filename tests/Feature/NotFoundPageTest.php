@@ -17,8 +17,10 @@ class NotFoundPageTest extends TestCase
         $response->assertSeeText(__('Page not found'));
         $response->assertSeeText(__('The page you are looking for does not exist or may have been moved.'));
         $response->assertSeeText(__('Back to home'));
+        $response->assertSee('data-testid="error-404-copy-page-url"', false);
         $response->assertSee('data-testid="error-404-opportunities"', false);
         $response->assertSee('data-testid="error-404-events"', false);
         $response->assertSee('data-testid="error-404-support"', false);
+        $response->assertSee('topic=other', false);
     }
 }

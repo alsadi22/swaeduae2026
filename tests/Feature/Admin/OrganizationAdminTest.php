@@ -59,6 +59,13 @@ class OrganizationAdminTest extends TestCase
         ]);
 
         $response->assertRedirect(route('admin.organizations.index', PublicLocale::query()));
+
+        $this->actingAs($user)
+            ->get(route('admin.organizations.index', PublicLocale::query()))
+            ->assertOk()
+            ->assertSee('data-testid="admin-organizations-flash-status"', false)
+            ->assertSee(__('Organization created.'), false);
+
         $this->assertDatabaseHas('organizations', [
             'name_en' => 'SwaedUAE Demo Org',
             'name_ar' => 'تجريبي',
@@ -140,5 +147,72 @@ class OrganizationAdminTest extends TestCase
         $this->actingAs($user)
             ->get(route('admin.organizations.index', ['search' => str_repeat('a', 101)]))
             ->assertSessionHasErrors('search');
+    }
+
+    public function test_admin_organizations_index_includes_export_and_copy_filtered_controls(): void
+    {
+        $user = $this->adminUser();
+
+        $this->actingAs($user)
+            ->get(route('admin.organizations.index'))
+            ->assertOk()
+            ->assertSee('<title>'.e(__('Organizations').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
+            ->assertSee('data-testid="admin-organizations-export-csv"', false)
+            ->assertSee('data-testid="admin-organizations-copy-filtered-url"', false);
+    }
+
+    public function test_admin_can_download_organizations_csv(): void
+    {
+        $user = $this->adminUser();
+        $org = Organization::factory()->create([
+            'name_en' => 'CsvExportUniqueOrgName',
+            'name_ar' => 'اسم عربي',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('admin.organizations.export'));
+
+        $response->assertOk();
+        $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
+        $content = $response->streamedContent();
+        $this->assertStringStartsWith("\xEF\xBB\xBF", $content);
+        $this->assertStringContainsString((string) $org->id, $content);
+        $this->assertStringContainsString('CsvExportUniqueOrgName', $content);
+        $this->assertStringContainsString('اسم عربي', $content);
+        $this->assertStringContainsString($org->verification_status, $content);
+    }
+
+    public function test_volunteer_cannot_access_admin_organizations_export(): void
+    {
+        $this->seedRoles();
+        $user = User::factory()->create();
+        $user->assignRole('volunteer');
+
+        $this->actingAs($user)->get(route('admin.organizations.export'))->assertForbidden();
+    }
+
+    public function test_admin_organization_edit_includes_copy_page_url_control(): void
+    {
+        $user = $this->adminUser();
+        $org = Organization::factory()->create(['name_en' => 'EditCopyOrgUnique']);
+
+        $this->actingAs($user)
+            ->get(route('admin.organizations.edit', array_merge(['organization' => $org], PublicLocale::query())))
+            ->assertOk()
+            ->assertSee('<title>'.e(__('Edit organization').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
+            ->assertSee('data-testid="admin-organization-edit-copy-page-url"', false);
+    }
+
+    public function test_admin_organization_create_includes_copy_page_url_control(): void
+    {
+        $user = $this->adminUser();
+
+        $this->actingAs($user)
+            ->get(route('admin.organizations.create', PublicLocale::query()))
+            ->assertOk()
+            ->assertSee('<title>'.e(__('New organization').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
+            ->assertSee('data-testid="admin-organization-create-copy-page-url"', false);
     }
 }

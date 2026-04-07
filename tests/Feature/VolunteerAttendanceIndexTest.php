@@ -53,6 +53,9 @@ class VolunteerAttendanceIndexTest extends TestCase
         $response->assertOk();
         $response->assertSee($eventOut->titleForLocale(), false);
         $response->assertDontSee($eventIn->titleForLocale(), false);
+        $response->assertSee('data-testid="attendance-copy-filtered-url"', false);
+        $response->assertSee('<title>'.e(__('My attendance').' — '.__('SwaedUAE')).'</title>', false);
+        $response->assertSee('rel="manifest"', false);
     }
 
     public function test_volunteer_sees_minutes_adjustment_note_on_checked_out_attendance(): void

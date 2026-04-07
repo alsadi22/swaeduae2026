@@ -41,6 +41,7 @@ class VolunteerOpportunitiesTest extends TestCase
             ->assertOk()
             ->assertSee(__('No open opportunities right now'), false)
             ->assertSee('data-testid="opportunities-empty-contact"', false)
+            ->assertSee('data-testid="opportunities-copy-filtered-url"', false)
             ->assertSee(route('contact.show', PublicLocale::query(), true), false);
     }
 
@@ -656,6 +657,32 @@ class VolunteerOpportunitiesTest extends TestCase
         $this->get(route('volunteer.opportunities.show', $event))
             ->assertOk()
             ->assertSee('data-testid="opportunity-copy-link"', false);
+    }
+
+    public function test_opportunity_show_displays_flash_status_in_live_region(): void
+    {
+        $user = $this->volunteerUser();
+        $org = Organization::query()->create(['name_en' => 'Apply Flash Org', 'name_ar' => null]);
+        $event = Event::factory()->create([
+            'organization_id' => $org->id,
+            'title_en' => 'Apply Flash Event',
+            'application_required' => true,
+            'event_starts_at' => now()->addDay(),
+            'event_ends_at' => now()->addDays(2),
+            'checkin_window_starts_at' => now(),
+            'checkin_window_ends_at' => now()->addDays(2),
+        ]);
+
+        $this->actingAs($user)
+            ->from(route('volunteer.opportunities.show', $event))
+            ->post(route('volunteer.opportunities.apply', $event), [])
+            ->assertSessionHas('status', __('Application submitted.'));
+
+        $this->actingAs($user)
+            ->get(route('volunteer.opportunities.show', $event))
+            ->assertOk()
+            ->assertSee('data-testid="opportunity-flash-status"', false)
+            ->assertSee(__('Application submitted.'), false);
     }
 
     public function test_opportunities_entry_filter_open_vs_application(): void

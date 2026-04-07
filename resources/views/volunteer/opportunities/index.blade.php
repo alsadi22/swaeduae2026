@@ -49,9 +49,10 @@
                     </div>
                 @endif
             @endauth
-            <div class="flex flex-wrap gap-2">
+            <div class="flex flex-wrap items-center gap-2">
                 <button type="submit" class="btn-primary-solid">{{ __('Apply') }}</button>
                 <a href="{{ route('volunteer.opportunities.index', $localeQ) }}" class="btn-secondary-muted">{{ __('Clear') }}</a>
+                <x-copy-filtered-list-url-button class="max-sm:w-full max-sm:[&_button]:w-full" test-id="opportunities-copy-filtered-url" />
             </div>
         </form>
 

@@ -13,7 +13,7 @@ Invoke via **`composer ci:full`** or:
 ./scripts/ci-full.sh
 ```
 
-Requires **bash**, **PostgreSQL** with **`swaeduae_testing`** (see `Documents/Developer-README.md`).
+Requires **bash**, **Node 22+**, **PostgreSQL** with **`swaeduae_testing`** (see `Documents/Developer-README.md`). Playwright smoke runs in CI only; locally use **`npm run test:e2e`** (see **`docs/POST-DEPLOY-SMOKE.md`**).
 
 ## `deploy-on-server.sh`
 

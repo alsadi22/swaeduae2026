@@ -21,7 +21,7 @@ rm -f public/hot
 if [[ ! -f public/build/manifest.json ]]; then
   echo "deploy-on-server: ERROR — public/build/manifest.json is missing." >&2
   echo "  Without it, Laravel cannot emit correct asset URLs (page will look unstyled)." >&2
-  echo "  Fix: on a machine with Node, run: npm ci && npm run build" >&2
+  echo "  Fix: on a machine with Node 22+, run: npm ci && npm run build" >&2
   echo "  Then commit and push public/build/ (this repo tracks built assets for production)." >&2
   exit 1
 fi

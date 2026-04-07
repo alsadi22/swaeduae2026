@@ -58,7 +58,7 @@ Vision statement — CMS.
 
 Values list — CMS.
 
-See the **[Leadership](/leadership)** page for board structure and profiles.
+See the **[Leadership](/about#leadership)** section for board structure and profiles.
 MD,
             ],
             [
@@ -82,7 +82,7 @@ MD,
 
 قائمة القيم — نظام إدارة المحتوى.
 
-اطلع على صفحة **[القيادة](/leadership)** لهيكل المجلس والملفات التعريفية.
+اطلع على قسم **[القيادة](/about#leadership)** لهيكل المجلس والملفات التعريفية.
 MD,
             ],
             [

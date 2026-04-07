@@ -30,12 +30,12 @@
 
         <article class="card-surface mt-8 max-w-3xl p-8">
             @if (session('status'))
-                <div class="mb-6 rounded-lg border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900" role="status">{{ session('status') }}</div>
+                <div class="mb-6 rounded-lg border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900" role="status" aria-live="polite" data-testid="opportunity-flash-status">{{ session('status') }}</div>
             @endif
 
             @auth
                 @if (auth()->user()->hasRole('volunteer') && ($pendingApplicationsOnOtherEventsCount ?? 0) > 0)
-                    <div data-testid="pending-applications-other-events-notice" class="mb-6 rounded-lg border border-sky-200 bg-sky-50 p-4 text-sm text-sky-950" role="status">
+                    <div data-testid="pending-applications-other-events-notice" class="mb-6 rounded-lg border border-sky-200 bg-sky-50 p-4 text-sm text-sky-950" role="status" aria-live="polite">
                         {{ trans_choice('site.volunteer_opportunity_other_pending_applications', $pendingApplicationsOnOtherEventsCount) }}
                     </div>
                 @endif
@@ -50,16 +50,12 @@
                         @endif
                     </div>
                 </div>
-                <div class="flex flex-shrink-0 flex-wrap items-center gap-2" x-data="{ copied: false }">
-                    <button
-                        type="button"
-                        data-testid="opportunity-copy-link"
-                        class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:border-emerald-200 hover:text-emerald-900"
-                        @click="navigator.clipboard.writeText({{ \Illuminate\Support\Js::from(url()->current()) }}).then(() => { copied = true; setTimeout(() => copied = false, 2000); }).catch(() => {})"
-                    >
-                        <span x-show="!copied">{{ __('Copy page link') }}</span>
-                        <span x-show="copied" x-cloak>{{ __('Link copied') }}</span>
-                    </button>
+                <div class="flex flex-shrink-0 flex-wrap items-center gap-2">
+                    <x-copy-filtered-list-url-button
+                        class="inline-flex items-center [&_button]:px-3 [&_button]:py-1.5"
+                        test-id="opportunity-copy-link"
+                        :label="__('Copy page link')"
+                    />
                     @auth
                         @if (auth()->user()->hasRole('volunteer'))
                             @can('saveOpportunity', $event)

@@ -120,7 +120,8 @@ class OrganizationInvitationFlowTest extends TestCase
     {
         $this->get('/organization/join/'.Str::random(64))
             ->assertOk()
-            ->assertSee(__('Invalid or expired invitation'), false);
+            ->assertSee(__('Invalid or expired invitation'), false)
+            ->assertSee('data-testid="organization-invitation-invalid-copy-page-url"', false);
     }
 
     public function test_invited_user_accepts_and_joins_organization(): void
@@ -173,7 +174,41 @@ class OrganizationInvitationFlowTest extends TestCase
 
         $this->actingAs($other)->get('/organization/join/'.$plain)
             ->assertOk()
-            ->assertSee(__('Wrong account'), false);
+            ->assertSee('<title>'.e(__('Wrong account').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
+            ->assertSee(__('Wrong account'), false)
+            ->assertSee('data-testid="organization-invitation-wrong-account-copy-page-url"', false);
+    }
+
+    public function test_member_of_another_org_sees_cannot_accept_invitation_page(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $orgA = Organization::factory()->create();
+        $orgB = Organization::factory()->create();
+        $ownerB = User::factory()->create();
+        $ownerB->forceFill(['organization_id' => $orgB->id])->save();
+        $ownerB->assignRole('org-owner');
+
+        $member = User::factory()->create(['email' => 'dualorg@example.org']);
+        $member->forceFill(['organization_id' => $orgA->id])->save();
+        $member->assignRole('org-coordinator');
+
+        $plain = Str::random(64);
+        OrganizationInvitation::query()->create([
+            'organization_id' => $orgB->id,
+            'email' => 'dualorg@example.org',
+            'role' => OrganizationInvitation::ROLE_VIEWER,
+            'token_hash' => OrganizationInvitation::hashToken($plain),
+            'invited_by_user_id' => $ownerB->id,
+            'expires_at' => now()->addWeek(),
+        ]);
+
+        $this->actingAs($member)->get('/organization/join/'.$plain)
+            ->assertOk()
+            ->assertSee('<title>'.e(__('Cannot accept invitation').' — '.__('SwaedUAE')).'</title>', false)
+            ->assertSee('rel="manifest"', false)
+            ->assertSee(__('Cannot accept invitation'), false)
+            ->assertSee('data-testid="organization-invitation-other-org-copy-page-url"', false);
     }
 
     public function test_cannot_invite_email_already_in_organization(): void

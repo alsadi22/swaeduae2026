@@ -40,6 +40,66 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(30)->by($id !== null ? 'org-roster-export|'.$id : 'org-roster-export|'.$request->ip());
         });
 
+        RateLimiter::for('org-event-applications-export', function (Request $request): Limit {
+            $id = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute(20)->by($id !== null ? 'org-app-export|'.$id : 'org-app-export|'.$request->ip());
+        });
+
+        RateLimiter::for('admin-event-applications-export', function (Request $request): Limit {
+            $id = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute(30)->by($id !== null ? 'admin-app-export|'.$id : 'admin-app-export|'.$request->ip());
+        });
+
+        RateLimiter::for('admin-organizations-export', function (Request $request): Limit {
+            $id = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute(30)->by($id !== null ? 'admin-org-export|'.$id : 'admin-org-export|'.$request->ip());
+        });
+
+        RateLimiter::for('admin-flagged-attendance-export', function (Request $request): Limit {
+            $id = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute(30)->by($id !== null ? 'admin-flagged-export|'.$id : 'admin-flagged-export|'.$request->ip());
+        });
+
+        RateLimiter::for('admin-checkin-attempts-export', function (Request $request): Limit {
+            $id = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute(30)->by($id !== null ? 'admin-checkin-export|'.$id : 'admin-checkin-export|'.$request->ip());
+        });
+
+        RateLimiter::for('admin-disputes-export', function (Request $request): Limit {
+            $id = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute(30)->by($id !== null ? 'admin-disputes-export|'.$id : 'admin-disputes-export|'.$request->ip());
+        });
+
+        RateLimiter::for('admin-cms-pages-export', function (Request $request): Limit {
+            $id = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute(30)->by($id !== null ? 'admin-cms-export|'.$id : 'admin-cms-export|'.$request->ip());
+        });
+
+        RateLimiter::for('admin-external-news-items-export', function (Request $request): Limit {
+            $id = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute(30)->by($id !== null ? 'admin-en-items-export|'.$id : 'admin-en-items-export|'.$request->ip());
+        });
+
+        RateLimiter::for('admin-external-news-sources-export', function (Request $request): Limit {
+            $id = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute(30)->by($id !== null ? 'admin-en-src-export|'.$id : 'admin-en-src-export|'.$request->ip());
+        });
+
+        RateLimiter::for('admin-events-export', function (Request $request): Limit {
+            $id = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute(30)->by($id !== null ? 'admin-events-export|'.$id : 'admin-events-export|'.$request->ip());
+        });
+
         RateLimiter::for('org-invitation-send', function (Request $request): Limit {
             $id = $request->user()?->getAuthIdentifier();
 
@@ -62,6 +122,12 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('guest-login', function (Request $request): Limit {
             return Limit::perMinute(30)->by('guest-login|'.$request->ip());
+        });
+
+        RateLimiter::for('admin-two-factor-challenge', function (Request $request): Limit {
+            $sessionId = $request->hasSession() ? $request->session()->getId() : '';
+
+            return Limit::perMinute(10)->by('admin-2fa|'.($sessionId !== '' ? $sessionId : $request->ip()));
         });
 
         RateLimiter::for('guest-password-email', function (Request $request): Limit {
@@ -116,6 +182,18 @@ class AppServiceProvider extends ServiceProvider
             $id = $request->user()?->getAuthIdentifier();
 
             return Limit::perHour(3)->by($id !== null ? 'user-data-export|'.$id : 'user-data-export|'.$request->ip());
+        });
+
+        RateLimiter::for('user-erasure-request', function (Request $request): Limit {
+            $id = $request->user()?->getAuthIdentifier();
+
+            return Limit::perDay(2)->by($id !== null ? 'user-erasure-request|'.$id : 'user-erasure-request|'.$request->ip());
+        });
+
+        RateLimiter::for('org-document-upload', function (Request $request): Limit {
+            $id = $request->user()?->getAuthIdentifier();
+
+            return Limit::perHour(20)->by($id !== null ? 'org-document-upload|'.$id : 'org-document-upload|'.$request->ip());
         });
 
         RateLimiter::for('org-verification-resubmit', function (Request $request): Limit {
@@ -178,7 +256,7 @@ class AppServiceProvider extends ServiceProvider
             Mail::alwaysReplyTo($replyTo, config('mail.reply_to.name'));
         }
 
-        View::composer('layouts.navigation', function (\Illuminate\View\View $view): void {
+        View::composer(['layouts.navigation', 'layouts.admin-sidebar'], function (\Illuminate\View\View $view): void {
             $count = 0;
             $pendingOrgs = 0;
             $openDisputesCount = 0;

@@ -17,6 +17,22 @@ class PasswordResetTest extends TestCase
         $response = $this->get('/forgot-password');
 
         $response->assertStatus(200);
+        $response->assertSee('data-testid="forgot-password-copy-page-url"', false);
+        $response->assertSee('autocomplete="username"', false);
+        $response->assertSee('<title>'.e(__('Forgot password').' — '.__('SwaedUAE')).'</title>', false);
+    }
+
+    public function test_forgot_password_success_shows_accessible_flash(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create();
+
+        $this->post('/forgot-password', ['email' => $user->email])->assertRedirect();
+
+        $this->get('/forgot-password')
+            ->assertOk()
+            ->assertSee('data-testid="auth-flash-status"', false);
     }
 
     public function test_forgot_password_includes_opportunities_footer_with_locale(): void
@@ -52,6 +68,7 @@ class PasswordResetTest extends TestCase
             $response = $this->get('/reset-password/'.$notification->token);
 
             $response->assertStatus(200);
+            $response->assertSee('data-testid="reset-password-copy-page-url"', false);
 
             return true;
         });

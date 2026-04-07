@@ -17,8 +17,10 @@ class PublicHumansTxtTest extends TestCase
         $body = $response->getContent();
         $this->assertStringContainsString('SwaedUAE', $body);
         $this->assertStringContainsString(route('contact.show', [], true), $body);
-        $this->assertStringContainsString(route('support.show', [], true), $body);
         $this->assertStringContainsString(route('feed', [], true), $body);
+        $this->assertStringContainsString(route('sitemap', [], true), $body);
+        $this->assertStringContainsString(route('register.volunteer', [], true), $body);
+        $this->assertStringContainsString(route('register.organization', [], true), $body);
         $this->assertStringContainsString('/.well-known/security.txt', $body);
     }
 }

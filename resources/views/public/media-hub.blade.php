@@ -54,6 +54,10 @@
             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
         @enderror
 
+        <div class="mt-4 flex flex-wrap items-center gap-2">
+            <x-copy-filtered-list-url-button class="max-sm:w-full max-sm:[&_button]:w-full" test-id="media-hub-copy-filtered-url" />
+        </div>
+
         <div class="mt-10 flex flex-wrap gap-2">
             <a href="{{ route('media.index', array_merge($localeQ, ['filter' => 'all'], $search !== '' ? ['q' => $search] : [])) }}" class="rounded-full px-4 py-2 text-sm font-semibold {{ $filter === 'all' && ! $sourceId ? 'bg-emerald-800 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">{{ __('All updates') }}</a>
             <a href="{{ route('media.index', array_merge($localeQ, ['filter' => 'internal'], $search !== '' ? ['q' => $search] : [])) }}" class="rounded-full px-4 py-2 text-sm font-semibold {{ $filter === 'internal' ? 'bg-emerald-800 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">{{ __('Our news') }}</a>

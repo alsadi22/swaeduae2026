@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\RequireAdminTwoFactor;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\ShareAdminLocaleQuery;
@@ -31,6 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'role' => RoleMiddleware::class,
+            'require.admin.2fa' => RequireAdminTwoFactor::class,
         ]);
 
         $middleware->redirectGuestsTo(function (Request $request) {

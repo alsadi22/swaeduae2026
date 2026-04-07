@@ -6,6 +6,9 @@
         <div class="card-surface mx-auto max-w-lg p-8 text-center">
             <h1 class="font-display text-xl font-bold text-slate-900">{{ __('Invalid or expired invitation') }}</h1>
             <p class="mt-4 text-sm text-slate-600">{{ __('Organization invitation invalid hint') }}</p>
+            <div class="mt-4 flex justify-center">
+                <x-copy-filtered-list-url-button class="max-sm:[&_button]:w-full [&_button]:border-slate-300 [&_button]:text-slate-700" test-id="organization-invitation-invalid-copy-page-url" />
+            </div>
             <a href="{{ route('home', \App\Support\PublicLocale::queryFromRequestOrUser(auth()->user())) }}" class="mt-6 inline-flex text-sm font-bold text-emerald-800 hover:underline">{{ __('Back to home') }}</a>
         </div>
     </div>
