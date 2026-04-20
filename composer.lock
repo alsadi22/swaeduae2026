@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "db0063316dca0f91dde42127420d97af",
+    "content-hash": "cd96d6957c465189c5a1c4aed0f65890",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1498,16 +1498,16 @@
         },
         {
             "name": "laravel/serializable-closure",
-            "version": "v2.0.10",
+            "version": "v2.0.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/serializable-closure.git",
-                "reference": "870fc81d2f879903dfc5b60bf8a0f94a1609e669"
+                "reference": "d1af40ac4a6ccc12bd062a7184f63c9995a63bdd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/870fc81d2f879903dfc5b60bf8a0f94a1609e669",
-                "reference": "870fc81d2f879903dfc5b60bf8a0f94a1609e669",
+                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/d1af40ac4a6ccc12bd062a7184f63c9995a63bdd",
+                "reference": "d1af40ac4a6ccc12bd062a7184f63c9995a63bdd",
                 "shasum": ""
             },
             "require": {
@@ -1555,7 +1555,7 @@
                 "issues": "https://github.com/laravel/serializable-closure/issues",
                 "source": "https://github.com/laravel/serializable-closure"
             },
-            "time": "2026-02-20T19:59:49+00:00"
+            "time": "2026-04-07T13:32:18+00:00"
         },
         {
             "name": "laravel/socialite",
@@ -2435,16 +2435,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "3.11.3",
+            "version": "3.11.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/CarbonPHP/carbon.git",
-                "reference": "6a7e652845bb018c668220c2a545aded8594fbbf"
+                "reference": "e890471a3494740f7d9326d72ce6a8c559ffee60"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CarbonPHP/carbon/zipball/6a7e652845bb018c668220c2a545aded8594fbbf",
-                "reference": "6a7e652845bb018c668220c2a545aded8594fbbf",
+                "url": "https://api.github.com/repos/CarbonPHP/carbon/zipball/e890471a3494740f7d9326d72ce6a8c559ffee60",
+                "reference": "e890471a3494740f7d9326d72ce6a8c559ffee60",
                 "shasum": ""
             },
             "require": {
@@ -2536,7 +2536,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-03-11T17:23:39+00:00"
+            "time": "2026-04-07T09:57:54+00:00"
         },
         {
             "name": "nette/schema",
@@ -2843,33 +2843,29 @@
         },
         {
             "name": "owen-it/laravel-auditing",
-            "version": "v13.7.4",
+            "version": "v14.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/owen-it/laravel-auditing.git",
-                "reference": "a15d33306252ede30adb8942b537993e182c5288"
+                "reference": "34e8a21890082a7a353894a4acdeb2d301dbe0d4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/owen-it/laravel-auditing/zipball/a15d33306252ede30adb8942b537993e182c5288",
-                "reference": "a15d33306252ede30adb8942b537993e182c5288",
+                "url": "https://api.github.com/repos/owen-it/laravel-auditing/zipball/34e8a21890082a7a353894a4acdeb2d301dbe0d4",
+                "reference": "34e8a21890082a7a353894a4acdeb2d301dbe0d4",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "illuminate/console": "^7.0|^8.0|^9.0|^10.0|^11.0",
-                "illuminate/database": "^7.0|^8.0|^9.0|^10.0|^11.0",
-                "illuminate/filesystem": "^7.0|^8.0|^9.0|^10.0|^11.0",
-                "php": "^7.3|^8.0"
+                "illuminate/console": "^11.0|^12.0|^13.0",
+                "illuminate/database": "^11.0|^12.0|^13.0",
+                "illuminate/filesystem": "^11.0|^12.0|^13.0",
+                "php": "^8.2"
             },
             "require-dev": {
-                "laravel/legacy-factories": "*",
-                "mockery/mockery": "^1.0",
-                "orchestra/testbench": "^5.0|^6.0|^7.0|^8.0|^9.0",
-                "phpunit/phpunit": "^9.6|^10.5|^11.0"
-            },
-            "suggest": {
-                "irazasyed/larasupport": "Needed to publish the package configuration in Lumen"
+                "mockery/mockery": "^1.5.1",
+                "orchestra/testbench": "^9.0|^10.0|^11.0",
+                "phpunit/phpunit": "^11.0|^12.5.12"
             },
             "type": "package",
             "extra": {
@@ -2879,7 +2875,7 @@
                     ]
                 },
                 "branch-alias": {
-                    "dev-master": "v13-dev"
+                    "dev-master": "v14-dev"
                 }
             },
             "autoload": {
@@ -2905,7 +2901,7 @@
                     "email": "morten@visia.dk"
                 }
             ],
-            "description": "Audit changes of your Eloquent models in Laravel/Lumen",
+            "description": "Audit changes of your Eloquent models in Laravel",
             "homepage": "https://laravel-auditing.com",
             "keywords": [
                 "Accountability",
@@ -2927,7 +2923,7 @@
                 "issues": "https://github.com/owen-it/laravel-auditing/issues",
                 "source": "https://github.com/owen-it/laravel-auditing"
             },
-            "time": "2026-03-27T13:39:36+00:00"
+            "time": "2026-03-27T13:27:17+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
@@ -9132,12 +9128,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.3"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
 }
